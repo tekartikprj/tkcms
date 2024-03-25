@@ -197,16 +197,13 @@ class FfServerApp {
   int instanceCallCount = 0;
   static int globalInstanceCallCount = 0;
   final FirebaseFunctionsContext firebaseFunctionsContext;
-  final AppFlavorContext flavorContext;
-
+  final FlavorContext flavorContext;
+  FirebaseContext get firebaseContext =>
+      firebaseFunctionsContext.firebaseContext;
   FirebaseFunctions get functionsV2 => firebaseFunctionsContext.functionsV2;
 
   late Uri commandUri;
   FirebaseFunctions get functionsV1 => firebaseFunctionsContext.functionsV1;
-  String get app => flavorContext.app;
-  late final databaseService = FfServerApp(
-      firebaseFunctionsContext: firebaseFunctionsContext,
-      flavorContext: flavorContext);
 
   FfServerApp(
       {required this.firebaseFunctionsContext, required this.flavorContext});
@@ -300,7 +297,7 @@ class FfServerApp {
 
   Future<void> dailyCronHandler(ScheduleContext context) async {
     try {
-      print('$app dailyCron handler ${DateTime.now().toIso8601String()}');
+      // print('$app dailyCron handler ${DateTime.now().toIso8601String()}');
       try {
         await handleDailyCron();
       } catch (e) {
@@ -359,7 +356,7 @@ class FfServerApp {
   late String command;
   void initFunctions() {
     String cron;
-    switch (flavorContext.flavorContext) {
+    switch (flavorContext) {
       case FlavorContext.prod:
       case FlavorContext.prodx:
         command = functionCommandV1Prod;
@@ -373,7 +370,7 @@ class FfServerApp {
         break;
     }
     functionsV2[command] = commandV1;
-    if (!flavorContext.local) {
+    if (!firebaseContext.local) {
       try {
         // Every day at 11pm
         functionsV2[cron] = functionsV1

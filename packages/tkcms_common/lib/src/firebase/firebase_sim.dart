@@ -10,8 +10,8 @@ Future<FirebaseFunctionsContext> initFirebaseSimMemory() async {
   var firebase = FirebaseLocal();
   var firestoreService = newFirestoreServiceMemory();
 
-  var firebaseContext = await FirebaseServicesContext(
-          firebase: firebase, firestoreService: firestoreService)
+  var firebaseContext = FirebaseServicesContext(
+          local: true, firebase: firebase, firestoreService: firestoreService)
       .initContext();
   return FirebaseFunctionsContext(
       firebaseContext: firebaseContext, functionsV2: firebaseFunctionsMemory);

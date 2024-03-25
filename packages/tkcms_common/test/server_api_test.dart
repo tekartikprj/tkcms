@@ -18,7 +18,7 @@ Future<void> main() async {
     var httpClientFactory = httpClientFactoryMemory;
     var ff = firebaseFunctionsMemory;
     var ffServerApp = FfServerApp(
-        flavorContext: AppFlavorContext.testLocal,
+        flavorContext: FlavorContext.test,
         firebaseFunctionsContext: firebaseFunctionsContext);
 
     ffServerApp.initFunctions();
