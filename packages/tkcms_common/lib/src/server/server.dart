@@ -228,7 +228,7 @@ class TkCmsServerApp {
     try {
       if (uri.pathSegments.isNotEmpty) {
         var command = uri.pathSegments.last;
-        devPrint('command: $command ($uri');
+        // devPrint('command: $command ($uri');
         switch (command) {
           case commandCron:
             await CronCommandHandler(
