@@ -44,7 +44,7 @@ class FirebaseContext {
   final bool local;
   final FirebaseApp firebaseApp;
   final Firebase firebase;
-  String get projectId => firebaseApp.options.projectId!;
+  String get projectId => firebaseApp.options.projectId ?? 'local';
   late Firestore? firestoreOrNull;
   Firestore get firestore => firestoreOrNull!;
 

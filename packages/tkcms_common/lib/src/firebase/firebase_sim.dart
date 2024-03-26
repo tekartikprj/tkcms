@@ -5,7 +5,12 @@ import 'package:tekartik_firebase_local/firebase_local.dart';
 
 import 'firebase.dart';
 
+/// Global sim context.
+FirebaseContext? firebaseContextSimOrNull;
+
+/// Global sim with functions context.
 FirebaseFunctionsContext? firebaseFunctionsContextSimOrNull;
+
 Future<FirebaseFunctionsContext> initFirebaseSimMemory() async {
   var firebase = FirebaseLocal();
   var firestoreService = newFirestoreServiceMemory();

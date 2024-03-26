@@ -6,17 +6,19 @@ import 'package:tkcms_common/src/server/server.dart';
 import 'package:tkcms_common/tkcms_api.dart';
 import 'package:tkcms_common/tkcms_common.dart';
 
+import 'model/api_info_fb_response.dart';
 import 'model/api_info_response.dart';
 
 var debugWebServices = false; // devWarning(true);
-late CtdoApiServiceBase gApiService;
+late TkCmsApiServiceBase gApiService;
 
 abstract interface class ApiService {
   Future<T> send<T extends CvModel>(String command, CvModel request);
 }
 
-class CtdoApiServiceBase implements ApiService {
-  final Uri commandUri;
+class TkCmsApiServiceBase implements ApiService {
+  /// Can be modified by client.
+  late Uri commandUri;
   late Client innerClient;
   late Client retryClient;
   late Client secureClient;
@@ -24,7 +26,7 @@ class CtdoApiServiceBase implements ApiService {
   final HttpClientFactory httpClientFactory;
 
   /// Set from login and prefs
-  CtdoApiServiceBase(
+  TkCmsApiServiceBase(
       {required this.commandUri, required this.httpClientFactory}) {
     initApiBuilders();
   }
@@ -157,6 +159,16 @@ class CtdoApiServiceBase implements ApiService {
 
   Future<ApiInfoResponse> getInfo() async {
     return await send<ApiInfoResponse>(commandInfo, ApiEmpty());
+  }
+
+  Future<ApiInfoFbResponse> getInfoFb() async {
+    return await send<ApiInfoFbResponse>(commandInfoFb, ApiEmpty());
+  }
+
+  //@override
+  Future<ApiGetTimestampResponse> getTimestamp() async {
+    return await send<ApiGetTimestampResponse>(commandTimestamp, ApiEmpty(),
+        client: innerClient);
   }
 
   Future<ApiEmpty> runCron() async {

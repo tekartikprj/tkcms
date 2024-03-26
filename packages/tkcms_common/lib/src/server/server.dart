@@ -1,8 +1,5 @@
 import 'package:tekartik_app_http/app_http.dart';
 import 'package:tekartik_firebase_functions/firebase_functions.dart';
-import 'package:tkcms_common/src/api/model/api_empty.dart';
-import 'package:tkcms_common/src/api/model/api_error.dart';
-import 'package:tkcms_common/src/api/model/api_info_response.dart';
 import 'package:tkcms_common/src/api/token_info.dart';
 import 'package:tkcms_common/src/firebase/firebase.dart';
 import 'package:tkcms_common/src/flavor/flavor.dart';
@@ -27,9 +24,10 @@ const commandTimestamp = 'timestamp';
 const commandProxy = 'proxy';
 const commandCron = 'cron';
 const commandInfo = 'info';
+const commandInfoFb = 'infofb';
 
 class CommandHandler {
-  final FfServerApp serverApp;
+  final TkCmsServerApp serverApp;
   final ExpressHttpRequest request;
 
   Future<void> sendErrorResponse(int statusCode, CvModel model) async {
@@ -68,6 +66,7 @@ class InfoCommandHandler extends CommandHandler {
 
   TokenInfo? getTokenOrNull() =>
       _tokenInfo ??= TokenInfo.fromToken(request.headers.value(tokenHeader));
+
   Future<bool> requireToken() async {
     var tokenInfo = getTokenOrNull();
     if (tokenInfo?.serverDateTime == null) {
@@ -91,7 +90,7 @@ class InfoCommandHandler extends CommandHandler {
   // Read clientDateTime and return client and server date time
   Future<void> handle() async {
     var instanceCallCount = ++serverApp.instanceCallCount;
-    var globalInstanceCallCount = ++FfServerApp.globalInstanceCallCount;
+    var globalInstanceCallCount = ++TkCmsServerApp.globalInstanceCallCount;
     var info = ApiInfoResponse()
       ..uri.v = request.uri.toString()
       ..instanceCallCount.v = instanceCallCount
@@ -193,26 +192,43 @@ void ensureFields(CvModel model, List<CvField> fields) {
   }
 }
 */
-class FfServerApp {
-  int instanceCallCount = 0;
-  static int globalInstanceCallCount = 0;
+
+class TkCmsServerAppContext {
   final FirebaseFunctionsContext firebaseFunctionsContext;
   final FlavorContext flavorContext;
+
+  TkCmsServerAppContext(
+      {required this.firebaseFunctionsContext, required this.flavorContext});
+}
+
+class TkCmsServerApp {
+  final TkCmsServerAppContext context;
+  int instanceCallCount = 0;
+  static int globalInstanceCallCount = 0;
+
+  FirebaseFunctionsContext get firebaseFunctionsContext =>
+      context.firebaseFunctionsContext;
+
+  FlavorContext get flavorContext => context.flavorContext;
+
   FirebaseContext get firebaseContext =>
       firebaseFunctionsContext.firebaseContext;
+
   FirebaseFunctions get functionsV2 => firebaseFunctionsContext.functionsV2;
 
   late Uri commandUri;
+
   FirebaseFunctions get functionsV1 => firebaseFunctionsContext.functionsV1;
 
-  FfServerApp(
-      {required this.firebaseFunctionsContext, required this.flavorContext});
+  TkCmsServerApp({required this.context});
 
   Future<void> handle(ExpressHttpRequest request) async {
     var uri = request.uri;
+
     try {
       if (uri.pathSegments.isNotEmpty) {
         var command = uri.pathSegments.last;
+        devPrint('command: $command ($uri');
         switch (command) {
           case commandCron:
             await CronCommandHandler(
@@ -256,6 +272,13 @@ class FfServerApp {
           case commandInfo:
             await InfoCommandHandler(serverApp: this, request: request)
                 .handle();
+            return true;
+          case commandInfoFb:
+            await GetInfoFbCommandHandler(
+              firebaseContext: firebaseContext,
+              request: request,
+              serverApp: this,
+            ).handle();
             return true;
           case commandTimestamp:
             await GetTimeCommandHandler(
@@ -354,6 +377,7 @@ class FfServerApp {
   }
 
   late String command;
+
   void initFunctions() {
     String cron;
     switch (flavorContext) {
@@ -384,5 +408,20 @@ class FfServerApp {
         print(st);
       }
     }
+  }
+}
+
+class GetInfoFbCommandHandler extends CommandHandler {
+  final FirebaseContext firebaseContext;
+
+  GetInfoFbCommandHandler(
+      {required this.firebaseContext,
+      required super.request,
+      required super.serverApp});
+
+  // Read clientDateTime and return client and server date time
+  Future<void> handle() async {
+    await sendResponse(
+        ApiInfoFbResponse()..projectId.v = firebaseContext.projectId);
   }
 }

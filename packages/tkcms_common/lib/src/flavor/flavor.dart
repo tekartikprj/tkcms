@@ -19,6 +19,7 @@ class FlavorContext {
   static const prodx = FlavorContext(flavor: appFlavorProdx);
   static const test = FlavorContext(flavor: appFlavorTest);
 
+  bool get isProd => flavor == appFlavorProd || flavor == appFlavorProdx;
   @override
   int get hashCode => flavor.hashCode;
   @override
