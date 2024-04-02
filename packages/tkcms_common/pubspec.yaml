@@ -1,5 +1,5 @@
 name: tkcms_common
-description: A starting point for Dart libraries or applications.
+description: Common part for tkcms
 version: 0.1.0
 publish_to: none
 
@@ -12,6 +12,7 @@ environment:
 dependencies:
   path:
   http:
+  cv:
   tekartik_app_cv_firestore:
     git:
       url: https://github.com/tekartik/app_common_utils.dart

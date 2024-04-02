@@ -9,16 +9,22 @@ class FirebaseServicesContext {
   //final FunctionsService? functionsServiceOrNull;
   final StorageService? storageServiceOrNull;
   final Firebase firebase;
+  final bool local;
+  late final FirebaseApp firebaseApp;
+  final FirebaseApp? _firebaseAppOrNull;
 
   FirebaseServicesContext(
-      {required this.firebase,
+      {this.local = false,
+      required this.firebase,
+      FirebaseApp? firebaseApp,
       FirestoreService? firestoreService,
       StorageService? storageService})
       : firestoreServiceOrNull = firestoreService,
-        storageServiceOrNull = storageService;
+        storageServiceOrNull = storageService,
+        _firebaseAppOrNull = firebaseApp;
 
-  Future<FirebaseContext> initContext() async {
-    var firebaseApp = firebase.initializeApp();
+  FirebaseContext initContext() {
+    firebaseApp = _firebaseAppOrNull ?? firebase.initializeApp();
     var firestore = firestoreServiceOrNull?.firestore(firebaseApp);
     if (gDebugLogFirestore) {
       // ignore: deprecated_member_use
@@ -26,6 +32,7 @@ class FirebaseServicesContext {
     }
     var storage = storageServiceOrNull?.storage(firebaseApp);
     return FirebaseContext(
+        local: local,
         firebase: firebase,
         firebaseApp: firebaseApp,
         firestore: firestore,
@@ -34,9 +41,10 @@ class FirebaseServicesContext {
 }
 
 class FirebaseContext {
+  final bool local;
   final FirebaseApp firebaseApp;
   final Firebase firebase;
-
+  String get projectId => firebaseApp.options.projectId ?? 'local';
   late Firestore? firestoreOrNull;
   Firestore get firestore => firestoreOrNull!;
 
@@ -46,6 +54,7 @@ class FirebaseContext {
   FirebaseAuth get auth => authOrNull!;
 
   FirebaseContext({
+    this.local = false,
     required this.firebase,
     required this.firebaseApp,
     Auth? auth,

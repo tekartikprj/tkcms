@@ -9,7 +9,7 @@ import 'package:tkcms_common/src/flavor/flavor.dart';
 import 'package:tkcms_common/src/server/server.dart';
 
 Future<void> main() async {
-  late CtdoApiServiceBase apiService;
+  late TkCmsApiServiceBase apiService;
   late FfServerHttp ffServerHttp;
   setUpAll(() async {
     firebaseFunctionsContextOrNull =
@@ -17,9 +17,10 @@ Future<void> main() async {
 
     var httpClientFactory = httpClientFactoryMemory;
     var ff = firebaseFunctionsMemory;
-    var ffServerApp = FfServerApp(
-        flavorContext: AppFlavorContext.testLocal,
-        firebaseFunctionsContext: firebaseFunctionsContext);
+    var serverAppContext = TkCmsServerAppContext(
+        firebaseFunctionsContext: firebaseFunctionsContext,
+        flavorContext: FlavorContext.test);
+    var ffServerApp = TkCmsServerApp(context: serverAppContext);
 
     ffServerApp.initFunctions();
     var httpServer = await ff.serveHttp();
@@ -27,7 +28,7 @@ Future<void> main() async {
     ffServerHttp = ffServer;
 
     var commandUri = ffServerHttp.uri.replace(path: ffServerApp.command);
-    apiService = CtdoApiServiceBase(
+    apiService = TkCmsApiServiceBase(
         httpClientFactory: httpClientFactory, commandUri: commandUri);
 
     await apiService.initClient();
@@ -42,5 +43,9 @@ Future<void> main() async {
     info = await apiService.getInfo();
     print(info);
 //    expect(info.version.v, appVersion.toString());
+  });
+  test('infofb', () async {
+    var info = await apiService.getInfoFb();
+    print(info);
   });
 }

@@ -2,3 +2,4 @@
 
 export 'src/api/model/api_models.dart';
 export 'package:cv/cv_json.dart';
+export 'src/api/api_service_base.dart';

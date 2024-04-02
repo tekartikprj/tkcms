@@ -2,3 +2,5 @@
 
 export 'package:tekartik_firebase/firebase.dart';
 export 'package:tekartik_firebase/firebase_admin.dart';
+export 'src/firebase/firebase.dart';
+export 'src/firebase/firebase_sim.dart';
