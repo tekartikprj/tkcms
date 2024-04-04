@@ -30,7 +30,9 @@ class FsUserAccess extends CvFirestoreDocumentBase with FsUserAccessMixin {
 extension FsUserAccessCommonExt on FsUserAccessCommon {
   bool get isSuperAdmin => role.v == roleSuperAdmin;
   bool get isAdmin => role.v == roleAdmin || isSuperAdmin;
+  bool get isUser => role.v == roleUser;
 }
 
+const roleUser = 'user';
 const roleAdmin = 'admin';
 const roleSuperAdmin = 'super_admin';

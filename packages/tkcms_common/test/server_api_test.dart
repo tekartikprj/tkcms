@@ -12,8 +12,8 @@ Future<void> main() async {
   late TkCmsApiServiceBase apiService;
   late FfServerHttp ffServerHttp;
   setUpAll(() async {
-    firebaseFunctionsContextOrNull =
-        firebaseFunctionsContextSimOrNull = await initFirebaseSimMemory();
+    firebaseFunctionsContextOrNull = firebaseFunctionsContextSimOrNull =
+        await initFirebaseFunctionsSimMemory();
 
     var httpClientFactory = httpClientFactoryMemory;
     var ff = firebaseFunctionsMemory;
@@ -39,13 +39,16 @@ Future<void> main() async {
 
   test('info', () async {
     var info = await apiService.getInfo();
+    // ignore: avoid_print
     print(info);
     info = await apiService.getInfo();
+    // ignore: avoid_print
     print(info);
 //    expect(info.version.v, appVersion.toString());
   });
   test('infofb', () async {
     var info = await apiService.getInfoFb();
+    // ignore: avoid_print
     print(info);
   });
 }

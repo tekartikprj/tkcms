@@ -50,6 +50,7 @@ class TokenInfo {
         }
         return TokenInfo(clientDateTime, serverDateTime, authToken);
       } catch (e) {
+        // ignore: avoid_print
         print('invalid token $token $e ($decodedToken)');
       }
     }

@@ -43,12 +43,20 @@ class TkCmsApiServiceBase implements ApiService {
           return false;
       }
       retryCount++;
-      print('retry: ${response.statusCode}');
+      if (debugWebServices) {
+        // ignore: avoid_print
+        print('retry: ${response.statusCode}');
+      }
       return true;
     }, whenError: (error, stackTrace) {
-      print('retry error?: error');
-      print(error);
-      print(stackTrace);
+      if (debugWebServices) {
+        // ignore: avoid_print
+        print('retry error?: error');
+        // ignore: avoid_print
+        print(error);
+        // ignore: avoid_print
+        print(stackTrace);
+      }
       return true;
     });
 
@@ -76,7 +84,9 @@ class TkCmsApiServiceBase implements ApiService {
       }
     } catch (e, st) {
       if (isDebug) {
+        // ignore: avoid_print
         print(e);
+        // ignore: avoid_print
         print(st);
       }
       if (e is ApiException) {
@@ -143,6 +153,7 @@ class TkCmsApiServiceBase implements ApiService {
       try {
         errorResponse = body.cv<ApiErrorResponse>();
       } catch (e) {
+        // ignore: avoid_print
         print(e);
       }
       return ServiceResponse(

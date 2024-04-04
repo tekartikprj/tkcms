@@ -6,3 +6,6 @@
 # Local
 .local
 
+/flutter_packages/tkcms_admin_app/pubspec.lock
+/flutter_packages/tkcms_admin_app/.metadata
+/flutter_packages/tkcms_admin_app/linux/
