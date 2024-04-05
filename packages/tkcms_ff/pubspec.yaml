@@ -10,9 +10,6 @@ environment:
 dependencies:
   # path: ^1.8.0
 
-  tkcms_common:
-    path: ../tkcms_common
-
   tekartik_firebase_functions_node:
     git:
       url: https://github.com/tekartik/firebase_node.dart
@@ -45,7 +42,11 @@ dependencies:
       ref: dart3a
   path:
   http:
-
+  tkcms_common:
+    git:
+      url: https://github.com/tekartikprj/tkcms.git
+      ref: dart3a
+      path: packages/tkcms_common
 dev_dependencies:
   lints: '>=2.0.0'
   test: '>=1.21.0'
@@ -71,3 +72,7 @@ dev_dependencies:
       path: packages/build_node
       ref: dart3a
   dev_build: '>=0.16.5-4'
+
+dependency_overrides:
+  tkcms_common:
+    path: ../tkcms_common
