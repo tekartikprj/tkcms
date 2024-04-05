@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tekartik_app_flutter_common_utils/common_utils_import.dart';
 import 'package:tekartik_app_flutter_widget/mini_ui.dart';
 import 'package:tekartik_app_prefs/app_prefs.dart';
 import 'package:tkcms_admin_app/auth/auth.dart';
@@ -11,6 +12,7 @@ import 'package:tkcms_common/tkcms_firestore.dart';
 import 'package:tkcms_common/tkcms_flavor.dart';
 
 Future<void> main() async {
+  //debugTkCmsAuthBloc = devWarning(true);
   WidgetsFlutterBinding.ensureInitialized();
   var packageName = 'tkcms.example';
   var prefsFactory = getPrefsFactory(packageName: 'tkcms.example');
@@ -54,6 +56,9 @@ class MyApp extends StatelessWidget {
         });
         muiItem('logged in screen', () {
           goToLoggedInScreen(muiBuildContext);
+        });
+        muiItem('sign out', () {
+          gAuthBloc.signOut();
         });
         muiItem('check logged in', () async {
           var context = muiBuildContext;

@@ -33,27 +33,25 @@ class _LoginScreenState extends RouteAwareState<LoginScreen> {
   final passwordController = TextEditingController(text: gDebugPassword);
   final loginEnabled = ValueNotifier<bool>(false);
   final busy = ValueNotifier<bool>(false);
-
+  StreamSubscription? authLoggedInSubscription;
   @override
   void dispose() {
     usernameController.dispose();
     passwordController.dispose();
     loginEnabled.dispose();
-
+    authLoggedInSubscription?.cancel();
     super.dispose();
   }
 
   @override
   void initState() {
     _checkLoginEnabled();
-    () async {
-      var fsUserAccess =
-          await gAuthBloc.loggedInUserAccess.firstWhere((element) {
-        if (element.isLoggedIn) {
-          return true;
-        }
-        return false;
-      });
+    authLoggedInSubscription = gAuthBloc.loggedInUserAccess.where((element) {
+      if (element.isLoggedIn) {
+        return true;
+      }
+      return false;
+    }).listen((fsUserAccess) {
       // ignore: avoid_print
       print('first logged in user: ${fsUserAccess.fsUserAccess}');
       if (mounted) {
@@ -63,7 +61,9 @@ class _LoginScreenState extends RouteAwareState<LoginScreen> {
           Navigator.of(context).pop(fsUserAccess);
         }
       }
-    }();
+      authLoggedInSubscription?.cancel();
+    });
+
     super.initState();
   }
 
@@ -203,8 +203,7 @@ class _LoginScreenState extends RouteAwareState<LoginScreen> {
       var username = usernameController.text.trim();
       var password = passwordController.text.trim();
 
-      gAuthBloc.signInWithEmailAndPassword(
-          username: username, password: password);
+      gAuthBloc.signInWithEmailAndPassword(email: username, password: password);
 
       await Future<void>.delayed(const Duration(milliseconds: 300));
     } catch (e, st) {

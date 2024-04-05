@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tkcms_admin_app/auth/auth.dart';
+import 'package:tkcms_admin_app/src/import_common.dart';
 import 'package:tkcms_admin_app/src/import_flutter.dart';
 import 'package:tkcms_admin_app/view/body_container.dart';
 import 'package:tkcms_admin_app/view/busy_indicator.dart';
@@ -40,8 +41,9 @@ class _LoggedInScreenState extends State<LoggedInScreen> {
           if (!snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
           }
-          var user = snapshot.data;
-          var isLoggedIn = snapshot.data?.isLoggedIn ?? false;
+          var user = snapshot.data!;
+          var isLoggedIn = user.isLoggedIn;
+          // devPrint('ui user $user');
           return Stack(
             children: [
               ListView(
@@ -54,7 +56,7 @@ class _LoggedInScreenState extends State<LoggedInScreen> {
                         else ...[
                           InfoTile(
                             titleLabel: 'Utilisateur',
-                            subtitleLabel: user!.name.split('@').first,
+                            subtitleLabel: user.name.split('@').first,
 
                             // '${user.authUser.uid}${(user.dbUser.superAdmin.v ?? false) ? ' (super admin)' : (user.dbUser.admin.v ?? false) ? ' (admin)' : ''}'),
                             //'TODO'),
