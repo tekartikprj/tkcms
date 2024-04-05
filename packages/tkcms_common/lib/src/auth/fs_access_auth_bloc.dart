@@ -21,6 +21,10 @@ class TkCmsLoggedInUserAccess extends TkCmsLoggedInUser {
   @override
   String get name => flutterFireUser?.email ?? fsUserAccess?.name.v ?? uid;
 
+  bool get isSuperAdmin => fsUserAccess?.isSuperAdmin ?? false;
+
+  bool get isAdmin => fsUserAccess?.isAdmin ?? false;
+
   @override
   String toString() => isLoggedIn
       ? 'logged in $uid ($name, ${fsUserAccess?.role.v ?? 'none'})'
