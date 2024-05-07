@@ -13,13 +13,19 @@ dependencies:
   path:
   http:
   cv:
+  tekartik_app_rx:
+    git:
+      url: https://github.com/tekartik/app_common_utils.dart
+      ref: dart3a
+      path: app_rx
+    version: '>=0.1.0'
   rxdart: '>=0.27.7'
   tekartik_app_cv_firestore:
     git:
       url: https://github.com/tekartik/app_common_utils.dart
       ref: dart3a
       path: app_cv_firestore
-    version: '>=0.10.3'
+    version: '>=0.10.11'
   tekartik_firebase_functions:
     git:
       url: https://github.com/tekartik/firebase_functions.dart
