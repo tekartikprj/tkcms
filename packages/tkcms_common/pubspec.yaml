@@ -97,6 +97,7 @@ dependencies:
       url: https://github.com/tekartik/app_common_utils.dart
       ref: dart3a
       path: app_crypto
+      version: '>=0.2.4'
   tekartik_app_http:
     git:
       url: https://github.com/tekartik/app_common_utils.dart

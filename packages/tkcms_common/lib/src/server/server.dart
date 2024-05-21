@@ -256,6 +256,11 @@ class TkCmsServerApp {
 
   Future<void> handleDailyCron() async {}
 
+  /// To override
+  Future<bool> handleCustom(ExpressHttpRequest request) async {
+    return false;
+  }
+
   Future<bool> handleCore(ExpressHttpRequest request) async {
     var uri = request.uri;
 
@@ -341,9 +346,13 @@ class TkCmsServerApp {
 
   Future<void> commandHttp(ExpressHttpRequest request) async {
     try {
+      if (await handleCustom(request)) {
+        return;
+      }
       if (await handleCore(request)) {
         return;
       }
+
       await handleDefault(request);
     } catch (e, st) {
       // devPrint(st);

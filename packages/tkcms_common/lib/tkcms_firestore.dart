@@ -6,3 +6,4 @@ export 'package:cv/cv_json.dart';
 export 'src/firestore/model/fs_models.dart';
 export 'src/firestore/firestore.dart';
 export 'src/database/tkcms_firestore_database.dart';
+export 'package:tekartik_firebase_firestore/utils/auto_id_generator.dart';
