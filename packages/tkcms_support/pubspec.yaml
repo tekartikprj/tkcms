@@ -47,7 +47,7 @@ dev_dependencies:
     git:
       url: https://github.com/tekartik/common_utils.dart
       ref: dart3a
-    version: '>=0.15.2'
+    version: '>=0.15.8'
   collection:
   csv:
   cv:
