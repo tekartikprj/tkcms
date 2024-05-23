@@ -49,9 +49,8 @@ class _TimestampPickerState extends State<TimestampPicker> {
                     var dateTime = await showDatePicker(
                       context: context,
                       initialDate: date,
-                      firstDate:
-                          DateTime.now().subtract(const Duration(days: 1)),
-                      lastDate: DateTime.now().add(const Duration(days: 365)),
+                      firstDate: date.subtract(const Duration(days: 365 * 100)),
+                      lastDate: date.add(const Duration(days: 365 * 100)),
                     );
                     if (dateTime != null) {
                       widget.subject.add(Timestamp.fromDateTime(
