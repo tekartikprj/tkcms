@@ -54,6 +54,7 @@ class _LoggedInScreenState extends State<LoggedInScreen> {
                         if (!isLoggedIn)
                           ...[]
                         else ...[
+                          const SizedBox(height: 16),
                           InfoTile(
                             titleLabel: 'Utilisateur',
                             subtitleLabel: user.name.split('@').first,
