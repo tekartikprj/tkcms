@@ -7,12 +7,14 @@ class InfoTile extends StatelessWidget {
   final VoidCallback? onLongPress;
   final String? titleLabel;
   final String? subtitleLabel;
+  final Widget? trailing;
   const InfoTile(
       {super.key,
       this.onTap,
       this.titleLabel,
       this.onLongPress,
-      this.subtitleLabel});
+      this.subtitleLabel,
+      this.trailing});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +22,7 @@ class InfoTile extends StatelessWidget {
       onLongPress: onLongPress,
       title: Text(titleLabel ?? ''),
       subtitle: subtitleLabel == null ? null : Text(subtitleLabel!),
-      trailing: onTap != null ? const TrailingArrow() : null,
+      trailing: trailing ?? (onTap != null ? const TrailingArrow() : null),
       onTap: onTap,
     );
   }
