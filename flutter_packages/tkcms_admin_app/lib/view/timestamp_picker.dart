@@ -42,30 +42,37 @@ class _TimestampPickerState extends State<TimestampPicker> {
           return Row(
             children: [
               SizedBox(
-                width: 128,
+                width: 154,
                 child: ListTile(
-                  onTap: () async {
-                    var date = day != null ? day.localDateTime : DateTime.now();
-                    var dateTime = await showDatePicker(
-                      context: context,
-                      initialDate: date,
-                      firstDate: date.subtract(const Duration(days: 365 * 100)),
-                      lastDate: date.add(const Duration(days: 365 * 100)),
-                    );
-                    if (dateTime != null) {
-                      widget.subject.add(Timestamp.fromDateTime(
-                          dayTimeToLocalDateTime(
-                              CalendarDay.fromLocalDateTime(dateTime),
-                              time ?? CalendarTime.zero())));
-                    }
-                  },
-                  title: const Text('Date'),
-                  subtitle:
-                      day != null ? Text(day.text) : const Text('<no date>'),
-                ),
+                    onTap: () async {
+                      var date =
+                          day != null ? day.localDateTime : DateTime.now();
+                      var dateTime = await showDatePicker(
+                        context: context,
+                        initialDate: date,
+                        firstDate:
+                            date.subtract(const Duration(days: 365 * 100)),
+                        lastDate: date.add(const Duration(days: 365 * 100)),
+                      );
+                      if (dateTime != null) {
+                        widget.subject.add(Timestamp.fromDateTime(
+                            dayTimeToLocalDateTime(
+                                CalendarDay.fromLocalDateTime(dateTime),
+                                time ?? CalendarTime.zero())));
+                      }
+                    },
+                    title: const Text(
+                      'Date',
+                      textScaler: TextScaler.noScaling,
+                    ),
+                    subtitle: Text(day != null ? day.text : '<no date>',
+                        textScaler: TextScaler.noScaling),
+                    trailing: const Icon(
+                      Icons.edit,
+                    )),
               ),
               SizedBox(
-                  width: 128,
+                  width: 154,
                   child: ListTile(
                     onTap: () async {
                       var tod = time != null
@@ -84,10 +91,12 @@ class _TimestampPickerState extends State<TimestampPicker> {
                                             60))));
                       }
                     },
-                    title: const Text('Time'),
-                    subtitle: time != null
-                        ? Text(time.text)
-                        : const Text('<no time>'),
+                    title: const Text('Time', textScaler: TextScaler.noScaling),
+                    subtitle: Text(time != null ? time.text : '<no time>',
+                        textScaler: TextScaler.noScaling),
+                    trailing: const Icon(
+                      Icons.edit,
+                    ),
                   ))
             ],
           );
