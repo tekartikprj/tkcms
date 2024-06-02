@@ -47,4 +47,7 @@ class AppFlavorContext {
       app: 'test', flavorContext: FlavorContext.test, local: true);
   static final test =
       AppFlavorContext(app: 'test', flavorContext: FlavorContext.test);
+
+  @override
+  String toString() => 'ctx$appKeySuffix';
 }

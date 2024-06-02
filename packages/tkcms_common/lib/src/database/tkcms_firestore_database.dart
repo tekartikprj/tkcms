@@ -2,13 +2,13 @@ import 'package:tkcms_common/src/firebase/firebase.dart';
 import 'package:tkcms_common/src/flavor/flavor.dart';
 import 'package:tkcms_common/tkcms_firestore.dart';
 
-class FirestoreDatabaseService {
+class TkCmsFirestoreDatabaseService {
   final FirebaseContext firebaseContext;
   final AppFlavorContext flavorContext;
 
   String get app => flavorContext.app;
 
-  FirestoreDatabaseService(
+  TkCmsFirestoreDatabaseService(
       {required this.firebaseContext, required this.flavorContext}) {
     initFsBuilders();
   }

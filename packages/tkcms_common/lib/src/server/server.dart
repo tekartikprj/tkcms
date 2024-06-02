@@ -55,6 +55,7 @@ class CronCommandHandler extends CommandHandler {
 
   // Read clientDateTime and return client and server date time
   Future<void> handle() async {
+    // ignore: avoid_print
     print('cron');
     await serverApp.handleDailyCron();
     await sendResponse(ApiEmpty());
@@ -255,6 +256,11 @@ class TkCmsServerApp {
 
   Future<void> handleDailyCron() async {}
 
+  /// To override
+  Future<bool> handleCustom(ExpressHttpRequest request) async {
+    return false;
+  }
+
   Future<bool> handleCore(ExpressHttpRequest request) async {
     var uri = request.uri;
 
@@ -324,10 +330,13 @@ class TkCmsServerApp {
       try {
         await handleDailyCron();
       } catch (e) {
+        // ignore: avoid_print
         print('cron dev error $e');
       }
+      // ignore: avoid_print
       print('Cron done');
     } catch (e) {
+      // ignore: avoid_print
       print('Cron Caught error $e');
     }
   }
@@ -337,9 +346,13 @@ class TkCmsServerApp {
 
   Future<void> commandHttp(ExpressHttpRequest request) async {
     try {
+      if (await handleCustom(request)) {
+        return;
+      }
       if (await handleCore(request)) {
         return;
       }
+
       await handleDefault(request);
     } catch (e, st) {
       // devPrint(st);
@@ -357,6 +370,7 @@ class TkCmsServerApp {
           ..stackTrace.v = st.toString());
   }
 
+  /// Send a response
   Future<void> sendResponse(ExpressHttpRequest request, CvModel model) async {
     var res = request.response;
     res.headers.set(httpHeaderContentType, httpContentTypeJson);
@@ -404,8 +418,12 @@ class TkCmsServerApp {
             .timeZone(timezoneEuropeParis)
             .onRun(dailyCronHandler);
       } catch (e, st) {
-        print('error setup daily cron: $e');
-        print(st);
+        if (isRunningAsJavascript) {
+          // ignore: avoid_print
+          print('error setup daily cron: $e');
+          // ignore: avoid_print
+          print(st);
+        }
       }
     }
   }
