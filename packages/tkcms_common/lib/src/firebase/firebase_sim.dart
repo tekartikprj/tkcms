@@ -19,7 +19,7 @@ Future<FirebaseFunctionsContext> initFirebaseFunctionsSimMemory() async {
           local: true, firebase: firebase, firestoreService: firestoreService)
       .initContext();
   return FirebaseFunctionsContext(
-      firebaseContext: firebaseContext, functionsV2: firebaseFunctionsMemory);
+      firebaseContext: firebaseContext, functions: firebaseFunctionsMemory);
 }
 
 /// app used as package name

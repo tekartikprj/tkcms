@@ -5,9 +5,9 @@ import 'package:tkcms_admin_app/src/import_flutter.dart';
 import 'package:tkcms_common/tkcms_auth.dart';
 import 'package:tkcms_common/tkcms_firestore.dart';
 
-class AdminOnlyContainer extends StatelessWidget {
+class SuperAdminOnlyContainer extends StatelessWidget {
   final Widget child;
-  const AdminOnlyContainer({super.key, required this.child});
+  const SuperAdminOnlyContainer({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -18,11 +18,12 @@ class AdminOnlyContainer extends StatelessWidget {
             return const CenteredProgress();
           } else {
             var user = userSnapshot.data!;
-            if (user.fsUserAccess?.isAdmin ?? false) {
+            if (user.fsUserAccess?.isSuperAdmin ?? false) {
               return child;
             } else {
               return const Center(
-                child: SizedBox(height: 240, child: Text('- Admin only -')),
+                child:
+                    SizedBox(height: 240, child: Text('- Super admin only -')),
               );
             }
           }
