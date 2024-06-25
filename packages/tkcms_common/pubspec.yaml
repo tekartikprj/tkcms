@@ -40,19 +40,25 @@ dependencies:
     version: '>=0.2.1'
   tekartik_firebase_rest:
     git:
-      url: https://github.com/tekartik/firebase.dart
+      url: https://github.com/tekartik/firebase_rest.dart
       path: firebase_rest
       ref: dart3a
     version: '>=0.6.2'
+  tekartik_firebase_auth_rest:
+    git:
+      url: https://github.com/tekartik/firebase_rest.dart
+      path: auth_rest
+      ref: dart3a
+    version: '>=0.3.8'
   tekartik_firebase_firestore_rest:
     git:
-      url: https://github.com/tekartik/firebase_firestore.dart
+      url: https://github.com/tekartik/firebase_rest.dart
       path: firestore_rest
       ref: dart3a
     version: '>=0.8.0'
   tekartik_firebase_storage_rest:
     git:
-      url: https://github.com/tekartik/firebase_storage.dart
+      url: https://github.com/tekartik/firebase_rest.dart
       path: storage_rest
       ref: dart3a
     version: '>=0.8.0'

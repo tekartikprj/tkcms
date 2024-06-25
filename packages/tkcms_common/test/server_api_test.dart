@@ -3,7 +3,6 @@ import 'package:tekartik_firebase_functions_http/ff_server.dart';
 import 'package:tekartik_firebase_functions_http/firebase_functions_memory.dart';
 import 'package:test/test.dart';
 import 'package:tkcms_common/src/api/api_service_base.dart';
-import 'package:tkcms_common/src/firebase/firebase.dart';
 import 'package:tkcms_common/src/firebase/firebase_sim.dart';
 import 'package:tkcms_common/src/flavor/flavor.dart';
 import 'package:tkcms_common/src/server/server.dart';
@@ -12,14 +11,13 @@ Future<void> main() async {
   late TkCmsApiServiceBase apiService;
   late FfServerHttp ffServerHttp;
   setUpAll(() async {
-    firebaseFunctionsContextOrNull = firebaseFunctionsContextSimOrNull =
+    var ffContext = firebaseFunctionsContextSimOrNull =
         await initFirebaseFunctionsSimMemory();
 
     var httpClientFactory = httpClientFactoryMemory;
     var ff = firebaseFunctionsMemory;
     var serverAppContext = TkCmsServerAppContext(
-        firebaseFunctionsContext: firebaseFunctionsContext,
-        flavorContext: FlavorContext.test);
+        firebaseFunctionsContext: ffContext, flavorContext: FlavorContext.test);
     var ffServerApp = TkCmsServerApp(context: serverAppContext);
 
     ffServerApp.initFunctions();

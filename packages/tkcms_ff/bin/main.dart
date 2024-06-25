@@ -1,7 +1,7 @@
 // ignore_for_file: depend_on_referenced_packages
 import 'dart:async';
 
-import 'package:tekartik_firebase_functions_node/firebase_functions_universal.dart';
+import 'package:tekartik_firebase_functions_node/firebase_functions_universal_interop.dart';
 import 'package:tkcms_common/tkcms_firebase.dart';
 import 'package:tkcms_common/tkcms_flavor.dart';
 import 'package:tkcms_common/tkcms_server.dart';

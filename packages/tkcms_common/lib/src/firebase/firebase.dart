@@ -75,20 +75,11 @@ FirebaseContext get firebaseContext => firebaseContextOrNull!;
 
 class FirebaseFunctionsContext {
   final FirebaseContext firebaseContext;
-  FirebaseFunctions? functionsV2OrNull;
-  FirebaseFunctions? functionsV1OrNull;
+  FirebaseFunctions? functionsOrNull;
 
-  FirebaseFunctions get functionsV2 => functionsV2OrNull!;
-  FirebaseFunctions get functionsV1 => functionsV1OrNull!;
+  FirebaseFunctions get functions => functionsOrNull!;
 
   FirebaseFunctionsContext(
-      {required this.firebaseContext,
-      FirebaseFunctions? functionsV2,
-      FirebaseFunctions? functionsV1})
-      : functionsV1OrNull = functionsV1,
-        functionsV2OrNull = functionsV2;
+      {required this.firebaseContext, required FirebaseFunctions? functions})
+      : functionsOrNull = functions;
 }
-
-FirebaseFunctionsContext? firebaseFunctionsContextOrNull;
-FirebaseFunctionsContext get firebaseFunctionsContext =>
-    firebaseFunctionsContextOrNull!;

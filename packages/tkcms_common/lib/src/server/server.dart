@@ -215,11 +215,9 @@ class TkCmsServerApp {
   FirebaseContext get firebaseContext =>
       firebaseFunctionsContext.firebaseContext;
 
-  FirebaseFunctions get functionsV2 => firebaseFunctionsContext.functionsV2;
+  FirebaseFunctions get functions => firebaseFunctionsContext.functions;
 
   late Uri commandUri;
-
-  FirebaseFunctions get functionsV1 => firebaseFunctionsContext.functionsV1;
 
   TkCmsServerApp({required this.context});
 
@@ -324,9 +322,11 @@ class TkCmsServerApp {
 
   Firestore get firestore => firebaseContext.firestore;
 
-  Future<void> dailyCronHandler(ScheduleContext context) async {
+  Future<void> dailyCronHandler(ScheduleEvent event) async {
     try {
-      // print('$app dailyCron handler ${DateTime.now().toIso8601String()}');
+      // ignore: avoid_print
+      print(
+          'dailyCron handler ${DateTime.now().toIso8601String()} ${event.jobName} ${event.scheduleTime}');
       try {
         await handleDailyCron();
       } catch (e) {
@@ -341,7 +341,7 @@ class TkCmsServerApp {
     }
   }
 
-  HttpsFunction get commandV1 => functionsV2.https.onRequestV2(
+  HttpsFunction get commandV1 => functions.https.onRequestV2(
       HttpsOptions(cors: true, region: regionBelgium), commandHttp);
 
   Future<void> commandHttp(ExpressHttpRequest request) async {
@@ -407,16 +407,16 @@ class TkCmsServerApp {
         cron = functionDailyCronV1Dev;
         break;
     }
-    functionsV2[command] = commandV1;
+    functions[command] = commandV1;
     if (!firebaseContext.local) {
       try {
         // Every day at 11pm
-        functionsV2[cron] = functionsV1
-            .region(regionBelgium)
-            .pubsub
-            .schedule('0 23 * * *')
-            .timeZone(timezoneEuropeParis)
-            .onRun(dailyCronHandler);
+        functions[cron] = functions.scheduler.onSchedule(
+            ScheduleOptions(
+                schedule: '0 23 * * *',
+                region: regionBelgium,
+                timeZone: timezoneEuropeParis),
+            dailyCronHandler);
       } catch (e, st) {
         if (isRunningAsJavascript) {
           // ignore: avoid_print
