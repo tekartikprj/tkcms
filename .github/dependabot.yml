@@ -3,15 +3,25 @@
 version: 2
 
 enable-beta-ecosystems: true
+
 updates:
+  - package-ecosystem: "pub"
+    directory: "flutter_packages/tkcms_admin_app"
+    schedule:
+      interval: "monthly"
   - package-ecosystem: "pub"
     directory: "packages/tkcms_common"
     schedule:
       interval: "monthly"
-
+  - package-ecosystem: "pub"
+    directory: "packages/tkcms_ff"
+    schedule:
+      interval: "monthly"
+  - package-ecosystem: "pub"
+    directory: "packages/tkcms_support"
+    schedule:
+      interval: "monthly"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "monthly"
-    labels:
-      - autosubmit
