@@ -42,7 +42,7 @@ class _TimestampPickerState extends State<TimestampPicker> {
           return Row(
             children: [
               SizedBox(
-                width: 154,
+                width: 180,
                 child: ListTile(
                     onTap: () async {
                       var date =

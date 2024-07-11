@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:rxdart/rxdart.dart';
+import 'package:tkcms_admin_app/src/import_flutter.dart';
 
 class BusyIndicator extends StatelessWidget {
   const BusyIndicator({
@@ -6,16 +8,16 @@ class BusyIndicator extends StatelessWidget {
     required this.busy,
   });
 
-  final ValueNotifier<bool> busy;
+  final ValueStream<bool> busy;
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<bool>(
-        valueListenable: busy,
-        builder: (context, active, _) {
-          if (active) {
+    return ValueStreamBuilder(
+        stream: busy,
+        builder: (context, snapshot) {
+          if (snapshot.data ?? false) {
             return const LinearProgressIndicator(
-                // color: Colors.blue,
+                //color: Colors.blue,
                 );
           } else {
             return Container();
