@@ -6,13 +6,13 @@ publish_to: none
 # repository: https://github.com/my_org/my_repo
 
 environment:
-  sdk: ^3.2.3
+  sdk: ^3.4.0
 
 # Add regular dependencies here.
 dependencies:
   path:
   http:
-  cv:
+  cv: '>=0.2.20'
   tekartik_app_rx:
     git:
       url: https://github.com/tekartik/app_common_utils.dart
