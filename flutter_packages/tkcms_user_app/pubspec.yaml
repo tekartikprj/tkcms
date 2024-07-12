@@ -30,6 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  cv: '>=0.2.20'
   tekartik_app_date:
     git:
       url: https://github.com/tekartik/app_common_utils.dart
