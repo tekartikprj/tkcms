@@ -47,7 +47,7 @@ class MyApp extends StatelessWidget {
         muiItem('login screen', () async {
           var result = await goToLoginScreen(muiBuildContext);
           if (muiBuildContext.mounted) {
-            muiSnack(muiBuildContext, 'login result: $result');
+            await muiSnack(muiBuildContext, 'login result: $result');
           }
         });
         muiItem('login screen or logged', () {
@@ -64,7 +64,7 @@ class MyApp extends StatelessWidget {
           var context = muiBuildContext;
           var firstUser = await gAuthBloc.loggedInUserAccess.first;
           if (context.mounted) {
-            muiSnack(context, firstUser.toString());
+            await muiSnack(context, firstUser.toString());
           }
         });
       }),

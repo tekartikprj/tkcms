@@ -203,7 +203,8 @@ class _LoginScreenState extends RouteAwareState<LoginScreen> {
       var username = usernameController.text.trim();
       var password = passwordController.text.trim();
 
-      gAuthBloc.signInWithEmailAndPassword(email: username, password: password);
+      await gAuthBloc.signInWithEmailAndPassword(
+          email: username, password: password);
 
       await Future<void>.delayed(const Duration(milliseconds: 300));
     } catch (e, st) {

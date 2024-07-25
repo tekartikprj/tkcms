@@ -9,6 +9,7 @@ import 'package:tkcms_ff/src/ff_app.dart';
 import 'package:tkcms_ff/src/firebase_universal.dart';
 
 Future main() async {
+  // ignore: avoid_print
   print('starting...');
 
   var ffContext = initFirebaseFunctionsUniversal();

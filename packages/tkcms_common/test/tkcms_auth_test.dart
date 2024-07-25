@@ -1,9 +1,9 @@
+import 'package:tekartik_prefs/prefs.dart';
 import 'package:test/test.dart';
 import 'package:tkcms_common/src/database/tkcms_firestore_database.dart';
 import 'package:tkcms_common/src/firebase/firebase_sim.dart';
 import 'package:tkcms_common/src/flavor/flavor.dart';
 import 'package:tkcms_common/tkcms_auth.dart';
-import 'package:tekartik_prefs/prefs.dart';
 
 void main() {
   test('tkcms_auth', () async {

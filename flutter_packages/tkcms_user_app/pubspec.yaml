@@ -89,6 +89,11 @@ dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: '>=3.0.0'
+  tekartik_lints_flutter:
+    git:
+      url: https://github.com/tekartik/common_flutter.dart
+      ref: dart3a
+      path: packages/lints_flutter
 
 dev_dependencies:
   flutter_test:
