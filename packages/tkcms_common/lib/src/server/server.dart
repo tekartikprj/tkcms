@@ -155,7 +155,9 @@ class TkCmsServerApp implements TkCmsCommonServerApp {
 
   late Uri commandUri;
 
-  TkCmsServerApp({required this.context});
+  TkCmsServerApp({required this.context}) {
+    initFunctions();
+  }
 
   Future<void> handle(ExpressHttpRequest request) async {
     var uri = request.uri;
