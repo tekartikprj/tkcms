@@ -188,6 +188,7 @@ class TkCmsServerApp implements TkCmsCommonServerApp {
     }
   }
 
+  /// Default read config and call each app read
   Future<void> handleDailyCron() async {}
 
   /// To override
