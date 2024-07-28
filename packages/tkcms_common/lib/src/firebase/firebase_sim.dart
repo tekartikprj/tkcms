@@ -3,13 +3,20 @@ import 'package:tekartik_firebase_firestore_sembast/firestore_sembast.dart';
 import 'package:tekartik_firebase_functions_http/firebase_functions_memory.dart';
 // ignore: depend_on_referenced_packages
 import 'package:tekartik_firebase_local/firebase_local.dart';
+import 'package:tkcms_common/tkcms_common.dart';
 import 'package:tkcms_common/tkcms_firebase.dart';
 
 /// Global sim context.
 FirebaseContext? firebaseContextSimOrNull;
 
 /// Global sim with functions context.
-FirebaseFunctionsContext? firebaseFunctionsContextSimOrNull;
+FirebaseFunctionsContext? _firebaseFunctionsContextSimOrNull;
+
+FirebaseFunctionsContext? get firebaseFunctionsContextSimOrNull =>
+    _firebaseFunctionsContextSimOrNull;
+set firebaseFunctionsContextSimOrNull(FirebaseFunctionsContext? value) {
+  _firebaseFunctionsContextSimOrNull = value;
+}
 
 Future<FirebaseFunctionsContext> initFirebaseFunctionsSimMemory() async {
   var firebase = FirebaseLocal();
