@@ -71,7 +71,13 @@ class FirebaseContext {
 }
 
 FirebaseContext? firebaseContextOrNull;
-FirebaseContext get firebaseContext => firebaseContextOrNull!;
+FirebaseContext get firebaseContext => () {
+      if (firebaseContextOrNull == null) {
+        throw StateError('firebaseContext not set');
+      } else {
+        return firebaseContextOrNull!;
+      }
+    }();
 
 class FirebaseFunctionsContext {
   final FirebaseContext firebaseContext;
