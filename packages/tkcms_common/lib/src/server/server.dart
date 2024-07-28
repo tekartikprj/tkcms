@@ -113,66 +113,6 @@ void ensureFields(CvModel model, List<CvField> fields) {
   }
 }
 
-/*
-class dCommandHandler {
-  final ExpressHttpRequest request;
-
-
-  /*
-  // Check secure and auth token
-  Future<bool> requireAuthToken({bool allowTest = false}) async {
-    if (await requireToken()) {
-      ApiUser? apiUser;
-      try {
-        if (tokenInfo!.userAuthToken != null) {
-          apiUser =
-              dcjoAuthTokenDecrypt(tokenInfo!.userAuthToken!).cv<ApiUser>();
-        }
-      } catch (e) {
-        print('decrypt error: $e');
-      }
-      switch (apiUser?.role.v ?? '--none--') {
-        case roleAnim:
-        case roleAdmin:
-        case roleSuperAdmin:
-          break;
-        case roleTest:
-          if (allowTest) {
-            break;
-          }
-        default:
-          await sendErrorResponse(
-              httpStatusCodeUnauthorized,
-              ApiErrorResponse()
-                ..message.v =
-                    'Unauthorized - invalid user token${isDebug ? ' apiUser: $apiUser' : ''}');
-          return false;
-      }
-      return true;
-    }
-    return false;
-  }*/
-
-  Future<void> sendErrorResponse(int statusCode, CvModel model) async {
-    var res = request.response;
-    res.statusCode = statusCode;
-    res.headers.set(httpHeaderContentType, httpContentTypeJson);
-    await res.send(model.toMap());
-  }
-
-  dCommandHandler({required this.request}) {
-    initAllBuilders();
-    tokenInfo = TokenInfo.fromToken(request.headers.value(tokenHeader));
-  }
-
-  Future<void> sendResponse(ExpressHttpRequest request, CvModel model) async {
-    var res = request.response;
-    res.headers.set(httpHeaderContentType, httpContentTypeJson);
-    await res.send(model.toJson());
-  }
-}
-*/
-
 class GetTimeCommandHandler extends CommandHandler {
   GetTimeCommandHandler({required super.request, required super.serverApp});
 
@@ -183,16 +123,12 @@ class GetTimeCommandHandler extends CommandHandler {
   }
 }
 
-/*
-/// All fields must be present and non null
-void ensureFields(CvModel model, List<CvField> fields) {
-  for (var field in fields) {
-    if (model.field(field.name)?.isNull ?? true) {
-      throw ArgumentError('field ${field.name} missing or null in $model');
-    }
-  }
+typedef TkCmsCreateServerAppFunction = TkCmsCommonServerApp Function(
+    TkCmsServerAppContext context);
+
+abstract class TkCmsCommonServerApp {
+  void initFunctions();
 }
-*/
 
 class TkCmsServerAppContext {
   final FirebaseFunctionsContext firebaseFunctionsContext;
@@ -202,7 +138,7 @@ class TkCmsServerAppContext {
       {required this.firebaseFunctionsContext, required this.flavorContext});
 }
 
-class TkCmsServerApp {
+class TkCmsServerApp implements TkCmsCommonServerApp {
   final TkCmsServerAppContext context;
   int instanceCallCount = 0;
   static int globalInstanceCallCount = 0;
@@ -219,7 +155,9 @@ class TkCmsServerApp {
 
   late Uri commandUri;
 
-  TkCmsServerApp({required this.context});
+  TkCmsServerApp({required this.context}) {
+    initFunctions();
+  }
 
   Future<void> handle(ExpressHttpRequest request) async {
     var uri = request.uri;
@@ -252,6 +190,7 @@ class TkCmsServerApp {
     }
   }
 
+  /// Default read config and call each app read
   Future<void> handleDailyCron() async {}
 
   /// To override
@@ -392,6 +331,7 @@ class TkCmsServerApp {
 
   late String command;
 
+  @override
   void initFunctions() {
     String cron;
     switch (flavorContext) {
