@@ -47,6 +47,11 @@ dependencies:
       url: https://github.com/tekartik/test_menu.dart
       ref: dart3a
       path: test_menu_io
+  tekartik_firebase_build_menu_flutter:
+    git:
+      url: https://github.com/tekartik/app_build.dart
+      ref: dart3a
+      path: packages/firebase_build_menu_flutter
 
 dev_dependencies:
   lints: '>=3.0.0'
