@@ -9,19 +9,29 @@ import 'package:tkcms_common/tkcms_server.dart';
 
 class FirebaseServicesContext {
   final FirestoreService? firestoreServiceOrNull;
+  FirestoreService get firestoreService => firestoreServiceOrNull!;
+
   final FirebaseFunctionsService? functionsServiceOrNull;
   FirebaseFunctionsService get functionsService => functionsServiceOrNull!;
+
   final FirebaseFunctionsCallService? functionsCallServiceOrNull;
   FirebaseFunctionsCallService get functionsCallService =>
       functionsCallServiceOrNull!;
+
   final StorageService? storageServiceOrNull;
+  StorageService get storageService => storageServiceOrNull!;
+
   final FirebaseAuthService? authServiceOrNull;
+  FirebaseAuthService get authService => authServiceOrNull!;
+
   final Firebase firebase;
   bool get local => firebase.isLocal;
   FirebaseApp get firebaseApp => firebaseAppOrNull!;
   FirebaseApp? firebaseAppOrNull;
+
   String? functionsCallRegionOrNull;
   String get functionsCallRegion => functionsCallRegionOrNull!;
+
   FirebaseAppOptions? appOptions;
   FirebaseServicesContext(
       {bool? local,
