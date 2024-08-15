@@ -9,24 +9,22 @@ import 'package:tkcms_common/tkcms_firebase.dart';
 /// Global sim context.
 FirebaseContext? firebaseContextSimOrNull;
 
-/// Global sim with functions context.
-FirebaseFunctionsContext? _firebaseFunctionsContextSimOrNull;
-
 FirebaseFunctionsContext? get firebaseFunctionsContextSimOrNull =>
-    _firebaseFunctionsContextSimOrNull;
+    firebaseContextSimOrNull;
 set firebaseFunctionsContextSimOrNull(FirebaseFunctionsContext? value) {
-  _firebaseFunctionsContextSimOrNull = value;
+  firebaseContextSimOrNull = value;
 }
 
-Future<FirebaseFunctionsContext> initFirebaseFunctionsSimMemory() async {
+Future<FirebaseContext> initFirebaseFunctionsSimMemory() async {
   var firebase = FirebaseLocal();
   var firestoreService = newFirestoreServiceMemory();
-
+  var functionsService = firebaseFunctionsServiceMemory;
   var firebaseContext = FirebaseServicesContext(
-          local: true, firebase: firebase, firestoreService: firestoreService)
+          firebase: firebase,
+          firestoreService: firestoreService,
+          functionsService: functionsService)
       .initContext();
-  return FirebaseFunctionsContext(
-      firebaseContext: firebaseContext, functions: firebaseFunctionsMemory);
+  return firebaseContext;
 }
 
 /// app used as package name

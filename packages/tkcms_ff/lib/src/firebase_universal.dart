@@ -10,10 +10,9 @@ import 'package:tkcms_common/tkcms_firebase.dart';
 FirebaseFunctionsContext initFirebaseFunctionsUniversal() {
   var firebase = universal.firebase;
   var firestoreService = universal.firestoreService;
-  var functions = firebaseFunctionsUniversal;
-  return FirebaseFunctionsContext(
-      firebaseContext: FirebaseServicesContext(
-              firebase: firebase, firestoreService: firestoreService)
-          .initContext(),
-      functions: functions);
+  return FirebaseServicesContext(
+          firebase: firebase,
+          firestoreService: firestoreService,
+          functionsService: firebaseFunctionsServiceUniversal)
+      .initContext();
 }
