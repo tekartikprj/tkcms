@@ -131,11 +131,18 @@ abstract class TkCmsCommonServerApp {
 }
 
 class TkCmsServerAppContext {
-  final FirebaseFunctionsContext firebaseFunctionsContext;
+  /// Compat
+  FirebaseFunctionsContext get firebaseFunctionsContext => firebaseContext;
+  late final FirebaseContext firebaseContext;
   final FlavorContext flavorContext;
 
   TkCmsServerAppContext(
-      {required this.firebaseFunctionsContext, required this.flavorContext});
+      {
+      /// Compat
+      FirebaseFunctionsContext? firebaseFunctionsContext,
+      FirebaseContext? firebaseContext,
+      required this.flavorContext})
+      : firebaseContext = firebaseContext ?? firebaseFunctionsContext!;
 }
 
 class TkCmsServerApp implements TkCmsCommonServerApp {

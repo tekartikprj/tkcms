@@ -29,9 +29,8 @@ dependencies:
   tekartik_firebase_functions:
     git:
       url: https://github.com/tekartik/firebase_functions.dart
-      path: firebase_functions
       ref: dart3a
-    version: '>=0.2.1'
+      path: firebase_functions
   tekartik_firebase_functions_http:
     git:
       url: https://github.com/tekartik/firebase_functions.dart
@@ -127,6 +126,16 @@ dependencies:
       url: https://github.com/tekartik/http.dart
       ref: dart3a
       path: http
+  tekartik_firebase_functions_call_http:
+    git:
+      url: https://github.com/tekartik/firebase_functions.dart
+      ref: dart3a
+      path: functions_call_http
+  tekartik_firebase_functions_call:
+    git:
+      url: https://github.com/tekartik/firebase_functions.dart
+      ref: dart3a
+      path: functions_call
 
 dev_dependencies:
   lints: '>=2.1.0'
