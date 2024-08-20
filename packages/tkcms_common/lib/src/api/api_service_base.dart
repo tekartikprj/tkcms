@@ -1,5 +1,6 @@
 import 'package:tekartik_app_http/app_http.dart';
 import 'package:tekartik_app_http/app_http.dart' as universal;
+import 'package:tekartik_firebase_functions_call/functions_call.dart';
 import 'package:tkcms_common/src/server/server.dart';
 import 'package:tkcms_common/tkcms_api.dart';
 import 'package:tkcms_common/tkcms_common.dart';
@@ -12,6 +13,12 @@ abstract interface class ApiService {
 }
 
 class TkCmsApiServiceBase implements ApiService {
+  /// New generic api uri - Can be modified by client.
+  Uri? httpsApiUri;
+
+  /// New generic api uri - Can be modified by client.
+  FirebaseFunctionsCallable? callableApi;
+
   /// Can be modified by client.
   late Uri commandUri;
   late Client innerClient;
@@ -22,7 +29,10 @@ class TkCmsApiServiceBase implements ApiService {
 
   /// Set from login and prefs
   TkCmsApiServiceBase(
-      {required this.commandUri, required this.httpClientFactory}) {
+      {required this.commandUri,
+      required this.httpClientFactory,
+      this.httpsApiUri,
+      this.callableApi}) {
     initApiBuilders();
   }
 
@@ -177,8 +187,76 @@ class TkCmsApiServiceBase implements ApiService {
         client: innerClient);
   }
 
-  Future<ApiEmpty> runCron() async {
-    return await send<ApiEmpty>(commandCron, ApiEmpty(), client: innerClient);
+  Future<R> getApiResult<R extends ApiResult>(ApiRequest request) async {
+    assert(httpsApiUri != null);
+    var uri = httpsApiUri!;
+    if (debugWebServices) {
+      log('-> uri: $uri');
+      log('   $request');
+    }
+    // devPrint('uri $uri');
+    var headers = <String, String>{
+      httpHeaderContentType: httpContentTypeJson,
+      httpHeaderAccept: httpContentTypeJson
+    };
+
+    // devPrint('query headers: $headers');
+    var response = await httpClientSend(retryClient, httpMethodPost, uri,
+        headers: headers, body: utf8.encode(jsonEncode(request.toMap())));
+    //devPrint('response headers: ${response.headers}');
+    response.body;
+    var body = utf8.decode(response.bodyBytes);
+    var statusCode = response.statusCode;
+    // Only reply with a token if we have one
+    /*
+    TokenInfo? tokenInfo;
+
+    var responseToken = response.headers.value(tokenHeader);
+    if (responseToken != null) {
+      tokenInfo = TokenInfo.fromToken(responseToken);
+      if (tokenInfo == null) {
+        throw ArgumentError('invalid token $responseToken');
+      } else {
+        if (tokenInfo.clientDateTime.difference(DateTime.timestamp()).abs() >
+            const Duration(hours: 6)) {
+          throw ArgumentError('invalid client token $responseToken');
+        }
+      }
+    }*/
+    if (debugWebServices) {
+      log('<- $statusCode $body');
+    }
+    // Save token
+    /*if (tokenInfo != null) {
+      lastTokenInfo = tokenInfo;
+    }*/
+    if (response.isSuccessful) {
+      var response = body.cv<ApiResponse<R, ApiError>>();
+      if (response.error.isNotNull) {
+        throw ApiException(
+          error: response.error.v,
+        );
+      }
+      return response.result.v!;
+    } else {
+      var statusCode = response.statusCode;
+      ApiErrorResponse? errorResponse;
+      String? message;
+      try {
+        errorResponse = body.cv<ApiErrorResponse>();
+        message = errorResponse.message.v;
+      } catch (e) {
+        message = body;
+        // ignore: avoid_print
+        print(e);
+      }
+      // throw ApiError()
+      throw ApiException(
+        statusCode: statusCode,
+        errorResponse: errorResponse,
+        message: message,
+      );
+    }
   }
 }
 
@@ -197,14 +275,22 @@ class ServiceResponse<T extends CvModel> {
 }
 
 class ApiException implements Exception {
+  /// Prefer
+  final ApiError? error;
+
+  /// Compat
   final ApiErrorResponse? errorResponse;
   final int? statusCode;
   late final String? message;
   final Object? cause;
 
   ApiException(
-      {this.statusCode, String? message, this.cause, this.errorResponse}) {
-    this.message = message ?? errorResponse?.message.v;
+      {this.statusCode,
+      String? message,
+      this.cause,
+      this.errorResponse,
+      this.error}) {
+    this.message = message ?? error?.message.v ?? errorResponse?.message.v;
   }
 
   @override
