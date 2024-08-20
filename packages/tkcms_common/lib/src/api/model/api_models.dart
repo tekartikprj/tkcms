@@ -21,10 +21,11 @@ void initApiBuilders() {
     ApiErrorResponse.new,
     ApiGetTimestampResponse.new,
     ApiRequest.new,
+    ApiResponse.new,
   ]);
 }
 
-class ApiGetTimestampResponse extends CvModelBase {
+class ApiGetTimestampResponse extends ApiResult {
   late final timestamp = CvField<String>('timestamp');
 
   @override
@@ -38,11 +39,24 @@ mixin CvApiMixin implements CvModel {
 }
 
 class ApiRequest extends CvModelBase with CvApiMixin {
+  ApiRequest({String? command, Map? data, String? userId}) {
+    this.command.v = command;
+    this.data.v = data;
+    this.userId.v = userId;
+  }
   final userId = CvField<String>('userId');
   final command = CvField<String>('command');
-  final data = CvModelField<CvMapModel>('data');
+  final data = CvField<Map>('data');
   @override
   CvFields get fields => [...apiFields, command, data];
+}
+
+extension ApiRequestExt on ApiRequest {
+  /// The api command
+  String get apiCommand => command.v!;
+
+  /// The user id if any
+  String? get apiUserId => userId.v;
 }
 
 class ApiError extends CvModelBase {
@@ -61,9 +75,9 @@ abstract class ApiResult extends CvModelBase {
   CvFields get fields => [];
 }
 
-class ApiResponse<R extends ApiResult, E extends ApiError> extends CvModelBase {
-  late final result = CvModelField<R>('result');
-  late final error = CvModelField<E>('error');
+class ApiResponse extends CvModelBase {
+  late final result = CvField<Map>('result');
+  late final error = CvModelField<ApiError>('error');
 
   @override
   late final List<CvField<Object?>> fields = [result, error];

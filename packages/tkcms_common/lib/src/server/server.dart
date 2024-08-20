@@ -146,7 +146,7 @@ class TkCmsServerAppContext {
 }
 
 class TkCmsServerApp implements TkCmsCommonServerApp {
-  final int version;
+  final int apiVersion;
   final TkCmsServerAppContext context;
   int instanceCallCount = 0;
   static int globalInstanceCallCount = 0;
@@ -163,7 +163,7 @@ class TkCmsServerApp implements TkCmsCommonServerApp {
 
   late Uri commandUri;
 
-  TkCmsServerApp({required this.context, this.version = apiVersion1}) {
+  TkCmsServerApp({required this.context, this.apiVersion = apiVersion1}) {
     initFunctions();
   }
 
@@ -298,19 +298,28 @@ class TkCmsServerApp implements TkCmsCommonServerApp {
       onCallableCommandV2,
       callableOptions: HttpsCallableOptions(region: regionBelgium, cors: true));
 
-  Future<ApiResult?> onCommandV2(String command, Map requestMap) async {
-    throw UnsupportedError('test');
+  Future<ApiResult> onCommandV2(ApiRequest apiRequest) async {
+    switch (apiRequest.command.v!) {
+      case commandTimestamp:
+        return ApiGetTimestampResponse()
+          ..timestamp.v = DateTime.timestamp().toIso8601String();
+      default:
+        throw UnsupportedError('command $command');
+    }
   }
 
   Future<Object> onCallableCommandV2(CallRequest request) async {
     try {
       var requestMap = request.dataAsMap;
-      var command = requestMap['command'] as String;
-      var result = await onCommandV2(command, requestMap);
-      return ApiResponse()..result.v = result;
+      var apiRequest = requestMap.cv<ApiRequest>();
+      apiRequest.userId.v = request.context.auth?.uid;
+      var result = await onCommandV2(apiRequest);
+
+      return (ApiResponse()..result.v = (CvMapModel()..copyFrom(result)))
+          .toMap();
     } on ApiException catch (e) {
       if (e.error != null) {
-        return ApiResponse()..error.v = e.error;
+        return (ApiResponse()..error.v = e.error).toMap();
       } else {
         rethrow;
       }
@@ -322,10 +331,11 @@ class TkCmsServerApp implements TkCmsCommonServerApp {
   Future<void> onHttpsCommandV2(ExpressHttpRequest request) async {
     try {
       var requestMap = request.bodyAsMap;
-      var command = requestMap['command'] as String;
-      var result = await onCommandV2(command, requestMap);
+      var apiRequest = requestMap.cv<ApiRequest>();
+      var result = await onCommandV2(apiRequest);
 
-      await sendResponse(request, ApiResponse()..result.v = result);
+      await sendResponse(
+          request, ApiResponse()..result.v = (CvMapModel()..copyFrom(result)));
     } on ApiException catch (e) {
       if (e.error != null) {
         await sendResponse(request, ApiResponse()..error.v = e.error);
@@ -405,7 +415,7 @@ class TkCmsServerApp implements TkCmsCommonServerApp {
         cron = functionDailyCronV1Dev;
         break;
     }
-    switch (version) {
+    switch (apiVersion) {
       case apiVersion1:
         functions[command] = commandV1;
         break;
@@ -423,7 +433,7 @@ class TkCmsServerApp implements TkCmsCommonServerApp {
     },*/
         break;
       default:
-        throw 'unsupported version $version';
+        throw 'unsupported version $apiVersion';
     }
 
     if (!firebaseContext.local) {

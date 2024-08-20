@@ -64,6 +64,7 @@ class FirebaseServicesContext {
     var auth = authServiceOrNull?.auth(firebaseApp);
     var storage = storageServiceOrNull?.storage(firebaseApp);
     var functions = functionsServiceOrNull?.functions(firebaseApp);
+
     FirebaseFunctionsCall? functionsCall;
     if (functionsCallServiceOrNull != null &&
         functionsCallRegionOrNull != null) {
@@ -85,6 +86,29 @@ class FirebaseServicesContext {
   Future<FirebaseApp> initApp() async {
     return firebaseAppOrNull ??=
         await firebase.initializeAppAsync(options: appOptions);
+  }
+
+  Future<FirebaseContext> initServer({FirebaseApp? firebaseApp}) async {
+    firebaseApp ??= firebaseAppOrNull ??=
+        await firebase.initializeAppAsync(options: appOptions);
+    var firestore = firestoreServiceOrNull?.firestore(firebaseApp);
+    if (gDebugLogFirestore) {
+      // ignore: deprecated_member_use
+      firestore = firestore?.debugQuickLoggerWrapper();
+    }
+    var auth = authServiceOrNull?.auth(firebaseApp);
+    var storage = storageServiceOrNull?.storage(firebaseApp);
+    var functions = functionsServiceOrNull?.functions(firebaseApp);
+
+    return FirebaseContext(
+      local: local,
+      firebase: firebase,
+      firebaseApp: firebaseApp,
+      firestore: firestore,
+      storage: storage,
+      functions: functions,
+      auth: auth,
+    );
   }
 
   Future<FirebaseContext> init(

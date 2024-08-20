@@ -3,5 +3,5 @@
 import 'package:tkcms_common/tkcms_server.dart';
 
 class FfApp extends TkCmsServerApp {
-  FfApp({required super.context, super.version});
+  FfApp({required super.context, super.apiVersion});
 }
