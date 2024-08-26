@@ -21,8 +21,10 @@ class TkCmsApiServiceBase implements ApiService {
   final HttpClientFactory httpClientFactory;
 
   /// Set from login and prefs
-  TkCmsApiServiceBase(
-      {required this.commandUri, required this.httpClientFactory}) {
+  TkCmsApiServiceBase({
+    required this.commandUri,
+    required this.httpClientFactory,
+  }) {
     initApiBuilders();
   }
 
@@ -176,10 +178,6 @@ class TkCmsApiServiceBase implements ApiService {
     return await send<ApiGetTimestampResponse>(commandTimestamp, ApiEmpty(),
         client: innerClient);
   }
-
-  Future<ApiEmpty> runCron() async {
-    return await send<ApiEmpty>(commandCron, ApiEmpty(), client: innerClient);
-  }
 }
 
 class ServiceResponse<T extends CvModel> {
@@ -197,14 +195,22 @@ class ServiceResponse<T extends CvModel> {
 }
 
 class ApiException implements Exception {
+  /// Prefer
+  final ApiError? error;
+
+  /// Compat
   final ApiErrorResponse? errorResponse;
   final int? statusCode;
   late final String? message;
   final Object? cause;
 
   ApiException(
-      {this.statusCode, String? message, this.cause, this.errorResponse}) {
-    this.message = message ?? errorResponse?.message.v;
+      {this.statusCode,
+      String? message,
+      this.cause,
+      this.errorResponse,
+      this.error}) {
+    this.message = message ?? error?.message.v ?? errorResponse?.message.v;
   }
 
   @override

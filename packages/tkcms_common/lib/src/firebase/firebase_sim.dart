@@ -1,5 +1,7 @@
 import 'package:tekartik_app_sembast/sembast.dart';
 import 'package:tekartik_firebase_firestore_sembast/firestore_sembast.dart';
+import 'package:tekartik_firebase_functions/firebase_functions.dart';
+import 'package:tekartik_firebase_functions_call_http/functions_call_memory.dart';
 import 'package:tekartik_firebase_functions_http/firebase_functions_memory.dart';
 // ignore: depend_on_referenced_packages
 import 'package:tekartik_firebase_local/firebase_local.dart';
@@ -15,15 +17,22 @@ set firebaseFunctionsContextSimOrNull(FirebaseFunctionsContext? value) {
   firebaseContextSimOrNull = value;
 }
 
-Future<FirebaseContext> initFirebaseFunctionsSimMemory() async {
+Future<FirebaseServicesContext> initFirebaseServicesSimMemory() async {
   var firebase = FirebaseLocal();
   var firestoreService = newFirestoreServiceMemory();
   var functionsService = firebaseFunctionsServiceMemory;
-  var firebaseContext = FirebaseServicesContext(
-          firebase: firebase,
-          firestoreService: firestoreService,
-          functionsService: functionsService)
-      .initContext();
+  var functionsCallService = firebaseFunctionsCallServiceMemory;
+  var firebaseServicesContext = FirebaseServicesContext(
+      firebase: firebase,
+      firestoreService: firestoreService,
+      functionsService: functionsService,
+      functionsCallService: functionsCallService,
+      functionsCallRegion: regionBelgium);
+  return firebaseServicesContext;
+}
+
+Future<FirebaseContext> initFirebaseFunctionsSimMemory() async {
+  var firebaseContext = (await initFirebaseServicesSimMemory()).initContext();
   return firebaseContext;
 }
 

@@ -11,14 +11,14 @@ import 'package:tkcms_common/tkcms_firestore.dart';
 var functionCommandV1Dev = 'commandv1dev';
 var functionCommandV1Prod = 'commandv1prod';
 
+/// Callable function (when supported)
+const callableFunctionCommandV1Dev = 'callcommandv1dev';
+const callableFunctionCommandV1Prod = 'callcommandv1prod';
+
 var functionDailyCronV1Dev = 'daylycronv1dev';
 var functionDailyCronV1Prod = 'daylycronv1prod';
 
 const timezoneEuropeParis = 'Europe/Paris';
-
-Model bodyAsMap(ExpressHttpRequest request) {
-  return requestBodyAsJsonObject(request.body)!;
-}
 
 const commandTimestamp = 'timestamp';
 const commandProxy = 'proxy';
@@ -146,6 +146,7 @@ class TkCmsServerAppContext {
 }
 
 class TkCmsServerApp implements TkCmsCommonServerApp {
+  final int apiVersion;
   final TkCmsServerAppContext context;
   int instanceCallCount = 0;
   static int globalInstanceCallCount = 0;
@@ -162,7 +163,7 @@ class TkCmsServerApp implements TkCmsCommonServerApp {
 
   late Uri commandUri;
 
-  TkCmsServerApp({required this.context}) {
+  TkCmsServerApp({required this.context, this.apiVersion = apiVersion1}) {
     initFunctions();
   }
 
@@ -290,6 +291,63 @@ class TkCmsServerApp implements TkCmsCommonServerApp {
   HttpsFunction get commandV1 => functions.https.onRequestV2(
       HttpsOptions(cors: true, region: regionBelgium), commandHttp);
 
+  HttpsFunction get commandV2 => functions.https.onRequestV2(
+      HttpsOptions(cors: true, region: regionBelgium), onHttpsCommandV2);
+
+  HttpsCallableFunction get callCommandV2 => functions.https.onCall(
+      onCallableCommandV2,
+      callableOptions: HttpsCallableOptions(region: regionBelgium, cors: true));
+
+  Future<ApiResult> onCommandV2(ApiRequest apiRequest) async {
+    switch (apiRequest.command.v!) {
+      case commandTimestamp:
+        return ApiGetTimestampResponse()
+          ..timestamp.v = DateTime.timestamp().toIso8601String();
+      default:
+        throw UnsupportedError('command $command');
+    }
+  }
+
+  Future<Object> onCallableCommandV2(CallRequest request) async {
+    try {
+      var requestMap = request.dataAsMap;
+      var apiRequest = requestMap.cv<ApiRequest>();
+      apiRequest.userId.v = request.context.auth?.uid;
+      var result = await onCommandV2(apiRequest);
+
+      return (ApiResponse()..result.v = (CvMapModel()..copyFrom(result)))
+          .toMap();
+    } on ApiException catch (e) {
+      if (e.error != null) {
+        return (ApiResponse()..error.v = e.error).toMap();
+      } else {
+        rethrow;
+      }
+    } catch (e, st) {
+      throw HttpsError(HttpsErrorCode.internal, e.toString(), st.toString());
+    }
+  }
+
+  Future<void> onHttpsCommandV2(ExpressHttpRequest request) async {
+    try {
+      var requestMap = request.bodyAsMap;
+      var apiRequest = requestMap.cv<ApiRequest>();
+      var result = await onCommandV2(apiRequest);
+
+      await sendResponse(
+          request, ApiResponse()..result.v = (CvMapModel()..copyFrom(result)));
+    } on ApiException catch (e) {
+      if (e.error != null) {
+        await sendResponse(request, ApiResponse()..error.v = e.error);
+      } else {
+        rethrow;
+      }
+    } catch (e, st) {
+      // devPrint(st);
+      await sendCatchErrorResponse(request, e, st);
+    }
+  }
+
   Future<void> commandHttp(ExpressHttpRequest request) async {
     try {
       if (await handleCustom(request)) {
@@ -337,6 +395,7 @@ class TkCmsServerApp implements TkCmsCommonServerApp {
   }
 
   late String command;
+  late String callCommand;
 
   @override
   void initFunctions() {
@@ -345,16 +404,38 @@ class TkCmsServerApp implements TkCmsCommonServerApp {
       case FlavorContext.prod:
       case FlavorContext.prodx:
         command = functionCommandV1Prod;
+        callCommand = callableFunctionCommandV1Prod;
         cron = functionDailyCronV1Prod;
         break;
       case FlavorContext.dev:
       case FlavorContext.devx:
       default:
         command = functionCommandV1Dev;
+        callCommand = callableFunctionCommandV1Dev;
         cron = functionDailyCronV1Dev;
         break;
     }
-    functions[command] = commandV1;
+    switch (apiVersion) {
+      case apiVersion1:
+        functions[command] = commandV1;
+        break;
+      case apiVersion2:
+        functions[command] = commandV2;
+        functions[callCommand] = callCommandV2;
+        /*
+    functions[callableCommand] = functions.https.onCall((request) {
+    var userId = request.context.auth?.uid;
+    var requestData = request.dataAsMap;
+    var callableCommand = requestData.cv<ApiRequest>();
+    var command = callableCommand.command.v!;
+    var data = callableCommand.data.value;
+    return onNotelioCommand(userId, command, data);
+    },*/
+        break;
+      default:
+        throw 'unsupported version $apiVersion';
+    }
+
     if (!firebaseContext.local) {
       try {
         // Every day at 11pm
