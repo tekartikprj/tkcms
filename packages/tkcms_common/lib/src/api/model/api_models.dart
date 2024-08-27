@@ -48,7 +48,7 @@ class ApiRequest extends CvModelBase with CvApiMixin {
   final command = CvField<String>('command');
   final data = CvField<Map>('data');
   @override
-  CvFields get fields => [...apiFields, command, data];
+  CvFields get fields => [...apiFields, command, data, userId];
 }
 
 extension ApiRequestExt on ApiRequest {

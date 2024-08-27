@@ -25,6 +25,9 @@ class TkCmsApiServiceBaseV2 {
   var retryCount = 0;
   final HttpClientFactory httpClientFactory;
 
+  /// Rest support
+  String? userIdOrNull;
+
   /// Set from login and prefs
   TkCmsApiServiceBaseV2(
       {required this.httpClientFactory,
@@ -125,6 +128,10 @@ class TkCmsApiServiceBaseV2 {
   Future<R> httpGetApiResult<R extends ApiResult>(ApiRequest request) async {
     assert(httpsApiUri != null);
     var uri = httpsApiUri!;
+
+    /// Dev/Rest only
+
+    request.userId.v = userIdOrNull;
     if (debugWebServices) {
       log('-> uri: $uri');
       log('   $request');
