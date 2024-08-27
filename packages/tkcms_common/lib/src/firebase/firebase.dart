@@ -205,6 +205,7 @@ class FirebaseContext {
 }
 
 FirebaseContext? firebaseContextOrNull;
+@Deprecated('Use globalFirebaseContext')
 FirebaseContext get firebaseContext => () {
       if (firebaseContextOrNull == null) {
         throw StateError('firebaseContext not set');

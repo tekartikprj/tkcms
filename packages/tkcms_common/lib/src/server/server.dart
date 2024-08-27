@@ -312,7 +312,8 @@ class TkCmsServerApp implements TkCmsCommonServerApp {
     try {
       var requestMap = request.dataAsMap;
       var apiRequest = requestMap.cv<ApiRequest>();
-      apiRequest.userId.v = request.context.auth?.uid;
+      var userId = request.context.auth?.uid;
+      apiRequest.userId.v = userId;
       var result = await onCommandV2(apiRequest);
 
       return (ApiResponse()..result.v = (CvMapModel()..copyFrom(result)))
@@ -324,6 +325,13 @@ class TkCmsServerApp implements TkCmsCommonServerApp {
         rethrow;
       }
     } catch (e, st) {
+      if (isDebug) {
+        // ignore: avoid_print
+        print('Error $e');
+        // ignore: avoid_print
+        print(st);
+      }
+      //devPrint(st);
       throw HttpsError(HttpsErrorCode.internal, e.toString(), st.toString());
     }
   }
