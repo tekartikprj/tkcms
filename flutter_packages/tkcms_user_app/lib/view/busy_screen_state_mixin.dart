@@ -16,6 +16,7 @@ class BusyActionResult<T> {
 
 mixin BusyScreenStateMixin<T extends StatefulWidget> on State<T> {
   final _busySubject = BehaviorSubject<bool>.seeded(false);
+  Sink<bool> get busySink => _busySubject.sink;
   ValueStream<bool> get busyStream => _busySubject.stream;
 
   bool get busy => _busySubject.value == true;
