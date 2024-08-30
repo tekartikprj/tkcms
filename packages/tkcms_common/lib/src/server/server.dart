@@ -304,7 +304,7 @@ class TkCmsServerApp implements TkCmsCommonServerApp {
         return ApiGetTimestampResponse()
           ..timestamp.v = DateTime.timestamp().toIso8601String();
       default:
-        throw UnsupportedError('command $command');
+        throw UnsupportedError('command ${apiRequest.command.v!}');
     }
   }
 
