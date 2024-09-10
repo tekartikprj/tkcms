@@ -48,6 +48,8 @@ class AppFlavorContext {
   static final test =
       AppFlavorContext(app: 'test', flavorContext: FlavorContext.test);
 
+  bool get isProd => flavorContext.isProd;
+
   @override
   String toString() => 'ctx$appKeySuffix';
 }
