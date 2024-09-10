@@ -75,6 +75,12 @@ abstract class ApiResult extends CvModelBase {
   CvFields get fields => [];
 }
 
+/// Base query
+abstract class ApiQuery extends CvModelBase {
+  @override
+  CvFields get fields => [];
+}
+
 class ApiResponse extends CvModelBase {
   late final result = CvField<Map>('result');
   late final error = CvModelField<ApiError>('error');
