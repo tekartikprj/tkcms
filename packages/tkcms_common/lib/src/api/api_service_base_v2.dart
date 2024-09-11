@@ -87,6 +87,10 @@ class TkCmsApiServiceBaseV2 {
         ApiRequest()..command.v = commandTimestamp);
   }
 
+  Future<ApiEmpty> cron() async {
+    return await getApiResult<ApiEmpty>(ApiRequest()..command.v = commandCron);
+  }
+
   Future<ApiGetTimestampResponse> httpGetTimestamp() async {
     return await httpGetApiResult<ApiGetTimestampResponse>(
         ApiRequest()..command.v = commandTimestamp);
@@ -117,6 +121,9 @@ class TkCmsApiServiceBaseV2 {
         );
       }
       var result = apiResponse.result.v!;
+      if (debugWebServices) {
+        log('<- $result');
+      }
       return result.cv<R>();
     } catch (e) {
       throw ApiException(

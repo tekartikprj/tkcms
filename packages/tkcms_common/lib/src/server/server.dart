@@ -303,6 +303,9 @@ class TkCmsServerApp implements TkCmsCommonServerApp {
       case commandTimestamp:
         return ApiGetTimestampResponse()
           ..timestamp.v = DateTime.timestamp().toIso8601String();
+      case commandCron:
+        await handleDailyCron();
+        return ApiEmpty();
       default:
         throw UnsupportedError('command ${apiRequest.command.v!}');
     }

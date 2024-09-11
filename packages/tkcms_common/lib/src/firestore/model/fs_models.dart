@@ -30,7 +30,7 @@ CvCollectionReference<FsUser> fsAppUserCollection(String app) =>
 CvCollectionReference<FsUserAccess> fsAppUserAccessCollection(String app) =>
     fsAppRoot(app).collection<FsUserAccess>('user_access');
 
-// In app/config_dev/info
+// In app/{app}/info
 CvCollectionReference<CvFirestoreDocument> fsAppInfoCollection(String app) =>
     fsAppRoot(app).collection<CvFirestoreDocument>('info');
 
