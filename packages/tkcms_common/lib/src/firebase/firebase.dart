@@ -115,11 +115,12 @@ class FirebaseServicesContext {
       {FirebaseApp? firebaseApp,
       Uri? baseUri,
       FfServer? ffServer,
-      TkCmsServerApp? serverApp}) async {
+      TkCmsServerApp? serverApp,
+      bool debugFirestore = false}) async {
     firebaseApp ??= firebaseAppOrNull ??=
         await firebase.initializeAppAsync(options: appOptions);
     var firestore = firestoreServiceOrNull?.firestore(firebaseApp);
-    if (gDebugLogFirestore) {
+    if (debugFirestore || gDebugLogFirestore) {
       // ignore: deprecated_member_use
       firestore = firestore?.debugQuickLoggerWrapper();
     }
