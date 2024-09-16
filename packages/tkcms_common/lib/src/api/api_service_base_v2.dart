@@ -15,7 +15,7 @@ class TkCmsApiServiceBaseV2 {
   FirebaseFunctionsCallable? callableApi;
 
   /// Required for v2
-  String? app;
+  late String app;
 
   /// Can be modified by client.
 
@@ -34,8 +34,11 @@ class TkCmsApiServiceBaseV2 {
       // V2
       this.httpsApiUri,
       this.callableApi,
-      this.app}) {
+      String? app}) {
     initApiBuilders();
+    if (app != null) {
+      this.app = app;
+    }
   }
 
   void log(String message) {
