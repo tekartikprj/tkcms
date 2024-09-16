@@ -21,8 +21,16 @@ void initFsBuilders() {
 /// Root collection
 final fsRootCollection = CvCollectionReference<FsApp>('app');
 
+/// Root flavor collection
+final fsRootFlavorCollection =
+    CvCollectionReference<CvFirestoreDocument>('flavor');
+
 /// Root app collection
 CvDocumentReference<FsApp> fsAppRoot(String app) => fsRootCollection.doc(app);
+
+/// Root flavor collection
+CvDocumentReference<CvFirestoreDocument> fsFlavorRoot(String flavor) =>
+    fsRootFlavorCollection.doc(flavor);
 
 CvCollectionReference<FsUser> fsAppUserCollection(String app) =>
     fsAppRoot(app).collection<FsUser>('user');
@@ -30,7 +38,7 @@ CvCollectionReference<FsUser> fsAppUserCollection(String app) =>
 CvCollectionReference<FsUserAccess> fsAppUserAccessCollection(String app) =>
     fsAppRoot(app).collection<FsUserAccess>('user_access');
 
-// In app/config_dev/info
+// In app/{app}/info
 CvCollectionReference<CvFirestoreDocument> fsAppInfoCollection(String app) =>
     fsAppRoot(app).collection<CvFirestoreDocument>('info');
 

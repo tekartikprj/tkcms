@@ -48,7 +48,7 @@ class ApiRequest extends CvModelBase with CvApiMixin {
   final command = CvField<String>('command');
   final data = CvField<Map>('data');
   @override
-  CvFields get fields => [...apiFields, command, data];
+  CvFields get fields => [...apiFields, command, data, userId];
 }
 
 extension ApiRequestExt on ApiRequest {
@@ -71,6 +71,12 @@ class ApiError extends CvModelBase {
 
 /// Base result
 abstract class ApiResult extends CvModelBase {
+  @override
+  CvFields get fields => [];
+}
+
+/// Base query
+abstract class ApiQuery extends CvModelBase {
   @override
   CvFields get fields => [];
 }
