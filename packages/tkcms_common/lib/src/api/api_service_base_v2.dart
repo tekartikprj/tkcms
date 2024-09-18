@@ -198,4 +198,11 @@ class TkCmsApiServiceBaseV2 {
       );
     }
   }
+
+  Future<void> close() async {
+    try {
+      retryClient.close();
+    } catch (_) {}
+    // keep local server on
+  }
 }

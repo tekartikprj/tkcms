@@ -1,7 +1,6 @@
 import 'package:tekartik_app_http/app_http.dart';
 import 'package:tkcms_common/src/firebase/firebase.dart';
 import 'package:tkcms_common/src/flavor/flavor.dart';
-import 'package:tkcms_common/tkcms_api.dart';
 import 'package:tkcms_common/tkcms_common.dart';
 import 'package:tkcms_common/tkcms_firestore.dart';
 import 'package:tkcms_common/tkcms_server.dart';
@@ -35,7 +34,7 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
 
   late Uri commandUri;
 
-  TkCmsServerAppV2({required this.context, this.apiVersion = apiVersion1}) {
+  TkCmsServerAppV2({required this.context, required this.apiVersion}) {
     initFunctions();
   }
 
