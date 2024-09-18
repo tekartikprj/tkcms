@@ -126,8 +126,13 @@ class GetTimeCommandHandler extends CommandHandler {
 typedef TkCmsCreateServerAppFunction = TkCmsCommonServerApp Function(
     TkCmsServerAppContext context);
 
-abstract class TkCmsCommonServerApp {
+abstract interface class TkCmsCommonServerApp {
+  int get apiVersion;
   void initFunctions();
+  // v1 & v2
+  String get command;
+  // v2
+  String get callCommand;
 }
 
 class TkCmsServerAppContext {
@@ -145,7 +150,11 @@ class TkCmsServerAppContext {
       : firebaseContext = firebaseContext ?? firebaseFunctionsContext!;
 }
 
-class TkCmsServerApp implements TkCmsCommonServerApp {
+/// Compat
+typedef TkCmsServerApp = TkCmsServerAppV1;
+
+class TkCmsServerAppV1 implements TkCmsCommonServerApp {
+  @override
   final int apiVersion;
   final TkCmsServerAppContext context;
   int instanceCallCount = 0;
@@ -163,7 +172,7 @@ class TkCmsServerApp implements TkCmsCommonServerApp {
 
   late Uri commandUri;
 
-  TkCmsServerApp({required this.context, this.apiVersion = apiVersion1}) {
+  TkCmsServerAppV1({required this.context, this.apiVersion = apiVersion1}) {
     initFunctions();
   }
 
@@ -405,7 +414,9 @@ class TkCmsServerApp implements TkCmsCommonServerApp {
     await res.send(model.toMap());
   }
 
+  @override
   late String command;
+  @override
   late String callCommand;
 
   @override

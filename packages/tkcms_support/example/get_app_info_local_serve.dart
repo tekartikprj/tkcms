@@ -13,7 +13,7 @@ Future<void> runApiGetInfo() async {
   final apiService = TkCmsApiServiceBase(
       httpClientFactory: httpClientFactoryUniversal,
       commandUri:
-          Uri.parse('http://localhost:5000/xxx/europe-west1/commandv1dev'));
+          Uri.parse('http://localhost:5000/xxx/europe-west1/commandv2dev'));
   await apiService.initClient();
 
   var info = await apiService.getInfo();

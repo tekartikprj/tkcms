@@ -1,6 +1,6 @@
 import 'package:tekartik_app_http/app_http.dart';
 import 'package:tekartik_app_http/app_http.dart' as universal;
-import 'package:tkcms_common/src/server/server.dart';
+import 'package:tkcms_common/src/server/server_v1.dart';
 import 'package:tkcms_common/tkcms_api.dart';
 import 'package:tkcms_common/tkcms_common.dart';
 
@@ -11,7 +11,10 @@ abstract interface class ApiService {
   Future<T> send<T extends CvModel>(String command, CvModel request);
 }
 
-class TkCmsApiServiceBase implements ApiService {
+/// Compat
+typedef TkCmsApiServiceBase = TkCmsApiServiceBaseV1;
+
+class TkCmsApiServiceBaseV1 implements ApiService {
   /// Can be modified by client.
   late Uri commandUri;
   late Client innerClient;
@@ -21,7 +24,7 @@ class TkCmsApiServiceBase implements ApiService {
   final HttpClientFactory httpClientFactory;
 
   /// Set from login and prefs
-  TkCmsApiServiceBase({
+  TkCmsApiServiceBaseV1({
     required this.commandUri,
     required this.httpClientFactory,
   }) {

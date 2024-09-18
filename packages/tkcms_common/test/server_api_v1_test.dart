@@ -1,10 +1,10 @@
 import 'package:tekartik_app_http/app_http.dart';
 import 'package:tekartik_firebase_functions/ff_server.dart';
 import 'package:test/test.dart';
-import 'package:tkcms_common/src/api/api_service_base.dart';
+import 'package:tkcms_common/src/api/api_service_base_v1.dart';
 import 'package:tkcms_common/src/firebase/firebase_sim.dart';
 import 'package:tkcms_common/src/flavor/flavor.dart';
-import 'package:tkcms_common/src/server/server.dart';
+import 'package:tkcms_common/src/server/server_v1.dart';
 import 'package:tkcms_common/tkcms_common.dart';
 import 'package:tkcms_common/tkcms_firestore.dart';
 

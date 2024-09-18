@@ -115,7 +115,7 @@ class FirebaseServicesContext {
       {FirebaseApp? firebaseApp,
       Uri? baseUri,
       FfServer? ffServer,
-      TkCmsServerApp? serverApp,
+      TkCmsCommonServerApp? serverApp,
       bool debugFirestore = false}) async {
     firebaseApp ??= firebaseAppOrNull ??=
         await firebase.initializeAppAsync(options: appOptions);
@@ -168,8 +168,8 @@ class FirebaseContext {
   FirebaseFunctionsCall? functionsCallOrNull;
   FirebaseFunctionsCall get functionsCall => functionsCallOrNull!;
   bool get local => firebase.isLocal;
-  TkCmsServerApp? serverAppOrNull;
-  TkCmsServerApp get serverApp => serverAppOrNull!;
+  TkCmsCommonServerApp? serverAppOrNull;
+  TkCmsCommonServerApp get serverApp => serverAppOrNull!;
   FfServer? ffServerOrNull;
   FfServer get ffServerHttp => ffServerOrNull!;
 
@@ -186,7 +186,7 @@ class FirebaseContext {
     Storage? storage,
     FirebaseFunctionsCall? functionsCall,
     FfServer? ffServer,
-    TkCmsServerApp? serverApp,
+    TkCmsCommonServerApp? serverApp,
 
     /// Compat
     FirebaseContext? firebaseContext,

@@ -17,8 +17,8 @@ var tkcmsFfPackagesTop = join('..', 'tkcms_ff');
 var tkCmsGcfNodeAppOptions = GcfNodeAppOptions(
     projectId: tkTestCmsProjectId,
     functions: [
-      functionCommandV1Dev,
-      functionDailyCronV1Dev,
+      functionCommandV2Dev,
+      functionDailyCronV2Dev,
     ],
     packageTop: tkcmsFfPackagesTop);
 

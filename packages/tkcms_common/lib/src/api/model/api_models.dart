@@ -92,5 +92,5 @@ class ApiResponse extends CvModelBase {
 /// Basic commands
 const apiVersion1 = 1;
 
-/// Callable
+/// Callable server and api V2
 const apiVersion2 = 2;

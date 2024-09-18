@@ -1,11 +1,12 @@
 import 'package:tekartik_app_http/app_http.dart' as universal;
 import 'package:tekartik_app_http/app_http.dart';
 import 'package:tekartik_firebase_functions_call/functions_call.dart';
-import 'package:tkcms_common/src/server/server.dart';
+import 'package:tkcms_common/src/server/server_v1.dart';
 import 'package:tkcms_common/tkcms_api.dart';
 import 'package:tkcms_common/tkcms_common.dart';
 
 class TkCmsApiServiceBaseV2 {
+  final int apiVersion;
   // V2
   // ---
   /// New generic api uri - Can be modified by client.
@@ -32,6 +33,7 @@ class TkCmsApiServiceBaseV2 {
   TkCmsApiServiceBaseV2(
       {required this.httpClientFactory,
       // V2
+      required this.apiVersion,
       this.httpsApiUri,
       this.callableApi,
       String? app}) {
