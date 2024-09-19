@@ -22,10 +22,13 @@ void initApiBuilders() {
     ApiGetTimestampResponse.new,
     ApiRequest.new,
     ApiResponse.new,
+    ApiError.new,
   ]);
 }
 
-class ApiGetTimestampResponse extends ApiResult {
+typedef ApiGetTimestampResponse = ApiGetTimestampResult;
+
+class ApiGetTimestampResult extends ApiResult {
   late final timestamp = CvField<String>('timestamp');
 
   @override

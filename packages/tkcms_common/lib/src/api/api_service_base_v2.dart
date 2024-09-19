@@ -82,12 +82,11 @@ class TkCmsApiServiceBaseV2 {
   }
 
   Future<ApiGetTimestampResponse> callGetTimestamp() async {
-    return await callGetApiResult<ApiGetTimestampResponse>(
+    return await callGetApiResult<ApiGetTimestampResult>(
         ApiRequest()..command.v = commandTimestamp);
   }
 
-  //@override
-  Future<ApiGetTimestampResponse> getTimestamp() async {
+  Future<ApiGetTimestampResult> getTimestamp() async {
     return await getApiResult<ApiGetTimestampResponse>(
         ApiRequest()..command.v = commandTimestamp);
   }
@@ -96,12 +95,13 @@ class TkCmsApiServiceBaseV2 {
     return await getApiResult<ApiEmpty>(ApiRequest()..command.v = commandCron);
   }
 
-  Future<ApiGetTimestampResponse> httpGetTimestamp() async {
-    return await httpGetApiResult<ApiGetTimestampResponse>(
+  Future<ApiGetTimestampResult> httpGetTimestamp() async {
+    return await httpGetApiResult<ApiGetTimestampResult>(
         ApiRequest()..command.v = commandTimestamp);
   }
 
   Future<R> getApiResult<R extends ApiResult>(ApiRequest request) async {
+    request.app.v ??= app;
     if (callableApi != null) {
       return await callGetApiResult<R>(request);
     } else {

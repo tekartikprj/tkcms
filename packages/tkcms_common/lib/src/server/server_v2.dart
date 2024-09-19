@@ -63,13 +63,13 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
   }
 
   HttpsFunction get commandV2 => functions.https.onRequestV2(
-      HttpsOptions(cors: true, region: regionBelgium), onHttpsCommandV2);
+      HttpsOptions(cors: true, region: regionBelgium), onHttpsCommand);
 
   HttpsCallableFunction get callCommandV2 => functions.https.onCall(
-      onCallableCommandV2,
+      onCallableCommand,
       callableOptions: HttpsCallableOptions(region: regionBelgium, cors: true));
 
-  Future<ApiResult> onCommandV2(ApiRequest apiRequest) async {
+  Future<ApiResult> onCommand(ApiRequest apiRequest) async {
     switch (apiRequest.command.v!) {
       case commandTimestamp:
         return ApiGetTimestampResponse()
@@ -82,13 +82,13 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
     }
   }
 
-  Future<Object> onCallableCommandV2(CallRequest request) async {
+  Future<Object> onCallableCommand(CallRequest request) async {
     try {
       var requestMap = request.dataAsMap;
       var apiRequest = requestMap.cv<ApiRequest>();
       var userId = request.context.auth?.uid;
       apiRequest.userId.v = userId;
-      var result = await onCommandV2(apiRequest);
+      var result = await onCommand(apiRequest);
 
       return (ApiResponse()..result.v = (CvMapModel()..copyFrom(result)))
           .toMap();
@@ -110,11 +110,11 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
     }
   }
 
-  Future<void> onHttpsCommandV2(ExpressHttpRequest request) async {
+  Future<void> onHttpsCommand(ExpressHttpRequest request) async {
     try {
       var requestMap = request.bodyAsMap;
       var apiRequest = requestMap.cv<ApiRequest>();
-      var result = await onCommandV2(apiRequest);
+      var result = await onCommand(apiRequest);
 
       await sendResponse(
           request, ApiResponse()..result.v = (CvMapModel()..copyFrom(result)));
