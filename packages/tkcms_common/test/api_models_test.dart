@@ -12,9 +12,6 @@ void main() {
     test('ApiRequest', () {
       expect(newModel().cv<ApiRequest>().toMap(), isEmpty);
     });
-    test('ApiResult', () {
-      expect(newModel().cv<ApiResult>().toMap(), isEmpty);
-    });
     test('ApiResponse', () {
       expect(newModel().cv<ApiResponse>().toMap(), isEmpty);
     });
@@ -23,6 +20,9 @@ void main() {
     });
     test('ApiGetTimestampResponse', () {
       expect(newModel().cv<ApiGetTimestampResponse>().toMap(), isEmpty);
+    });
+    test('ApiGetTimestampResult', () {
+      expect(newModel().cv<ApiGetTimestampResult>().toMap(), isEmpty);
     });
 
     test('ApiInfoResponse', () {
