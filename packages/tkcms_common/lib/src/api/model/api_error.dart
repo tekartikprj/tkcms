@@ -10,5 +10,5 @@ class ApiErrorResponse extends CvModelBase {
   late final stackTrace = CvField<String>('stackTrace');
 
   @override
-  late final List<CvField<Object?>> fields = [code, message, stackTrace];
+  late final CvFields fields = [code, message, stackTrace];
 }

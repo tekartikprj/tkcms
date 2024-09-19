@@ -9,6 +9,15 @@ void main() {
     test('ApiEmpty', () {
       expect(newModel().cv<ApiEmpty>().toMap(), isEmpty);
     });
+    test('ApiRequest', () {
+      expect(newModel().cv<ApiRequest>().toMap(), isEmpty);
+    });
+    test('ApiResult', () {
+      expect(newModel().cv<ApiResult>().toMap(), isEmpty);
+    });
+    test('ApiResponse', () {
+      expect(newModel().cv<ApiResponse>().toMap(), isEmpty);
+    });
     test('ApiErrorResponse', () {
       expect(newModel().cv<ApiErrorResponse>().toMap(), isEmpty);
     });

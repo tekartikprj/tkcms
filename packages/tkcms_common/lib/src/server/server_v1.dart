@@ -105,7 +105,7 @@ class InfoCommandHandler extends CommandHandler {
 }
 
 /// All fields must be present and non null
-void ensureFields(CvModel model, List<CvField> fields) {
+void ensureFields(CvModel model, CvFields fields) {
   for (var field in fields) {
     if (model.field(field.name)?.isNull ?? true) {
       throw ArgumentError('field ${field.name} missing or null in $model');
