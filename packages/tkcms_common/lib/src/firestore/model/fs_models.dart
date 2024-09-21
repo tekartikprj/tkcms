@@ -7,7 +7,12 @@ export 'fs_user_access.dart';
 
 var _fsBuildersInitialized = false;
 
+// Compat
 void initFsBuilders() {
+  initTkCmsFsBuilders();
+}
+
+void initTkCmsFsBuilders() {
   if (_fsBuildersInitialized) {
     return;
   }

@@ -10,7 +10,7 @@ class ApiInfoResponse extends CvModelBase {
   late final debug = CvField<bool>('debug');
 
   @override
-  late final List<CvField> fields = [
+  late final CvFields fields = [
     app,
     uri,
     version,

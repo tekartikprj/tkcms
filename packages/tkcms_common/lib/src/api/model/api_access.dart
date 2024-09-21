@@ -9,7 +9,7 @@ class ApiAccessRequest extends CvModelBase {
   final type = CvField<String>('type');
 
   @override
-  List<CvField<Object?>> get fields => [type];
+  CvFields get fields => [type];
 }
 
 class ApiAccessResponse extends ApiEmpty {}

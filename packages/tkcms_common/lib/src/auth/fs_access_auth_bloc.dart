@@ -198,8 +198,8 @@ abstract class AuthBlocBase implements TkCmsAuthBloc {
       _loggedInUserSubscription = fsAppUserAccessCollection(app)
           .doc(userId)
           .onSnapshotSupport(firestore,
-              options:
-                  TrackChangesPullOptions(refreshDelay: Duration(hours: 1)))
+              options: TrackChangesPullOptions(
+                  refreshDelay: const Duration(hours: 1)))
           .listen((user) {
         if (debugTkCmsAuthBloc) {
           // ignore: avoid_print

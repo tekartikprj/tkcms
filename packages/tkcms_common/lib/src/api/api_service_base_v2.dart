@@ -1,11 +1,12 @@
 import 'package:tekartik_app_http/app_http.dart' as universal;
 import 'package:tekartik_app_http/app_http.dart';
 import 'package:tekartik_firebase_functions_call/functions_call.dart';
-import 'package:tkcms_common/src/server/server.dart';
+import 'package:tkcms_common/src/server/server_v1.dart';
 import 'package:tkcms_common/tkcms_api.dart';
 import 'package:tkcms_common/tkcms_common.dart';
 
 class TkCmsApiServiceBaseV2 {
+  final int apiVersion;
   // V2
   // ---
   /// New generic api uri - Can be modified by client.
@@ -15,7 +16,7 @@ class TkCmsApiServiceBaseV2 {
   FirebaseFunctionsCallable? callableApi;
 
   /// Required for v2
-  String? app;
+  late String app;
 
   /// Can be modified by client.
 
@@ -32,10 +33,14 @@ class TkCmsApiServiceBaseV2 {
   TkCmsApiServiceBaseV2(
       {required this.httpClientFactory,
       // V2
+      required this.apiVersion,
       this.httpsApiUri,
       this.callableApi,
-      this.app}) {
+      String? app}) {
     initApiBuilders();
+    if (app != null) {
+      this.app = app;
+    }
   }
 
   void log(String message) {
@@ -77,12 +82,11 @@ class TkCmsApiServiceBaseV2 {
   }
 
   Future<ApiGetTimestampResponse> callGetTimestamp() async {
-    return await callGetApiResult<ApiGetTimestampResponse>(
+    return await callGetApiResult<ApiGetTimestampResult>(
         ApiRequest()..command.v = commandTimestamp);
   }
 
-  //@override
-  Future<ApiGetTimestampResponse> getTimestamp() async {
+  Future<ApiGetTimestampResult> getTimestamp() async {
     return await getApiResult<ApiGetTimestampResponse>(
         ApiRequest()..command.v = commandTimestamp);
   }
@@ -91,12 +95,13 @@ class TkCmsApiServiceBaseV2 {
     return await getApiResult<ApiEmpty>(ApiRequest()..command.v = commandCron);
   }
 
-  Future<ApiGetTimestampResponse> httpGetTimestamp() async {
-    return await httpGetApiResult<ApiGetTimestampResponse>(
+  Future<ApiGetTimestampResult> httpGetTimestamp() async {
+    return await httpGetApiResult<ApiGetTimestampResult>(
         ApiRequest()..command.v = commandTimestamp);
   }
 
   Future<R> getApiResult<R extends ApiResult>(ApiRequest request) async {
+    request.app.v ??= app;
     if (callableApi != null) {
       return await callGetApiResult<R>(request);
     } else {
@@ -192,5 +197,12 @@ class TkCmsApiServiceBaseV2 {
         message: message,
       );
     }
+  }
+
+  Future<void> close() async {
+    try {
+      retryClient.close();
+    } catch (_) {}
+    // keep local server on
   }
 }
