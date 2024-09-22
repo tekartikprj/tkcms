@@ -3,7 +3,6 @@ import 'package:tkcms_common/tkcms_firestore.dart';
 
 export 'fs_app.dart';
 export 'fs_user.dart';
-export 'fs_user_access.dart';
 export 'fs_user_access_v2.dart';
 
 var _fsBuildersInitialized = false;
@@ -20,15 +19,8 @@ void initTkCmsFsBuilders() {
   _fsBuildersInitialized = true;
 
   // firestore
-  cvAddConstructors([
-    FsApp.new,
-    FsUser.new,
-    FsUserAccess.new,
-    FsAppsConfig.new,
-    TkCmsFsUserAccess.new,
-    TkCmsFsEntityTypeInvite.new,
-    TkCmsFsEntityTypeAccess.new
-  ]);
+  cvAddConstructors(
+      [FsApp.new, FsUser.new, FsUserAccess.new, FsAppsConfig.new]);
 }
 
 /// Root collection
