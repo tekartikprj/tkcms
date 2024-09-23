@@ -1,5 +1,6 @@
 import 'package:test/test.dart';
 import 'package:tkcms_common/src/firebase/firebase_sim.dart';
+import 'package:tkcms_common/src/firestore/tkcms_firestore_database_collections.dart';
 import 'package:tkcms_common/tkcms_firestore.dart';
 
 var tkTestCmsProjectId = 'tkcms';
@@ -10,23 +11,34 @@ class _TFsEntity extends TkCmsFsEntity {
   CvFields get fields => [specific, ...super.fields];
 }
 
+class _Content extends CvFirestoreDocumentBase {
+  final text = CvField<String>('text');
+  @override
+  CvFields get fields => [text];
+}
+
 final _entityCollectionInfo =
     TkCmsFirestoreDatabaseEntityCollectionInfo<_TFsEntity>(
-        id: 'type1', name: 'Type1');
+        id: 'type1',
+        name: 'Type1',
+        treeDef: TkCmsCollectionsTreeDef(map: {
+          'type1': {'subType2': null}
+        }));
 void main() {
   late TkCmsFirestoreDatabaseServiceEntityAccess<_TFsEntity> db;
   late Firestore firestore;
   setUp(() async {
-    cvAddConstructors([_TFsEntity.new, TkCmsFsInviteEntity<_TFsEntity>.new]);
+    cvAddConstructors(
+        [_TFsEntity.new, TkCmsFsInviteEntity<_TFsEntity>.new, _Content.new]);
     var firebaseContext = initFirebaseSimMemory(projectId: tkTestCmsProjectId);
     firestore = firebaseContext.firestore;
-    //firestore = firestore.debugQuickLoggerWrapper();
+    // firestore = firestore.debugQuickLoggerWrapper();
     db = TkCmsFirestoreDatabaseServiceEntityAccess<_TFsEntity>(
       entityCollectionInfo: _entityCollectionInfo,
       firestore: firestore,
     );
   });
-  test('booklet', () async {
+  test('entity', () async {
     var entity = _TFsEntity()
       ..name.v = 'e1'
       ..specific.v = 's1';
@@ -38,6 +50,9 @@ void main() {
     var readEntity = await entityRef.get(firestore);
     expect(readEntity.name.v, 'e1');
     expect(readEntity.specific.v, 's1');
+
+    var subContentRef = entityRef.collection<_Content>('subType2').doc('sub');
+    await firestore.cvSet(subContentRef.cv()..text.v = 'simple');
 
     var entityUserAccessRef = db.rootDocRef<TkCmsFsUserAccess>(
         'access/type1/entity_id/$entityId/user_access/$userId');
@@ -111,7 +126,9 @@ void main() {
     expect((await entityUserAccessRef.get(firestore)).exists, isTrue);
     expect((await userEntityAccessRef.get(firestore)).exists, isTrue);
 
+    expect((await subContentRef.get(firestore)).exists, isTrue);
     await db.purgeEntity(entityId);
+    expect((await subContentRef.get(firestore)).exists, isFalse);
     expect((await entityRef.get(firestore)).exists, isFalse);
     expect((await entityUserAccessRef.get(firestore)).exists, isFalse);
     expect((await userEntityAccessRef.get(firestore)).exists, isFalse);

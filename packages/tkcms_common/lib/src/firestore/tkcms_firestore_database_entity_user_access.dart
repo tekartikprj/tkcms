@@ -1,18 +1,8 @@
+import 'package:tekartik_firebase_firestore/utils/copy_utils.dart';
 import 'package:tkcms_common/tkcms_common.dart';
 import 'package:tkcms_common/tkcms_firestore.dart';
 
-class TkCmsFirestoreDatabaseEntityCollectionInfo<
-    TEntity extends TkCmsFsEntity> {
-  final String name;
-
-  /// The id of the collection (i.e. project, app, booklet, site...)
-  final String id;
-
-  /// The entity type is the id!
-  String get entityType => id;
-  TkCmsFirestoreDatabaseEntityCollectionInfo(
-      {required this.id, required this.name});
-}
+import 'tkcms_firestore_database_collections.dart';
 
 class TkCmsFirestoreDatabaseServiceEntityAccess<
     TFsEntity extends TkCmsFsEntity> {
@@ -306,20 +296,16 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<
       query = query.startAfter(values: [entityAccessUsers.last.id]);
     }
 
-    // TODO delete sub
-    /*
-    await deleteQuery(
-        firestore,
-        fsAppBookletDataSyncedDocument(app, booklet.id)
-            .collection(SyncedSourceFirestore.dataCollectionId)
-            .raw(firestore));
-    await deleteQuery(
-        firestore,
-        fsAppBookletDataSyncedDocument(app, booklet.id)
-            .collection(SyncedSourceFirestore.metaCollectionId)
-            .raw(firestore));
+    var treeDef = _info.treeDef;
+    if (treeDef != null) {
+      await entityRef.raw(firestore).tkcmsRecursiveDelete(treeDef);
+    } else if (firestore.service.supportsListCollections) {
+      await entityRef.raw(firestore).recursiveDelete(firestore);
+    } else {
+      await entityRef.delete(firestore);
+    }
 
-     */
+    /// Delete last
     if (userId != null) {
       await firestore.cvRunTransaction((txn) {
         txnDeleteUserAccess(txn, userId);
@@ -384,4 +370,21 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<
       query = query.startAfter(values: [last.timestamp.v, list.last.id]);
     }
   }
+}
+
+class TkCmsFirestoreDatabaseEntityCollectionInfo<
+    TEntity extends TkCmsFsEntity> {
+  /// Sub collections def
+  TkCmsCollectionsTreeDef? treeDef;
+
+  /// Display name
+  final String name;
+
+  /// The id of the collection (i.e. project, app, booklet, site...)
+  final String id;
+
+  /// The entity type is the id!
+  String get entityType => id;
+  TkCmsFirestoreDatabaseEntityCollectionInfo(
+      {required this.id, required this.name, this.treeDef});
 }
