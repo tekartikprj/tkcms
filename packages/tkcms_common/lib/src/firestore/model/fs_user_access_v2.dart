@@ -11,7 +11,7 @@ const tkCmsFsUserAccessCollectionId = 'user_access';
 const tkCmsFsEntityAccessCollectionId = 'entity_access';
 const tkCmsFsInviteEntityCollectionId = 'invite_entity';
 const tkCmsFsInviteCodeKey = 'inviteCode'; // in invite
-const tkCmsFsInviteIdKey = 'inviteId'; // when creating user access
+
 var _fsBuildersInitialized = false;
 void initTkCmsFsUserAccessBuilders() {
   if (_fsBuildersInitialized) {
@@ -108,8 +108,9 @@ mixin TkCmsCvUserAccessMixin implements TkCmsCvUserAccessCommon {
 
 class TkCmsFsUserAccess extends CvFirestoreDocumentBase
     with TkCmsCvUserAccessMixin {
+  final inviteId = CvField<String>('inviteId');
   @override
-  late final fields = [...userAccessMixinfields];
+  late final fields = [inviteId, ...userAccessMixinfields];
 }
 
 /// Inside invite

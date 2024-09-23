@@ -78,15 +78,26 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<
   CvCollectionReference<TFsEntity> get fsEntityCollectionRef =>
       _entityCollection;
 
+  /// Helper to get the collection reference
+  CvCollectionReference<TkCmsFsUserAccess> fsEntityUserAccessCollectionRef(
+          String entityId) =>
+      _entityUserAccessColl(entityId);
+
   /// Helper to get the entity reference
   CvDocumentReference<TkCmsFsUserAccess> fsEntityUserAccessRef(
           String entityId, String userId) =>
       _entityUserAccessDoc(entityId, userId);
 
+  /// Helper to get the collection reference
+  CvCollectionReference<TkCmsFsUserAccess> fsUserEntityAccessCollectionRef(
+          String userId) =>
+      _userAccessTop(userId)
+          .collection<TkCmsFsUserAccess>(tkCmsFsEntityAccessCollectionId);
+
   /// Helper to get the entity reference
   CvDocumentReference<TkCmsFsUserAccess> fsUserEntityAccessRef(
           String userId, String entityId) =>
-      _userEntityAccessDoc(userId, entityId);
+      fsUserEntityAccessCollectionRef(userId).doc(entityId);
 
   /// Helper to get the entity reference
   CvDocumentReference<TkCmsFsInviteId> fsInviteIdRef(String inviteId) =>
@@ -188,16 +199,11 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<
 
   /// Set user access in a transaction.
   void txnSetEntityUserAccess(CvFirestoreTransaction txn, String entityId,
-      String userId, TkCmsFsUserAccess userAccess,
-      {String? inviteId}) {
+      String userId, TkCmsFsUserAccess userAccess) {
     var entityUserAccessRef = _entityUserAccessDoc(entityId, userId);
     var userEntityAccessRef = _userEntityAccessDoc(userId, entityId);
-    var userAccessMap = userAccess.toMap();
-    if (inviteId != null) {
-      userAccessMap[tkCmsFsInviteIdKey] = inviteId;
-    }
-    txn.refSetMap(entityUserAccessRef, userAccessMap);
-    txn.refSetMap(userEntityAccessRef, userAccessMap);
+    txn.refSet(entityUserAccessRef, userAccess);
+    txn.refSet(userEntityAccessRef, userAccess);
   }
 
   /// Create a booklet invite, return the id
@@ -240,8 +246,8 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<
 
       txn.refDelete(inviteIdRef);
       txn.refDelete(inviteEntityRef);
-      txnSetEntityUserAccess(txn, entityId, userId, entityUserAccess,
-          inviteId: inviteId);
+      entityUserAccess.inviteId.v = inviteId;
+      txnSetEntityUserAccess(txn, entityId, userId, entityUserAccess);
     });
   }
 
