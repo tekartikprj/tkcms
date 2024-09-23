@@ -13,14 +13,14 @@ final tkTestCmsProjectIdKv = 'TK_CMS_PROJECT_ID'.kvFromEnv();
 // Invalid project id, only for testing, can be overriden for testing
 String get tkTestCmsProjectId => tkTestCmsProjectIdKv.value ?? 'tkcms';
 
-var tkcmsFfPackagesTop = join('..', 'tkcms_ff');
+var tkCmsFfPackagesTop = join('..', 'tkcms_ff');
 var tkCmsGcfNodeAppOptions = GcfNodeAppOptions(
     projectId: tkTestCmsProjectId,
     functions: [
       functionCommandV2Dev,
       functionDailyCronV2Dev,
     ],
-    packageTop: tkcmsFfPackagesTop);
+    packageTop: tkCmsFfPackagesTop);
 
 var ffBuilder = GcfNodeAppBuilder(options: tkCmsGcfNodeAppOptions);
 
@@ -28,6 +28,6 @@ Future<void> main(List<String> arguments) async {
   mainMenuConsole(arguments, () {
     keyValuesMenu('tkcms settings', [tkTestCmsProjectIdKv]);
     gcfMenuAppContent(options: tkCmsGcfNodeAppOptions);
-    menuAppContent(path: tkcmsFfPackagesTop);
+    menuAppContent(path: tkCmsFfPackagesTop);
   });
 }

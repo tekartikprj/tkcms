@@ -1,10 +1,10 @@
 import 'package:tkcms_common/tkcms_firestore.dart';
 
-extension CollectionReferenceRecursiveDeleteExt on CollectionReference {
+extension TkCmsCollectionReferenceRecursiveDeleteExt on CollectionReference {
   /// Delete all item in a query, return the count deleted
   /// Batch size default to 10
   /// Keep doc with paths in keepPaths
-  Future<int> tkcmsRecursiveDelete(TkCmsCollectionsTreeDef def,
+  Future<int> tkCmsRecursiveDelete(TkCmsCollectionsTreeDef def,
       {int? batchSize}) async {
     var collection = this;
 
@@ -41,7 +41,7 @@ extension CollectionReferenceRecursiveDeleteExt on CollectionReference {
         for (var collectionId in collectionIds) {
           count += await ref
               .collection(collectionId)
-              .tkcmsRecursiveDelete(def, batchSize: batchSize);
+              .tkCmsRecursiveDelete(def, batchSize: batchSize);
         }
       }
 
@@ -62,7 +62,7 @@ extension DocumentReferenceRecursiveDeleteExt on DocumentReference {
     var count = 0;
     for (var collectionId in collectionIds) {
       count += await collection(collectionId)
-          .tkcmsRecursiveDelete(def, batchSize: batchSize);
+          .tkCmsRecursiveDelete(def, batchSize: batchSize);
     }
 
     /// Assume exists

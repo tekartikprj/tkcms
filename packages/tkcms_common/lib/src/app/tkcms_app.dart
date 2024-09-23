@@ -1,3 +1,3 @@
-const tkcmsAppDev = 'tkcms_dev';
+const tkCmsAppDev = 'tkcms_dev';
 
 class TkCmsApp {}

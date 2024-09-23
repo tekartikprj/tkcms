@@ -10,7 +10,8 @@ const tkCmsFsUserIdCollectionId = 'user_id';
 const tkCmsFsUserAccessCollectionId = 'user_access';
 const tkCmsFsEntityAccessCollectionId = 'entity_access';
 const tkCmsFsInviteEntityCollectionId = 'invite_entity';
-const tkCmsFsInviteCodeKey = 'inviteCode';
+const tkCmsFsInviteCodeKey = 'inviteCode'; // in invite
+const tkCmsFsInviteIdKey = 'inviteId'; // when creating user access
 var _fsBuildersInitialized = false;
 void initTkCmsFsUserAccessBuilders() {
   if (_fsBuildersInitialized) {
@@ -61,8 +62,10 @@ class TkCmsFsInviteEntity<TFsEntity extends TkCmsFsEntity>
   final entityId = CvField<String>('entityId');
   final entity = CvModelField<TFsEntity>('entity');
   final userAccess = CvModelField<TkCmsFsUserAccess>('userAccess');
+  final inviteCode = CvField<String>('inviteCode');
   @override
-  CvFields get fields => [entityId, entity, userAccess, ...timedMixinFields];
+  CvFields get fields =>
+      [entityId, entity, userAccess, inviteCode, ...timedMixinFields];
 }
 
 /// Empty or no document
