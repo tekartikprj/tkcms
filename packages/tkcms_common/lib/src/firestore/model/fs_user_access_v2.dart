@@ -4,12 +4,13 @@ const tkCmsFsEntityCollectionId = 'entity';
 const tkCmsFsEntityTypeAccessCollectionId = 'access';
 const tkCmsFsEntityTypeInviteCollectionId = 'invite';
 const tkCmsFsInviteIdCollectionId = 'invite_id';
+const tkCmsFsInviteAccessCollectionId = 'invite_access';
 const tkCmsFsEntityIdCollectionId = 'entity_id';
 const tkCmsFsUserIdCollectionId = 'user_id';
 const tkCmsFsUserAccessCollectionId = 'user_access';
 const tkCmsFsEntityAccessCollectionId = 'entity_access';
 const tkCmsFsInviteEntityCollectionId = 'invite_entity';
-
+const tkCmsFsInviteCodeKey = 'inviteCode';
 var _fsBuildersInitialized = false;
 void initTkCmsFsUserAccessBuilders() {
   if (_fsBuildersInitialized) {
@@ -30,6 +31,7 @@ void initTkCmsFsUserAccessBuilders() {
 // {entity_type}/{entity_id} (TFsEntity extends TkCmsFsEntity)
 // access/{entity_type}/entity_id/{entity_id}/user_access/{user_id} (TkCmsFsUserAccess) - used for checking access
 // access/{entity_type}/user_id/{user_id}/entity_access/{entity_id} (TkCmsFsUserAccess) - used for user enumeration
+// access/{entity_type}/user_id/{user_id}/invite_access/{invite_code} (TkCmsFsUserAccess) - used for allowing creating invite
 // invite/{entity_type}/invite_id/{invite_id}/invite_entity/{entity_id} (TkCmsFsEntityInvite)
 
 /// Empty or no document

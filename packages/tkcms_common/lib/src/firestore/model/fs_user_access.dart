@@ -1,5 +1,6 @@
 import 'package:tkcms_common/tkcms_firestore.dart';
 
+// TP DEPRECATE
 abstract class FsUserAccessCommon {
   // Used for access
   CvField<bool> get admin;
