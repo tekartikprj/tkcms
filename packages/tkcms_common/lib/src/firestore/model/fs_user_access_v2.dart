@@ -99,8 +99,6 @@ mixin TkCmsCvUserAccessMixin implements TkCmsCvUserAccessCommon {
   @override
   final read = CvField<bool>('read');
 
-  CvFields get userAccessFields => [read, write, admin];
-
   @override
   late final role = CvField<String>('role');
 
@@ -143,11 +141,12 @@ extension TkCmsCvUserAccessCommonExt on TkCmsCvUserAccessCommon {
     }
   }
 
+  /// All access fields
+  CvFields get userAccessFields => [read, write, admin, role];
+
+  /// Copy access from other
   void copyAccessFrom(TkCmsCvUserAccessCommon other) {
-    admin.v = other.admin.v;
-    write.v = other.write.v;
-    read.v = other.read.v;
-    role.v = other.role.v;
+    userAccessFields.fromCvFields(other.userAccessFields);
     fixAccess();
   }
 }
