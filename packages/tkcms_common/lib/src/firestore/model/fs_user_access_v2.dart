@@ -22,6 +22,7 @@ void initTkCmsFsUserAccessBuilders() {
   // firestore
   cvAddConstructors([
     TkCmsFsUserAccess.new,
+    TkCmsCvUserAccess.new,
     TkCmsFsEntityTypeInvite.new,
     TkCmsFsEntityTypeAccess.new,
     TkCmsFsInviteId.new,

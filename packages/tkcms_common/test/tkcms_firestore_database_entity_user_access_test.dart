@@ -82,8 +82,8 @@ void main() {
 
     var inviteUserAccess = inviteEntity.userAccess.v!;
     var invityEntity = inviteEntity.entity.v!;
-    expect(inviteUserAccess.admin.hasValue, false);
-    expect(inviteUserAccess.write.hasValue, false);
+    expect(inviteUserAccess.admin.v, isFalse);
+    expect(inviteUserAccess.write.v, isFalse);
     expect(inviteUserAccess.read.v, isTrue);
     expect(invityEntity.name.v, 'e1');
     expect(inviteEntity.entityId.v, entityId);
