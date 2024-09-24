@@ -40,7 +40,7 @@ Future<void> main() async {
         callableApi: ffContext.functionsCall.callable(ffServerApp.callCommand),
         httpClientFactory: httpClientFactory,
         httpsApiUri: commandUri,
-        app: tkcmsAppDev);
+        app: tkCmsAppDev);
 
     await apiService.initClient();
   });

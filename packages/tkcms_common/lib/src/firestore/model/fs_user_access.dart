@@ -1,5 +1,6 @@
 import 'package:tkcms_common/tkcms_firestore.dart';
 
+// TP DEPRECATE
 abstract class FsUserAccessCommon {
   // Used for access
   CvField<bool> get admin;
@@ -32,7 +33,3 @@ extension FsUserAccessCommonExt on FsUserAccessCommon {
   bool get isAdmin => role.v == roleAdmin || isSuperAdmin;
   bool get isUser => role.v == roleUser;
 }
-
-const roleUser = 'user';
-const roleAdmin = 'admin';
-const roleSuperAdmin = 'super_admin';

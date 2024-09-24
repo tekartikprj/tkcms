@@ -55,7 +55,7 @@ class TkCmsLoggedInUser {
 }
 
 /// Local prefs
-const tkcmsAuthLocalLoggedInUserIdKey = 'tkcmsLocalLoggedInUserId';
+const tkCmsAuthLocalLoggedInUserIdKey = 'tkcmsLocalLoggedInUserId';
 
 /// Auth bloc
 abstract class TkCmsAuthBloc {
@@ -81,10 +81,10 @@ abstract class TkCmsAuthBloc {
 
 class AuthBlocLocal extends AuthBlocBase {
   String? prefsGetLocalUserId() =>
-      prefs.getString(tkcmsAuthLocalLoggedInUserIdKey);
+      prefs.getString(tkCmsAuthLocalLoggedInUserIdKey);
 
   void prefsSetLocalUserId(String? userId) =>
-      prefs.setString(tkcmsAuthLocalLoggedInUserIdKey, userId);
+      prefs.setString(tkCmsAuthLocalLoggedInUserIdKey, userId);
 
   final Prefs prefs;
 

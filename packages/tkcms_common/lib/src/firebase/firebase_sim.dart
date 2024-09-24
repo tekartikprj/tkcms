@@ -1,4 +1,5 @@
 import 'package:tekartik_app_sembast/sembast.dart';
+import 'package:tekartik_firebase_auth_sembast/auth_sembast.dart';
 import 'package:tekartik_firebase_firestore_sembast/firestore_sembast.dart';
 import 'package:tekartik_firebase_functions/firebase_functions.dart';
 import 'package:tekartik_firebase_functions_call_http/functions_call_memory.dart';
@@ -43,11 +44,14 @@ FirebaseContext initFirebaseSim(
   var firebase = FirebaseLocal();
   var sembastDatabaseFactory = getDatabaseFactory(packageName: packageName);
   var firestoreService = FirestoreServiceSembast(sembastDatabaseFactory);
+  var authService =
+      FirebaseAuthServiceSembast(databaseFactory: sembastDatabaseFactory);
   var firebaseApp =
       firebase.initializeApp(options: FirebaseAppOptions(projectId: projectId));
   return FirebaseServicesContext(
           firebase: firebase,
           firebaseApp: firebaseApp,
+          authService: authService,
           firestoreService: firestoreService)
       .initContext();
 }
