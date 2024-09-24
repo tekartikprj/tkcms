@@ -71,7 +71,7 @@ void main() {
     var inviteId = await db.createInviteEntity(
         userId: userId,
         entityId: entityId,
-        userAccess: TkCmsFsUserAccess()..read.v = true,
+        userAccess: TkCmsCvUserAccess()..read.v = true,
         entity: entity);
 
     var inviteIdRef =
@@ -106,7 +106,7 @@ void main() {
     expect(
         entityUserAccess,
         TkCmsFsUserAccess()
-          //..inviteId.v = inviteId
+          ..inviteId.v = inviteId
           ..admin.v = false
           ..write.v = false
           ..read.v = true);

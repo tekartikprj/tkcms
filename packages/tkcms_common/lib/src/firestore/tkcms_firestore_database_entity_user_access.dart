@@ -122,7 +122,7 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<
   Future<String> createInviteEntity(
       {required String userId,
       required String entityId,
-      required TkCmsFsUserAccess userAccess,
+      required TkCmsCvUserAccess userAccess,
       required TFsEntity entity,
       String? inviteCode,
       bool autoId = false}) async {
@@ -241,7 +241,8 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<
         entityUserAccess.read.v =
             inviteUserAccess.isRead || entityUserAccess.isRead;
       } else {
-        entityUserAccess = inviteUserAccess;
+        entityUserAccess = TkCmsFsUserAccess()
+          ..copyAccessFrom(inviteUserAccess);
       }
 
       txn.refDelete(inviteIdRef);

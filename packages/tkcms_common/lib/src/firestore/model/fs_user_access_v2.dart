@@ -61,7 +61,7 @@ class TkCmsFsInviteEntity<TFsEntity extends TkCmsFsEntity>
     extends CvFirestoreDocumentBase with WithServerTimestampMixin {
   final entityId = CvField<String>('entityId');
   final entity = CvModelField<TFsEntity>('entity');
-  final userAccess = CvModelField<TkCmsFsUserAccess>('userAccess');
+  final userAccess = CvModelField<TkCmsCvUserAccess>('userAccess');
   final inviteCode = CvField<String>('inviteCode');
   @override
   CvFields get fields =>
@@ -110,7 +110,7 @@ class TkCmsFsUserAccess extends CvFirestoreDocumentBase
     with TkCmsCvUserAccessMixin {
   final inviteId = CvField<String>('inviteId');
   @override
-  late final fields = [inviteId, ...userAccessMixinfields];
+  CvFields get fields => [...userAccessMixinfields];
 }
 
 /// Inside invite
@@ -129,12 +129,25 @@ extension TkCmsCvUserAccessCommonExt on TkCmsCvUserAccessCommon {
   bool get isWrite => write.v ?? false;
   bool get isAdmin => admin.v ?? false;
   void fixAccess() {
+    admin.v ??= false;
     if (isAdmin && !isWrite) {
       write.v = true;
+    } else {
+      write.v ??= false;
     }
     if (isWrite && !isRead) {
       read.v = true;
+    } else {
+      read.v ??= false;
     }
+  }
+
+  void copyAccessFrom(TkCmsCvUserAccessCommon other) {
+    admin.v = other.admin.v;
+    write.v = other.write.v;
+    read.v = other.read.v;
+    role.v = other.role.v;
+    fixAccess();
   }
 }
 
