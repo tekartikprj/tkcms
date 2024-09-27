@@ -19,11 +19,11 @@ mixin BusyScreenStateMixin<T extends StatefulWidget> on State<T> {
   Sink<bool> get busySink => _busySubject.sink;
   ValueStream<bool> get busyStream => _busySubject.stream;
 
-  bool get busy => _busySubject.value == true;
+  bool get busy => _busySubject.value;
 
   /// Action if not busy
   Future<BusyActionResult<R>> busyAction<R>(Future<R> Function() action) async {
-    if (_busySubject.value == true) {
+    if (_busySubject.value) {
       return BusyActionResult(busy: true);
     }
     _busySubject.add(true);
