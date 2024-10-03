@@ -35,6 +35,7 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
   late Uri commandUri;
 
   TkCmsServerAppV2({required this.context, required this.apiVersion}) {
+    assert(apiVersion >= apiVersion2);
     initFunctions();
   }
 
