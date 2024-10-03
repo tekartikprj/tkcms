@@ -207,12 +207,13 @@ class ApiException implements Exception {
   late final String? message;
   final Object? cause;
 
-  ApiException(
-      {this.statusCode,
-      String? message,
-      this.cause,
-      this.errorResponse,
-      this.error}) {
+  ApiException({
+    this.statusCode,
+    String? message,
+    this.cause,
+    this.errorResponse,
+    this.error,
+  }) {
     this.message = message ?? error?.message.v ?? errorResponse?.message.v;
   }
 
@@ -227,6 +228,9 @@ class ApiException implements Exception {
         sb.write(': ');
       }
       sb.write(message.toString());
+    }
+    if (error != null) {
+      sb.write(', $error');
     }
 
     return 'ApiException($sb)${errorResponse != null ? ': $errorResponse' : ''}';

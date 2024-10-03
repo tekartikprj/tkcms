@@ -316,7 +316,7 @@ class TkCmsServerAppV1 implements TkCmsCommonServerApp {
         await handleDailyCron();
         return ApiEmpty();
       default:
-        throw UnsupportedError('command ${apiRequest.command.v!}');
+        throw UnsupportedError('v1 command ${apiRequest.command.v!}');
     }
   }
 

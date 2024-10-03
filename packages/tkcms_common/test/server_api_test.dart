@@ -5,6 +5,7 @@ import 'package:tkcms_common/src/app/tkcms_app.dart';
 import 'package:tkcms_common/src/firebase/firebase_sim.dart';
 import 'package:tkcms_common/src/flavor/flavor.dart';
 import 'package:tkcms_common/src/server/server_v1.dart';
+import 'package:tkcms_common/src/server/server_v2.dart';
 import 'package:tkcms_common/tkcms_api.dart';
 import 'package:tkcms_common/tkcms_common.dart';
 import 'package:tkcms_common/tkcms_firestore.dart';
@@ -22,7 +23,7 @@ Future<void> main() async {
     var serverAppContext = TkCmsServerAppContext(
         firebaseContext: ffServerContext, flavorContext: FlavorContext.test);
     var ffServerApp =
-        TkCmsServerApp(context: serverAppContext, apiVersion: apiVersion2);
+        TkCmsServerAppV2(context: serverAppContext, apiVersion: apiVersion2);
 
     ffServerApp.initFunctions();
     //var httpServer = await ff.serveHttp();

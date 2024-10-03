@@ -11,19 +11,24 @@ export 'api_get_timestamp.dart';
 export 'api_info_fb_response.dart';
 export 'api_info_response.dart';
 
+bool _apiBuildersInitialized = false;
 void initApiBuilders() {
-  // common
-  cvAddConstructors([
-    ApiGetTimestampResponse.new,
-    ApiInfoResponse.new,
-    ApiInfoFbResponse.new,
-    ApiEmpty.new,
-    ApiErrorResponse.new,
-    ApiGetTimestampResponse.new,
-    ApiRequest.new,
-    ApiResponse.new,
-    ApiError.new,
-  ]);
+  if (!_apiBuildersInitialized) {
+    _apiBuildersInitialized = true;
+
+    // common
+    cvAddConstructors([
+      ApiGetTimestampResponse.new,
+      ApiInfoResponse.new,
+      ApiInfoFbResponse.new,
+      ApiEmpty.new,
+      ApiErrorResponse.new,
+      ApiGetTimestampResponse.new,
+      ApiRequest.new,
+      ApiResponse.new,
+      ApiError.new,
+    ]);
+  }
 }
 
 typedef ApiGetTimestampResponse = ApiGetTimestampResult;
@@ -67,9 +72,10 @@ class ApiError extends CvModelBase {
   // Never expires unless forced
   late final message = CvField<String>('message');
   late final details = CvModelField<CvMapModel>('details');
+  late final noRetry = CvField<bool>('noRetry');
 
   @override
-  late final CvFields fields = [code, message, details];
+  late final CvFields fields = [code, message, details, noRetry];
 }
 
 /// Base result
@@ -85,8 +91,8 @@ abstract class ApiQuery extends CvModelBase {
 }
 
 class ApiResponse extends CvModelBase {
-  late final result = CvField<Map>('result');
-  late final error = CvModelField<ApiError>('error');
+  final result = CvField<Map>('result');
+  final error = CvModelField<ApiError>('error');
 
   @override
   late final CvFields fields = [result, error];
