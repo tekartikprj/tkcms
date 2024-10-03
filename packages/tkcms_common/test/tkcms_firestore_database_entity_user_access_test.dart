@@ -2,7 +2,7 @@ import 'package:test/test.dart';
 import 'package:tkcms_common/src/firebase/firebase_sim.dart';
 import 'package:tkcms_common/tkcms_firestore.dart';
 
-var tkTestCmsProjectId = 'tkcms';
+const tkTestCmsProjectId = 'tkcms_test';
 
 class _TFsEntity extends TkCmsFsEntity {
   final specific = CvField<String>('specific');

@@ -8,6 +8,7 @@ import 'package:tkcms_common/tkcms_firestore.dart';
 import 'package:tkcms_common/tkcms_flavor.dart';
 import 'package:tkcms_common/tkcms_server.dart';
 import 'package:tkcms_test/tkcms_test_server.dart';
+import 'package:tkcms_test/tkcms_test_server_api.dart';
 
 class TestServerContext extends TestApiContext {
   final FfServer ffServer;
@@ -41,8 +42,7 @@ Future<TestApiContext> initAllMemory() async {
           ffServer: ffServer,
           serverApp: ffServerApp);
   var commandUri = ffServer.uri.replace(path: ffServerApp.command);
-  var apiService = TkCmsApiServiceBaseV2(
-      apiVersion: apiVersion2,
+  var apiService = TestServerApiService(
       callableApi: ffContext.functionsCall.callable(ffServerApp.callCommand),
       httpClientFactory: httpClientFactory,
       httpsApiUri: commandUri,
@@ -53,7 +53,7 @@ Future<TestApiContext> initAllMemory() async {
 }
 
 class TestApiContext {
-  final TkCmsApiServiceBaseV2 apiService;
+  final TestServerApiService apiService;
 
   TestApiContext({required this.apiService});
 
@@ -64,12 +64,13 @@ class TestApiContext {
 }
 
 Future<void> main() async {
+  debugWebServices = true;
   testServerTest(initAllMemory);
 }
 
 void testServerTest(Future<TestApiContext> Function() initAllContext) {
   late TestApiContext context;
-  late TkCmsApiServiceBaseV2 apiService;
+  late TestServerApiService apiService;
   setUpAll(() async {
     context = await initAllContext();
     apiService = context.apiService;
@@ -78,10 +79,12 @@ void testServerTest(Future<TestApiContext> Function() initAllContext) {
     await context.close();
   });
   test('callTimestamp', () async {
-    var timestamp = await apiService.callGetTimestamp();
-    expect(Timestamp.tryParse(timestamp.timestamp.v!), isNotNull);
-    // ignore: avoid_print
-    print(timestamp);
+    if (apiService.callableApi != null) {
+      var timestamp = await apiService.callGetTimestamp();
+      expect(Timestamp.tryParse(timestamp.timestamp.v!), isNotNull);
+      // ignore: avoid_print
+      print(timestamp);
+    }
   });
   test('timestamp', () async {
     var timestamp = await apiService.getTimestamp();
@@ -95,4 +98,69 @@ void testServerTest(Future<TestApiContext> Function() initAllContext) {
     // ignore: avoid_print
     print(timestamp);
   });
+  for (var preferHttp in [false, true]) {
+    var prefix = preferHttp ? 'http' : 'call';
+    test('$prefix test no arg', () async {
+      var result = await apiService.test(ApiTestQuery());
+      expect(result, isNotNull);
+      print(result);
+    });
+    test('$prefix test throw no retry', () async {
+      if (!preferHttp && apiService.callableApi == null) {
+        return;
+      }
+      var timestamp =
+          Timestamp.parse((await apiService.getTimestamp()).timestamp.v!);
+      try {
+        await apiService.test(ApiTestQuery()..doThrowNoRetry.v = true,
+            preferHttp: preferHttp);
+        fail('should fail');
+      } catch (e) {
+        expect(e, isNot(isA<TestFailure>()));
+        print(e);
+      }
+      var timestampAfter =
+          Timestamp.parse((await apiService.getTimestamp()).timestamp.v!);
+      expect(
+          timestampAfter.millisecondsSinceEpoch -
+              timestamp.millisecondsSinceEpoch,
+          lessThan(2000));
+    });
+    test('$prefix test throw before', () async {
+      if (!preferHttp && apiService.callableApi == null) {
+        return;
+      }
+      var timestampBefore =
+          Timestamp.parse((await apiService.getTimestamp()).timestamp.v!);
+      var timestamp = Timestamp.fromMillisecondsSinceEpoch(
+          timestampBefore.millisecondsSinceEpoch + 10000);
+      try {
+        await apiService.test(
+            ApiTestQuery()..doThrowBefore.v = timestamp.toIso8601String(),
+            preferHttp: preferHttp);
+        fail('should fail');
+      } catch (e) {
+        expect(e, isNot(isA<TestFailure>()));
+        print(e);
+      }
+      var timestampAfter =
+          Timestamp.parse((await apiService.getTimestamp()).timestamp.v!);
+      expect(
+          timestampAfter.millisecondsSinceEpoch -
+              timestampBefore.millisecondsSinceEpoch,
+          greaterThan(2000));
+    });
+    test('$prefix test throw twice', () async {
+      if (!preferHttp && apiService.callableApi == null) {
+        return;
+      }
+      var timestamp =
+          Timestamp.parse((await apiService.getTimestamp()).timestamp.v!);
+      timestamp = Timestamp.fromMillisecondsSinceEpoch(
+          timestamp.millisecondsSinceEpoch + 2000);
+      await apiService.test(
+          ApiTestQuery()..doThrowBefore.v = timestamp.toIso8601String(),
+          preferHttp: preferHttp);
+    });
+  }
 }

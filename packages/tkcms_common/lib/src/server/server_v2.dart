@@ -36,7 +36,7 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
 
   TkCmsServerAppV2({required this.context, required this.apiVersion}) {
     assert(apiVersion >= apiVersion2);
-    initFunctions();
+    initApiBuilders();
   }
 
   /// Default read config and call each app read

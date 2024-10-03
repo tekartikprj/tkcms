@@ -1,4 +1,5 @@
-import 'package:tekartik_app_http/app_http.dart' as universal;
+import 'dart:math';
+
 import 'package:tekartik_app_http/app_http.dart';
 import 'package:tekartik_firebase_functions_call/functions_call.dart';
 import 'package:tkcms_common/src/server/server_v1.dart';
@@ -19,11 +20,7 @@ class TkCmsApiServiceBaseV2 {
   late String app;
 
   /// Can be modified by client.
-
-  late Client innerClient;
-  late Client retryClient;
-  late Client secureClient;
-  var retryCount = 0;
+  late Client _client;
   final HttpClientFactory httpClientFactory;
 
   /// Rest support
@@ -37,6 +34,7 @@ class TkCmsApiServiceBaseV2 {
       this.httpsApiUri,
       this.callableApi,
       String? app}) {
+    assert(apiVersion >= apiVersion2);
     initApiBuilders();
     if (app != null) {
       this.app = app;
@@ -49,36 +47,7 @@ class TkCmsApiServiceBaseV2 {
   }
 
   Future<void> initClient() async {
-    innerClient = httpClientFactory.newClient();
-    retryClient = RetryClient(innerClient, when: (response) {
-      if (universal.isHttpStatusCodeSuccessful(response.statusCode)) {
-        return false;
-      }
-      switch (response.statusCode) {
-        case universal.httpStatusCodeForbidden:
-        case universal.httpStatusCodeUnauthorized:
-          return false;
-      }
-      retryCount++;
-      if (debugWebServices) {
-        // ignore: avoid_print
-        print('retry: ${response.statusCode}');
-      }
-      return true;
-    }, whenError: (error, stackTrace) {
-      if (debugWebServices) {
-        // ignore: avoid_print
-        print('retry error?: error');
-        // ignore: avoid_print
-        print(error);
-        // ignore: avoid_print
-        print(stackTrace);
-      }
-      return true;
-    });
-
-    secureClient =
-        retryClient; //SecureAuthClient(secureApiService: this, inner: client);
+    _client = httpClientFactory.newClient();
   }
 
   Future<ApiGetTimestampResponse> callGetTimestamp() async {
@@ -100,9 +69,29 @@ class TkCmsApiServiceBaseV2 {
         ApiRequest()..command.v = commandTimestamp);
   }
 
-  Future<R> getApiResult<R extends ApiResult>(ApiRequest request) async {
+  Future<R> getApiResult<R extends ApiResult>(ApiRequest request,
+      {bool? preferHttp}) async {
+    /// Try 4 times in total
+    for (var i = 0; i < 3; i++) {
+      try {
+        return await _getApiResult<R>(request, preferHttp: preferHttp);
+      } catch (e) {
+        if (e is ApiException) {
+          if (e.error?.noRetry.v == true) {
+            rethrow;
+          }
+        }
+        var delay = (500 * pow(1.5, i)).toInt();
+        await sleep(delay);
+      }
+    }
+    return await _getApiResult<R>(request, preferHttp: preferHttp);
+  }
+
+  Future<R> _getApiResult<R extends ApiResult>(ApiRequest request,
+      {bool? preferHttp}) async {
     request.app.v ??= app;
-    if (callableApi != null) {
+    if (callableApi != null && (preferHttp != true)) {
       return await callGetApiResult<R>(request);
     } else {
       return await httpGetApiResult<R>(request);
@@ -117,24 +106,27 @@ class TkCmsApiServiceBaseV2 {
       log('   $request');
     }
 
+    Object? exception;
     try {
       var response = await callableApi!.call<Map>(request.toMap());
       var apiResponse = response.dataAsMap!.cv<ApiResponse>();
       if (apiResponse.error.isNotNull) {
-        throw ApiException(
+        exception = ApiException(
           error: apiResponse.error.v,
         );
+      } else {
+        var result = apiResponse.result.v!;
+        if (debugWebServices) {
+          log('<- $result');
+        }
+        return result.cv<R>();
       }
-      var result = apiResponse.result.v!;
-      if (debugWebServices) {
-        log('<- $result');
-      }
-      return result.cv<R>();
     } catch (e) {
-      throw ApiException(
+      exception = ApiException(
           statusCode: httpStatusCodeInternalServerError, message: '$e');
       // ignore: avoid_print
     }
+    throw exception;
   }
 
   Future<R> httpGetApiResult<R extends ApiResult>(ApiRequest request) async {
@@ -155,7 +147,7 @@ class TkCmsApiServiceBaseV2 {
     };
 
     // devPrint('query headers: $headers');
-    var response = await httpClientSend(retryClient, httpMethodPost, uri,
+    var response = await httpClientSend(_client, httpMethodPost, uri,
         headers: headers, body: utf8.encode(jsonEncode(request.toMap())));
     //devPrint('response headers: ${response.headers}');
     response.body;
@@ -201,7 +193,7 @@ class TkCmsApiServiceBaseV2 {
 
   Future<void> close() async {
     try {
-      retryClient.close();
+      _client.close();
     } catch (_) {}
     // keep local server on
   }
