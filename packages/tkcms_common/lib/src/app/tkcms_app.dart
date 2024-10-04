@@ -5,22 +5,25 @@ const tkCmsAppDev = 'tkcms_dev';
 class TkCmsApp {}
 
 FlavorContext? _hostDetectFlavorContext(String host) {
-  if (host.endsWith('-dev')) {
-    return FlavorContext.dev;
-  } else if (host.endsWith('-devx')) {
-    return FlavorContext.devx;
-  } else if (host.endsWith('-prod')) {
-    return FlavorContext.prod;
-  } else if (host.endsWith('-prodx')) {
-    return FlavorContext.prodx;
-  }
-  if (host == 'localhost') {
-    return FlavorContext.dev;
+  for (var part in host.split('.')) {
+    if (part.endsWith('-dev')) {
+      return FlavorContext.dev;
+    } else if (part.endsWith('-devx')) {
+      return FlavorContext.devx;
+    } else if (part.endsWith('-prod')) {
+      return FlavorContext.prod;
+    } else if (part.endsWith('-prodx')) {
+      return FlavorContext.prodx;
+    }
+    if (part == 'localhost') {
+      return FlavorContext.dev;
+    }
   }
 
+  var firstHostPart = host.split('.').first;
+
   /// is ip?
-  var ip = host.split('.');
-  if (int.tryParse(ip.first) != null) {
+  if (int.tryParse(firstHostPart) != null) {
     return FlavorContext.dev;
   }
   return null;

@@ -17,14 +17,16 @@ void main() {
         FlavorContext.prod);
     expect(uriDetectFlavorContext(Uri.parse('https://some.site?dev')),
         FlavorContext.dev);
+    expect(uriDetectFlavorContext(Uri.parse('https://some-dev.site')),
+        FlavorContext.dev);
     expect(uriDetectFlavorContext(Uri.parse('https://some.site-dev')),
         FlavorContext.dev);
     expect(uriDetectFlavorContext(Uri.parse('http://some.site')),
         FlavorContext.dev);
-    expect(uriDetectFlavorContext(Uri.parse('http://some.site-prod')),
-        FlavorContext.prod);
     expect(uriDetectFlavorContext(Uri.parse('http://some.site?prod')),
         FlavorContext.prod);
+    expect(uriDetectFlavorContext(Uri.parse('http://some-prodx.site')),
+        FlavorContext.prodx);
     expect(uriDetectFlavorContext(Uri.parse('http://some.site-prodx')),
         FlavorContext.prodx);
     expect(uriDetectFlavorContext(Uri.parse('http://some.site?prodx')),
