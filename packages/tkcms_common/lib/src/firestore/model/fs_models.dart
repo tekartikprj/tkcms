@@ -2,6 +2,7 @@ import 'package:tkcms_common/src/firestore/model/fs_apps_config.dart';
 import 'package:tkcms_common/tkcms_firestore.dart';
 
 export 'fs_app.dart';
+export 'fs_app_v2.dart';
 export 'fs_user.dart';
 export 'fs_user_access.dart';
 export 'fs_user_access_v2.dart';
@@ -25,6 +26,7 @@ void initTkCmsFsBuilders() {
     FsUser.new,
     FsUserAccess.new,
     FsAppsConfig.new,
+    TkCmsFsApp.new,
     TkCmsFsUserAccess.new,
     TkCmsFsEntityTypeInvite.new,
     TkCmsFsEntityTypeAccess.new
