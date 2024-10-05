@@ -78,6 +78,9 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<
   CvCollectionReference<TFsEntity> get fsEntityCollectionRef =>
       _entityCollection;
 
+  CvDocumentReference<TFsEntity> fsEntityRef(String entityId) =>
+      _entityCollection.doc(entityId);
+
   /// Helper to get the collection reference
   CvCollectionReference<TkCmsFsUserAccess> fsEntityUserAccessCollectionRef(
           String entityId) =>

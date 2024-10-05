@@ -17,3 +17,11 @@ class TkCmsEmailPasswordCredentials {
   @override
   String toString() => toMap().toString();
 }
+
+class TkCmsUidEmailPasswordCredentials extends TkCmsEmailPasswordCredentials {
+  final String uid;
+
+  const TkCmsUidEmailPasswordCredentials(
+      this.uid, String email, String password)
+      : super(email: email, password: password);
+}
