@@ -27,11 +27,17 @@ abstract class AutoDispose {
   StreamController<T> audiAddStreamController<T>(
       StreamController<T> controller);
 
-  /// Add a disposer to the auto dispose list
+  /// Add a disposer to the auto dispose list, if object is null.
   T audiAdd<T extends Object>(T object, AutoDisposeFunction dispose);
+
+  /// Add a function to the auto dispose list, audiDisposeAll will dispose it
+  void audiAddFunction(AutoDisposeFunction dispose);
 
   /// Dispose an object
   void audiDispose<T extends Object>(T? object);
+
+  /// Dispose a function
+  void audiDisposeFunction(AutoDisposeFunction dispose);
 
   /// Dispose all disposers
   void audiDisposeAll();
@@ -40,6 +46,9 @@ abstract class AutoDispose {
 /// Auto dispose mixin
 mixin AutoDisposeMixin implements AutoDispose {
   final _disposers = <Object, _AutoDisposer>{};
+
+  /// No associated object
+  final _disposeFunctions = <AutoDisposeFunction>[];
 
   @override
   StreamSubscription<T> audiAddStreamSubscription<T>(
@@ -73,9 +82,25 @@ mixin AutoDisposeMixin implements AutoDispose {
     disposer?.dispose();
   }
 
+  @override
+  void audiAddFunction(AutoDisposeFunction dispose) {
+    _disposeFunctions.add(dispose);
+  }
+
+  @override
+  void audiDisposeFunction(AutoDisposeFunction function) {
+    if (_disposeFunctions.remove(function)) {
+      function();
+    }
+  }
+
   /// Call this method in dispose method of the widget
   @override
   void audiDisposeAll() {
+    for (var function in _disposeFunctions) {
+      function();
+    }
+    _disposeFunctions.clear();
     for (var entry in _disposers.values) {
       entry.dispose();
     }
@@ -89,4 +114,9 @@ extension AutoDisposeRxExtension on AutoDispose {
   BehaviorSubject<T> audiAddBehaviorSubject<T>(BehaviorSubject<T> subject) {
     return audiAdd(subject, subject.close);
   }
+}
+
+/// Private extension
+extension AutoDisposeMixinPrvExtension on AutoDisposeMixin {
+  int get length => _disposeFunctions.length + _disposers.length;
 }
