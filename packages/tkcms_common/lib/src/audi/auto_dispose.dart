@@ -1,0 +1,92 @@
+import 'dart:async';
+
+import 'package:rxdart/rxdart.dart';
+
+/// Auto dispose function
+typedef AutoDisposeFunction = void Function();
+
+/// Auto dispose class
+class _AutoDisposer<T extends Object> {
+  /// Dispose function
+  final AutoDisposeFunction dispose;
+
+  /// Object to dispose
+  T object;
+
+  /// Constructor
+  _AutoDisposer({required this.object, required this.dispose});
+}
+
+/// Auto dispose interface
+abstract class AutoDispose {
+  /// Add a StreamSubscription to the auto dispose list
+  StreamSubscription<T> audiAddStreamSubscription<T>(
+      StreamSubscription<T> subscription);
+
+  /// Add a StreamController to the auto dispose list
+  StreamController<T> audiAddStreamController<T>(
+      StreamController<T> controller);
+
+  /// Add a disposer to the auto dispose list
+  T audiAdd<T extends Object>(T object, AutoDisposeFunction dispose);
+
+  /// Dispose an object
+  void audiDispose<T extends Object>(T? object);
+
+  /// Dispose all disposers
+  void audiDisposeAll();
+}
+
+/// Auto dispose mixin
+mixin AutoDisposeMixin implements AutoDispose {
+  final _disposers = <Object, _AutoDisposer>{};
+
+  @override
+  StreamSubscription<T> audiAddStreamSubscription<T>(
+      StreamSubscription<T> subscription) {
+    return audiAdd(subscription, subscription.cancel);
+  }
+
+  @override
+  StreamController<T> audiAddStreamController<T>(
+      StreamController<T> controller) {
+    return audiAdd(controller, controller.close);
+  }
+
+  /// Add a disposer to the auto dispose list
+  T _audiAdd<T extends Object>(_AutoDisposer<T> disposer) {
+    _disposers[disposer.object] = disposer;
+    return disposer.object;
+  }
+
+  @override
+  T audiAdd<T extends Object>(T object, AutoDisposeFunction dispose) {
+    return _audiAdd<T>(_AutoDisposer(object: object, dispose: dispose));
+  }
+
+  @override
+  void audiDispose<T extends Object>(T? object) {
+    if (object == null) {
+      return;
+    }
+    var disposer = _disposers.remove(object);
+    disposer?.dispose();
+  }
+
+  /// Call this method in dispose method of the widget
+  @override
+  void audiDisposeAll() {
+    for (var entry in _disposers.values) {
+      entry.dispose();
+    }
+    _disposers.clear();
+  }
+}
+
+/// Auto dispose extension for rx
+extension AutoDisposeRxExtension on AutoDispose {
+  /// Add a BehaviorSubject to the auto dispose list
+  BehaviorSubject<T> audiAddBehaviorSubject<T>(BehaviorSubject<T> subject) {
+    return audiAdd(subject, subject.close);
+  }
+}

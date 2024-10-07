@@ -95,6 +95,10 @@ dependencies:
       ref: dart3a
       path: packages/lints_flutter
 
+dependency_overrides:
+  tkcms_common:
+    path: ../../packages/tkcms_common
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

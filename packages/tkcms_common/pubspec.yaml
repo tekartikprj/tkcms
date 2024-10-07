@@ -141,6 +141,11 @@ dependencies:
       url: https://github.com/tekartik/firebase_auth.dart
       ref: dart3a
       path: auth_sembast
+  tekartik_app_rx_bloc:
+    git:
+      url: https://github.com/tekartik/app_common_utils.dart
+      ref: dart3a
+      path: app_rx_bloc
 
 dev_dependencies:
   lints: '>=2.1.0'
