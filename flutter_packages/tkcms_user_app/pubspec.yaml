@@ -94,6 +94,15 @@ dependencies:
       url: https://github.com/tekartik/common_flutter.dart
       ref: dart3a
       path: packages/lints_flutter
+  tekartik_app_rx_bloc_flutter:
+    git:
+      url: https://github.com/tekartik/app_flutter_utils.dart
+      ref: dart3a
+      path: app_rx_bloc
+
+dependency_overrides:
+  tkcms_common:
+    path: ../../packages/tkcms_common
 
 dev_dependencies:
   flutter_test:
