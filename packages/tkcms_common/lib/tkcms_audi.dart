@@ -1,3 +1,1 @@
-export 'src/audi/auto_dispose.dart'
-    show AutoDisposeMixin, AutoDispose, AutoDisposeRxExtension;
-export 'src/audi/auto_dispose_base_bloc.dart' show AutoDisposeStateBaseBloc;
+export 'package:tekartik_app_rx_bloc/auto_dispose_state_base_bloc.dart';
