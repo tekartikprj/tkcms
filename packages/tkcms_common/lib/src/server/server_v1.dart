@@ -1,4 +1,3 @@
-import 'package:tekartik_app_http/app_http.dart';
 import 'package:tekartik_firebase_functions/firebase_functions.dart';
 import 'package:tkcms_common/src/api/token_info.dart';
 import 'package:tkcms_common/src/firebase/firebase.dart';

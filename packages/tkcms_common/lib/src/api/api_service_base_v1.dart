@@ -1,4 +1,3 @@
-import 'package:tekartik_app_http/app_http.dart';
 import 'package:tekartik_app_http/app_http.dart' as universal;
 import 'package:tkcms_common/src/server/server_v1.dart';
 import 'package:tkcms_common/tkcms_api.dart';
@@ -195,44 +194,4 @@ class ServiceResponse<T extends CvModel> {
     this.data,
     this.error,
   });
-}
-
-class ApiException implements Exception {
-  /// Prefer
-  final ApiError? error;
-
-  /// Compat
-  final ApiErrorResponse? errorResponse;
-  final int? statusCode;
-  late final String? message;
-  final Object? cause;
-
-  ApiException({
-    this.statusCode,
-    String? message,
-    this.cause,
-    this.errorResponse,
-    this.error,
-  }) {
-    this.message = message ?? error?.message.v ?? errorResponse?.message.v;
-  }
-
-  @override
-  String toString() {
-    var sb = StringBuffer();
-    if (statusCode != null) {
-      sb.write(statusCode);
-    }
-    if (message != null) {
-      if (sb.isNotEmpty) {
-        sb.write(': ');
-      }
-      sb.write(message.toString());
-    }
-    if (error != null) {
-      sb.write(', $error');
-    }
-
-    return 'ApiException($sb)${errorResponse != null ? ': $errorResponse' : ''}';
-  }
 }

@@ -1,4 +1,3 @@
-import 'package:tekartik_app_http/app_http.dart';
 import 'package:tekartik_firebase_functions/ff_server.dart';
 import 'package:test/test.dart';
 import 'package:tkcms_common/src/app/tkcms_app.dart';
