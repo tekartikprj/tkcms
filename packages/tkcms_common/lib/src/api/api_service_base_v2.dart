@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:tekartik_app_http/app_http.dart';
 import 'package:tekartik_firebase_functions_call/functions_call.dart';
 import 'package:tkcms_common/src/server/server_v1.dart';
 import 'package:tkcms_common/tkcms_api.dart';
@@ -106,89 +105,69 @@ class TkCmsApiServiceBaseV2 {
       log('   $request');
     }
 
-    Object? exception;
-    try {
+    return apiExceptionWrapAction(() async {
       var response = await callableApi!.call<Map>(request.toMap());
-      var apiResponse = response.dataAsMap!.cv<ApiResponse>();
-      if (apiResponse.error.isNotNull) {
-        exception = ApiException(
-          error: apiResponse.error.v,
-        );
-      } else {
-        var result = apiResponse.result.v!;
-        if (debugWebServices) {
-          log('<- $result');
-        }
-        return result.cv<R>();
+      var text = response.dataAsText;
+      if (debugWebServices) {
+        log('<- $text');
       }
-    } catch (e) {
-      exception = ApiException(
-          statusCode: httpStatusCodeInternalServerError, message: '$e');
-      // ignore: avoid_print
-    }
-    throw exception;
+      return apiResultWrapResponseString<R>(text);
+    });
   }
 
   Future<R> httpGetApiResult<R extends ApiResult>(ApiRequest request) async {
     assert(httpsApiUri != null);
-    var uri = httpsApiUri!;
+    return apiExceptionWrapAction(() async {
+      var uri = httpsApiUri!;
 
-    /// Dev/Rest only
+      /// Dev/Rest only
 
-    request.userId.v = userIdOrNull;
-    if (debugWebServices) {
-      log('-> uri: $uri');
-      log('   $request');
-    }
-    // devPrint('uri $uri');
-    var headers = <String, String>{
-      httpHeaderContentType: httpContentTypeJson,
-      httpHeaderAccept: httpContentTypeJson
-    };
+      request.userId.v = userIdOrNull;
+      if (debugWebServices) {
+        log('-> uri: $uri');
+        log('   $request');
+      }
+      // devPrint('uri $uri');
+      var headers = <String, String>{
+        httpHeaderContentType: httpContentTypeJson,
+        httpHeaderAccept: httpContentTypeJson
+      };
 
-    // devPrint('query headers: $headers');
-    var response = await httpClientSend(_client, httpMethodPost, uri,
-        headers: headers, body: utf8.encode(jsonEncode(request.toMap())));
-    //devPrint('response headers: ${response.headers}');
-    response.body;
-    var body = utf8.decode(response.bodyBytes);
-    var statusCode = response.statusCode;
+      // devPrint('query headers: $headers');
+      var response = await httpClientSend(_client, httpMethodPost, uri,
+          headers: headers, body: utf8.encode(jsonEncode(request.toMap())));
+      var body = utf8.decode(response.bodyBytes);
+      var statusCode = response.statusCode;
 
-    if (debugWebServices) {
-      log('<- $statusCode $body');
-    }
-    // Save token
-    /*if (tokenInfo != null) {
+      if (debugWebServices) {
+        log('<- $statusCode $body');
+      }
+      // Save token
+      /*if (tokenInfo != null) {
       lastTokenInfo = tokenInfo;
     }*/
-    if (response.isSuccessful) {
-      var apiResponse = body.cv<ApiResponse>();
-      if (apiResponse.error.isNotNull) {
+      if (response.isSuccessful) {
+        return apiResultWrapResponseString<R>(body);
+      } else {
+        var statusCode = response.statusCode;
+        ApiErrorResponse? errorResponse;
+        String? message;
+        try {
+          errorResponse = body.cv<ApiErrorResponse>();
+          message = errorResponse.message.v;
+        } catch (e) {
+          message = body;
+          // ignore: avoid_print
+          print(e);
+        }
+        // throw ApiError()
         throw ApiException(
-          error: apiResponse.error.v,
+          statusCode: statusCode,
+          errorResponse: errorResponse,
+          message: message,
         );
       }
-      var result = apiResponse.result.v!;
-      return result.cv<R>();
-    } else {
-      var statusCode = response.statusCode;
-      ApiErrorResponse? errorResponse;
-      String? message;
-      try {
-        errorResponse = body.cv<ApiErrorResponse>();
-        message = errorResponse.message.v;
-      } catch (e) {
-        message = body;
-        // ignore: avoid_print
-        print(e);
-      }
-      // throw ApiError()
-      throw ApiException(
-        statusCode: statusCode,
-        errorResponse: errorResponse,
-        message: message,
-      );
-    }
+    });
   }
 
   Future<void> close() async {

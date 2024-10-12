@@ -1,4 +1,3 @@
-import 'package:tekartik_app_http/app_http.dart';
 import 'package:tkcms_common/src/firebase/firebase.dart';
 import 'package:tkcms_common/src/flavor/flavor.dart';
 import 'package:tkcms_common/tkcms_common.dart';
