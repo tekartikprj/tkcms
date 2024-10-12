@@ -1,3 +1,5 @@
+import 'package:tkcms_common/src/api/api_exception.dart';
+import 'package:tkcms_common/tkcms_common.dart';
 import 'package:tkcms_common/tkcms_firestore.dart';
 
 import 'api_empty.dart';
@@ -90,10 +92,37 @@ abstract class ApiQuery extends CvModelBase {
   CvFields get fields => [];
 }
 
+/// ApiResponse from any exception
+ApiResponse apiResponseFromException(Object e, [StackTrace? st]) {
+  ApiResponse response;
+  if (e is ApiException) {
+    if (e.error != null) {
+      response = ApiResponse()..error.v = e.error;
+    } else {
+      response = ApiResponse()
+        ..error.v = (ApiError()
+          ..code.v = apiErrorCodeInternal
+          ..message.v = e.message ?? e.toString());
+    }
+  } else {
+    response = ApiResponse()
+      ..error.v = (ApiError()
+        ..code.v = apiErrorCodeInternal
+        ..message.v = e.toString());
+  }
+  if (isDebug) {
+    var error = response.error.v!;
+    var detailsMap = error.details.v ?? CvMapModel();
+    detailsMap['exception'] ??= e.toString();
+    detailsMap['stackTrace'] ??= st?.toString();
+  }
+  return response;
+}
+
 class ApiResponse extends CvModelBase {
   final result = CvField<Map>('result');
   final error = CvModelField<ApiError>('error');
-
+  ApiResponse();
   @override
   late final CvFields fields = [result, error];
 }
