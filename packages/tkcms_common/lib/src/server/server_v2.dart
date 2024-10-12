@@ -92,21 +92,8 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
 
       return (ApiResponse()..result.v = (CvMapModel()..copyFrom(result)))
           .toMap();
-    } on ApiException catch (e) {
-      if (e.error != null) {
-        return (ApiResponse()..error.v = e.error).toMap();
-      } else {
-        rethrow;
-      }
     } catch (e, st) {
-      if (isDebug) {
-        // ignore: avoid_print
-        print('Error $e');
-        // ignore: avoid_print
-        print(st);
-      }
-      //devPrint(st);
-      throw HttpsError(HttpsErrorCode.internal, e.toString(), st.toString());
+      return apiResponseFromException(e, st);
     }
   }
 
@@ -118,15 +105,8 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
 
       await sendResponse(
           request, ApiResponse()..result.v = (CvMapModel()..copyFrom(result)));
-    } on ApiException catch (e) {
-      if (e.error != null) {
-        await sendResponse(request, ApiResponse()..error.v = e.error);
-      } else {
-        rethrow;
-      }
     } catch (e, st) {
-      // devPrint(st);
-      await sendCatchErrorResponse(request, e, st);
+      await sendResponse(request, apiResponseFromException(e, st));
     }
   }
 

@@ -58,11 +58,12 @@ class ApiException implements Exception {
   final Object? cause;
 
   ApiException({
+    /// Preferred error
+    this.error,
     this.statusCode,
     String? message,
     this.cause,
     this.errorResponse,
-    this.error,
   }) {
     this.message = message ?? error?.message.v ?? errorResponse?.message.v;
   }
