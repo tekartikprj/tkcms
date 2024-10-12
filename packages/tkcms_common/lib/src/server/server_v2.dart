@@ -93,7 +93,7 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
       return (ApiResponse()..result.v = (CvMapModel()..copyFrom(result)))
           .toMap();
     } catch (e, st) {
-      return apiResponseFromException(e, st);
+      return apiResponseFromException(e, st).toMap();
     }
   }
 

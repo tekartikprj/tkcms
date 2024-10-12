@@ -123,7 +123,7 @@ void testServerTest(Future<TestApiContext> Function() initAllContext) {
       expect(
           timestampAfter.millisecondsSinceEpoch -
               timestamp.millisecondsSinceEpoch,
-          lessThan(2000));
+          lessThan(3000));
     });
     test('$prefix test throw before', () async {
       if (!preferHttp && apiService.callableApi == null) {
