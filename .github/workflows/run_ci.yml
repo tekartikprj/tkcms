@@ -37,6 +37,5 @@ jobs:
         run: |
           dart pub global activate --source git https://github.com/tekartik/ci.dart --git-path ci --git-ref dart3a
           dart pub global run tekartik_ci:setup_sqlite3lib
-      - run: apt-get -y install libsqlite3-dev
       - run: dart pub global activate dev_build
       - run: dart pub global run dev_build:run_ci
