@@ -1,4 +1,5 @@
 import 'package:tkcms_common/src/api/api_exception.dart';
+import 'package:tkcms_common/src/api/model/api_secured.dart';
 import 'package:tkcms_common/tkcms_common.dart';
 import 'package:tkcms_common/tkcms_firestore.dart';
 
@@ -29,6 +30,9 @@ void initApiBuilders() {
       ApiRequest.new,
       ApiResponse.new,
       ApiError.new,
+      ApiEchoResult.new,
+      ApiEchoQuery.new,
+      ApiSecuredQuery.new
     ]);
   }
 }
@@ -132,3 +136,21 @@ const apiVersion1 = 1;
 
 /// Callable server and api V2
 const apiVersion2 = 2;
+
+/// Echo
+class ApiEchoQuery extends ApiQuery {
+  late final data = CvField<Map>('data');
+  late final timestamp = CvField<String>('timestamp');
+
+  @override
+  late final CvFields fields = [data, timestamp];
+}
+
+/// Echo
+class ApiEchoResult extends ApiResult {
+  late final data = CvField<Map>('data');
+  late final timestamp = CvField<String>('timestamp');
+
+  @override
+  late final CvFields fields = [data, timestamp];
+}

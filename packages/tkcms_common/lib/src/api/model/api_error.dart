@@ -3,6 +3,7 @@ import 'package:tkcms_common/tkcms_api.dart';
 const apiErrorCodeLoginFailed = 'login_failed';
 const apiErrorCodeAuthFailed = 'auth_failed';
 const apiErrorCodeInternal = 'internal_error';
+const apiErrorCodeSecured = 'secured_error';
 
 class ApiErrorResponse extends CvModelBase {
   late final code = CvField<String>('code');

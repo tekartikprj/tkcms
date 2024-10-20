@@ -1,11 +1,28 @@
 import 'dart:math';
 
 import 'package:tekartik_firebase_functions_call/functions_call.dart';
+import 'package:tkcms_common/src/api/api_command.dart';
 import 'package:tkcms_common/src/server/server_v1.dart';
 import 'package:tkcms_common/tkcms_api.dart';
 import 'package:tkcms_common/tkcms_common.dart';
 
+/// Secured options
+class TkCmsApiSecuredOptions {
+  final _map = <String, ApiSecuredEncOptions>{};
+
+  /// Add a secured option
+  void add(String command, ApiSecuredEncOptions options) {
+    _map[command] = options;
+  }
+
+  ApiSecuredEncOptions? get(String command) {
+    return _map[command];
+  }
+}
+
 class TkCmsApiServiceBaseV2 {
+  final secureOptions = TkCmsApiSecuredOptions();
+
   final int apiVersion;
   // V2
   // ---
@@ -35,6 +52,8 @@ class TkCmsApiServiceBaseV2 {
       String? app}) {
     assert(apiVersion >= apiVersion2);
     initApiBuilders();
+    secureOptions.add(apiCommandEcho, apiCommandEchoSecuredOptions);
+
     if (app != null) {
       this.app = app;
     }
@@ -57,6 +76,20 @@ class TkCmsApiServiceBaseV2 {
   Future<ApiGetTimestampResult> getTimestamp() async {
     return await getApiResult<ApiGetTimestampResponse>(
         ApiRequest()..command.v = commandTimestamp);
+  }
+
+  Future<ApiEchoResult> echo(ApiEchoQuery query) async {
+    return await getApiResult<ApiEchoResult>(ApiRequest()
+      ..command.v = apiCommandEcho
+      ..data.v = query.toMap());
+  }
+
+  Future<ApiEchoResult> securedEcho(ApiEchoQuery query) async {
+    var options = secureOptions.get(apiCommandEcho)!;
+    var apiRequest = ApiRequest(command: apiCommandEcho, data: query.toMap());
+    var securedRequest = apiRequest.wrapInSecuredRequest(options);
+
+    return await getApiResult<ApiEchoResult>(securedRequest);
   }
 
   Future<ApiEmpty> cron() async {

@@ -1,3 +1,5 @@
+import 'package:tkcms_common/src/api/api_command.dart';
+import 'package:tkcms_common/src/api/model/api_secured.dart';
 import 'package:tkcms_common/src/firebase/firebase.dart';
 import 'package:tkcms_common/src/flavor/flavor.dart';
 import 'package:tkcms_common/tkcms_common.dart';
@@ -15,6 +17,7 @@ var functionDailyCronV2Dev = 'daylycronv2dev';
 var functionDailyCronV2Prod = 'daylycronv2prod';
 
 class TkCmsServerAppV2 implements TkCmsCommonServerApp {
+  final securedOptions = TkCmsApiSecuredOptions();
   @override
   final int apiVersion;
   final TkCmsServerAppContext context;
@@ -36,6 +39,7 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
   TkCmsServerAppV2({required this.context, required this.apiVersion}) {
     assert(apiVersion >= apiVersion2);
     initApiBuilders();
+    securedOptions.add(apiCommandEcho, apiCommandEchoSecuredOptions);
   }
 
   /// Default read config and call each app read
@@ -69,8 +73,56 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
       onCallableCommand,
       callableOptions: HttpsCallableOptions(region: regionBelgium, cors: true));
 
-  Future<ApiResult> onCommand(ApiRequest apiRequest) async {
+  Future<ApiResult> handleSecuredCommandRequest(ApiRequest apiRequest) async {
+    var securedApiQuery = apiRequest.data.v!.cv<ApiSecuredQuery>();
+    var innerRequest = securedApiQuery.data.v!.cv<ApiRequest>();
+    var innerRequestCommand = innerRequest.command.v!;
+    var options = securedOptions.get(innerRequestCommand);
+    if (options == null) {
+      throw ApiException(
+          error: ApiError()
+            ..message.v = 'options not found for $innerRequestCommand'
+            ..noRetry.v = true);
+    }
+    var innerRequestData = innerRequest.data.v!;
+    var encHashText = innerRequestData.encGenerateHashText(options);
+    var readHashText = securedApiQuery.encReadHashText(options);
+    if (encHashText != readHashText) {
+      throw ApiException(
+          error: ApiError()
+            ..code.v = apiErrorCodeSecured
+            ..message.v = 'Invalid request'
+            ..noRetry.v = true
+            ..details.v = isDebug
+                ? (CvMapModel()..fromMap(innerRequestData.encDebugMap(options)))
+                : null);
+    }
+    return onSecuredCommand(innerRequest);
+  }
+
+  Future<ApiResult> onSecuredCommand(ApiRequest apiRequest) async {
     switch (apiRequest.command.v!) {
+      case apiCommandEcho:
+        return onEchoCommand(apiRequest);
+      default:
+        throw UnsupportedError('secured command ${apiRequest.command.v!}');
+    }
+  }
+
+  Future<ApiResult> onEchoCommand(ApiRequest apiRequest) async {
+    var echoQuery = apiRequest.data.v!.cv<ApiEchoQuery>();
+    return ApiEchoResult()
+      ..data.v = echoQuery.data.v
+      ..timestamp.v = echoQuery.timestamp.v;
+  }
+
+  Future<ApiResult> onCommand(ApiRequest apiRequest) async {
+    var command = apiRequest.command.v!;
+    switch (command) {
+      case apiCommandEcho:
+        return onEchoCommand(apiRequest);
+      case apiCommandSecured:
+        return handleSecuredCommandRequest(apiRequest);
       case commandTimestamp:
         return ApiGetTimestampResponse()
           ..timestamp.v = DateTime.timestamp().toIso8601String();
