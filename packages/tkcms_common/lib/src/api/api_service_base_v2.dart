@@ -85,11 +85,8 @@ class TkCmsApiServiceBaseV2 {
   }
 
   Future<ApiEchoResult> securedEcho(ApiEchoQuery query) async {
-    var options = secureOptions.get(apiCommandEcho)!;
     var apiRequest = ApiRequest(command: apiCommandEcho, data: query.toMap());
-    var securedRequest = apiRequest.wrapInSecuredRequest(options);
-
-    return await getApiResult<ApiEchoResult>(securedRequest);
+    return getSecuredApiResult(apiRequest);
   }
 
   Future<ApiEmpty> cron() async {
@@ -101,12 +98,11 @@ class TkCmsApiServiceBaseV2 {
         ApiRequest()..command.v = commandTimestamp);
   }
 
-  Future<R> getApiResult<R extends ApiResult>(ApiRequest request,
-      {bool? preferHttp}) async {
+  Future<T> _retry<T>(Future<T> Function() action) async {
     /// Try 4 times in total
     for (var i = 0; i < 3; i++) {
       try {
-        return await _getApiResult<R>(request, preferHttp: preferHttp);
+        return await action();
       } catch (e) {
         if (e is ApiException) {
           if (e.error?.noRetry.v == true) {
@@ -117,7 +113,23 @@ class TkCmsApiServiceBaseV2 {
         await sleep(delay);
       }
     }
-    return await _getApiResult<R>(request, preferHttp: preferHttp);
+    return await action();
+  }
+
+  Future<R> getApiResult<R extends ApiResult>(ApiRequest request,
+      {bool? preferHttp}) {
+    return _retry(() {
+      return _getApiResult<R>(request, preferHttp: preferHttp);
+    });
+  }
+
+  Future<R> getSecuredApiResult<R extends ApiResult>(ApiRequest apiRequest,
+      {bool? preferHttp}) {
+    var options = secureOptions.get(apiRequest.apiCommand)!;
+    var securedApiRequest = apiRequest.wrapInSecuredRequest(options);
+    return _retry(() {
+      return _getApiResult<R>(securedApiRequest, preferHttp: preferHttp);
+    });
   }
 
   Future<R> _getApiResult<R extends ApiResult>(ApiRequest request,
@@ -155,7 +167,7 @@ class TkCmsApiServiceBaseV2 {
 
       /// Dev/Rest only
 
-      request.userId.v = userIdOrNull;
+      request.userId.setValue(userIdOrNull);
       if (debugWebServices) {
         log('-> uri: $uri');
         log('   $request');
