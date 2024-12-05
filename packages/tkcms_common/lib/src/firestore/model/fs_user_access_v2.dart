@@ -1,5 +1,12 @@
 import 'package:tkcms_common/tkcms_firestore.dart';
 
+// <entity>/{entity_id} * content
+// <user>/{user_id}/<entity>/{entity_id} * entity id and name user cache in a synchronized database
+// <entity>/access/{entity_id}/user_access/{user_id}
+// <entity>/access/{entity_id}/entity_access/{user_id}
+// <entity>/access/{entity_id}/invite_access/{user_id}
+// <entity>/invite/{entity_id}/invite_entity/{user_id}
+
 const tkCmsFsEntityCollectionId = 'entity';
 const tkCmsFsEntityTypeAccessCollectionId = 'access';
 const tkCmsFsEntityTypeInviteCollectionId = 'invite';

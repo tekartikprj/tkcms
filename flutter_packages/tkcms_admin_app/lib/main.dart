@@ -11,6 +11,8 @@ import 'package:tkcms_common/tkcms_firebase.dart';
 import 'package:tkcms_common/tkcms_firestore.dart';
 import 'package:tkcms_common/tkcms_flavor.dart';
 
+import 'screen/debug_screen.dart';
+
 Future<void> main() async {
   //debugTkCmsAuthBloc = devWarning(true);
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,6 +43,9 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: muiScreenWidget('Tkcms', () {
+        muiItem('debug', () {
+          goToAdminDebugScreen(muiBuildContext);
+        });
         muiItem('snack', () {
           muiSnack(muiBuildContext, 'test');
         });
