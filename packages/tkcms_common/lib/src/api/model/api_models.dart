@@ -106,6 +106,13 @@ abstract class ApiQuery extends CvModelBase {
   CvFields get fields => [];
 }
 
+/// Common extension
+extension ApiQueryExt on ApiQuery {
+  /// Create a request
+  ApiRequest request(String command) =>
+      ApiRequest(command: command, data: this.toMap());
+}
+
 /// ApiResponse from any exception
 ApiResponse apiResponseFromException(Object e, [StackTrace? st]) {
   ApiResponse response;
