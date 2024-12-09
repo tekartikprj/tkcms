@@ -110,7 +110,7 @@ abstract class ApiQuery extends CvModelBase {
 extension ApiQueryExt on ApiQuery {
   /// Create a request
   ApiRequest request(String command) =>
-      ApiRequest(command: command, data: this.toMap());
+      ApiRequest(command: command, data: toMap());
 }
 
 /// ApiResponse from any exception
