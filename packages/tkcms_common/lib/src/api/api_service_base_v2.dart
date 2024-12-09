@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:tekartik_common_utils/log_format.dart';
 import 'package:tekartik_firebase_functions_call/functions_call.dart';
 import 'package:tkcms_common/src/api/api_command.dart';
 import 'package:tkcms_common/src/server/server_v1.dart';
@@ -17,6 +18,29 @@ class TkCmsApiSecuredOptions {
 
   ApiSecuredEncOptions? get(String command) {
     return _map[command];
+  }
+
+  ApiSecuredEncOptions getOrThrow(String command) {
+    var options = get(command);
+    if (options == null) {
+      throw ArgumentError('No options for $command in ${logFormat(_map)}');
+    }
+    return options;
+  }
+
+  ApiRequest wrapInSecuredRequest(ApiRequest apiRequest) {
+    var options = get(apiRequest.apiCommand)!;
+    return apiRequest.wrapInSecuredRequest(options);
+  }
+
+  ApiRequest unwrapSecuredRequest(ApiRequest apiRequest, {bool check = true}) {
+    var innerRequest = apiRequest.securedInnerRequest;
+    var options = get(innerRequest.apiCommand)!;
+    return apiRequest.unwrapSecuredRequest(options, check: check);
+  }
+
+  void addAll(TkCmsApiSecuredOptions other) {
+    _map.addAll(other._map);
   }
 }
 
@@ -125,7 +149,7 @@ class TkCmsApiServiceBaseV2 {
 
   Future<R> getSecuredApiResult<R extends ApiResult>(ApiRequest apiRequest,
       {bool? preferHttp}) {
-    var options = secureOptions.get(apiRequest.apiCommand)!;
+    var options = secureOptions.getOrThrow(apiRequest.apiCommand);
     var securedApiRequest = apiRequest.wrapInSecuredRequest(options);
     return _retry(() {
       return _getApiResult<R>(securedApiRequest, preferHttp: preferHttp);

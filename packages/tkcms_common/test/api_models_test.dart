@@ -5,7 +5,40 @@ import 'fs_models_test.dart';
 
 void main() {
   initApiBuilders();
-  group('fs_models', () {
+
+  group('api_models', () {
+    test('SecuredApi', () {
+      var securedOptions = TkCmsApiSecuredOptions();
+      securedOptions.add(
+          'command',
+          ApiSecuredEncOptions(
+              encPaths: ['a', 'b'],
+              password: 'FSGY3TeAJPKYDErAjNVmAAhSmC8ejaVn'));
+      var apiRequest = ApiRequest()
+        ..command.v = 'command'
+        ..data.v = {'a': 1};
+      var securedRequest = securedOptions.wrapInSecuredRequest(apiRequest);
+      //print(securedRequest.toJsonPretty());
+      var unwrappedRequest =
+          securedOptions.unwrapSecuredRequest(securedRequest);
+      expect(unwrappedRequest, apiRequest);
+      expect(securedRequest.securedExistingEncValue, isNotEmpty);
+      //print(securedRequest.securedExistingEncValue);
+      securedRequest.securedOverrideEncValue('dummy');
+      expect(securedRequest.securedExistingEncValue, 'dummy');
+      // print(securedRequest.securedExistingEncValue);
+      unwrappedRequest =
+          securedOptions.unwrapSecuredRequest(securedRequest, check: false);
+      expect(unwrappedRequest, apiRequest);
+      try {
+        unwrappedRequest = securedOptions.unwrapSecuredRequest(securedRequest);
+        fail('should fail');
+      } catch (e) {
+        if (e is TestFailure) {
+          rethrow;
+        }
+      }
+    });
     test('ApiEmpty', () {
       expect(newModel().cv<ApiEmpty>().toMap(), isEmpty);
     });

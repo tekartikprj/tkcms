@@ -1,7 +1,6 @@
-import 'dart:convert';
-
 import 'package:tekartik_app_crypto/encrypt.dart';
 import 'package:tekartik_app_crypto/hash.dart';
+import 'package:tekartik_common_utils/map_utils.dart';
 import 'package:tkcms_common/tkcms_api.dart';
 import 'package:tkcms_common/tkcms_common.dart';
 
@@ -14,6 +13,9 @@ class ApiSecuredEncOptions {
   final String password;
 
   ApiSecuredEncOptions({required this.encPaths, required this.password});
+
+  @override
+  String toString() => 'EncPaths($encPaths)';
 }
 
 class ApiSecuredQuery extends ApiQuery {
@@ -27,6 +29,20 @@ class ApiSecuredQuery extends ApiQuery {
 }
 
 extension TekartikApiQuerySecuredExt on ApiRequest {
+  ApiRequest get securedInnerRequest {
+    return (mapValueFromParts(data.v as Map, ['data']) as Map).cv<ApiRequest>();
+  }
+
+  @visibleForTesting
+  void securedOverrideEncValue(String text) {
+    data.v!['enc'] = text;
+  }
+
+  String get securedExistingEncValue => securedQuery.enc.v!;
+
+  /// For secured request only
+  ApiSecuredQuery get securedQuery => data.v!.cv<ApiSecuredQuery>();
+
   ApiRequest wrapInSecuredRequest(ApiSecuredEncOptions options) {
     var map = toMap();
     var securedQuery = ApiSecuredQuery()
@@ -38,6 +54,42 @@ extension TekartikApiQuerySecuredExt on ApiRequest {
       ..command.v = apiCommandSecured
       ..data.v = securedQuery.toMap();
     return securedRequest;
+  }
+
+  ApiRequest unwrapSecuredRequest(ApiSecuredEncOptions options,
+      {bool check = true}) {
+    // query
+    var securedQuery = this.securedQuery;
+    var map = securedQuery.data.v!;
+    var innerRequest = map.cv<ApiRequest>();
+    if (check) {
+      /*
+      var innerRequestCommand = innerRequest.command.v!;
+
+      var options = securedOptions.get(innerRequestCommand);
+      if (options == null) {
+        throw ApiException(
+            error: ApiError()
+              ..message.v = 'options not found for $innerRequestCommand'
+              ..noRetry.v = true);
+      }*/
+      var innerRequestData = innerRequest.data.v!;
+      var encHashText = innerRequestData.encGenerateHashText(options);
+      var readHashText = securedQuery.encReadHashText(options);
+      if (encHashText != readHashText) {
+        throw ApiException(
+            error: ApiError()
+              ..code.v = apiErrorCodeSecured
+              ..message.v = 'Invalid request'
+              ..noRetry.v = true
+              ..details.v = isDebug
+                  ? (CvMapModel()
+                    ..fromMap(innerRequestData.encDebugMap(options)))
+                  : null);
+      }
+    }
+
+    return innerRequest;
   }
 }
 
@@ -80,10 +132,30 @@ extension TekartikModelSecuredPrvExt on Map {
   String encGenerateHashText(ApiSecuredEncOptions options) =>
       encHashText(options.encPaths);
 
+  String encGenerateUnencryptedValue(List<String> encPaths) =>
+      jsonEncode(valuesToHash(encPaths));
   String encHashText(List<String> encPaths) =>
-      md5Hash(jsonEncode(valuesToHash(encPaths)));
+      md5Hash(encGenerateUnencryptedValue(encPaths));
 
-  List<Object?> valuesToHash(List<String> encPaths) => encPaths
+  /// Cannot be all null
+  List<Object?> valuesToHash(List<String> encPaths) {
+    var values =
+        _rawValuesToHash(encPaths).where(_isBasicUnambiguateType).toList();
+    if (values.every((value) => value == null)) {
+      // ignore: avoid_print
+      print(UnsupportedError('All values are null for $encPaths on $this'));
+    }
+    return values;
+  }
+
+  List<Object?> _rawValuesToHash(List<String> encPaths) => encPaths
       .map((path) => getKeyPathValue(keyPartsFromString(path)))
       .toList();
+}
+
+bool _isBasicUnambiguateType(Object? value) {
+  if (value == null || value is String || value is int || value is bool) {
+    return true;
+  }
+  throw UnsupportedError('Unsupported type ${value.runtimeType} $value');
 }

@@ -15,7 +15,14 @@ export 'api_info_fb_response.dart';
 export 'api_info_response.dart';
 
 bool _apiBuildersInitialized = false;
+
+/// Compat
 void initApiBuilders() {
+  initTkCmsApiBuilders();
+}
+
+/// Core builders
+void initTkCmsApiBuilders() {
   if (!_apiBuildersInitialized) {
     _apiBuildersInitialized = true;
 
@@ -71,6 +78,9 @@ extension ApiRequestExt on ApiRequest {
 
   /// The user id if any
   String? get apiUserId => userId.v;
+
+  /// Get inner query
+  T query<T extends ApiQuery>() => data.v!.cv<T>();
 }
 
 class ApiError extends CvModelBase {
