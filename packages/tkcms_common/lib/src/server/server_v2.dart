@@ -1,5 +1,4 @@
 import 'package:tkcms_common/src/api/api_command.dart';
-import 'package:tkcms_common/src/api/model/api_secured.dart';
 import 'package:tkcms_common/src/firebase/firebase.dart';
 import 'package:tkcms_common/src/flavor/flavor.dart';
 import 'package:tkcms_common/tkcms_common.dart';
@@ -74,30 +73,18 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
       callableOptions: HttpsCallableOptions(region: regionBelgium, cors: true));
 
   Future<ApiResult> handleSecuredCommandRequest(ApiRequest apiRequest) async {
-    var securedApiQuery = apiRequest.data.v!.cv<ApiSecuredQuery>();
-    var innerRequest = securedApiQuery.data.v!.cv<ApiRequest>();
-    var innerRequestCommand = innerRequest.command.v!;
-    var options = securedOptions.get(innerRequestCommand);
-    if (options == null) {
-      throw ApiException(
-          error: ApiError()
-            ..message.v = 'options not found for $innerRequestCommand'
-            ..noRetry.v = true);
+    try {
+      var innerRequest = securedOptions.unwrapSecuredRequest(apiRequest);
+      return onSecuredCommand(innerRequest);
+    } catch (e, st) {
+      if (isDebug) {
+        // ignore: avoid_print
+        print('handleSecuredCommand error $e');
+        // ignore: avoid_print
+        print(st);
+      }
+      rethrow;
     }
-    var innerRequestData = innerRequest.data.v!;
-    var encHashText = innerRequestData.encGenerateHashText(options);
-    var readHashText = securedApiQuery.encReadHashText(options);
-    if (encHashText != readHashText) {
-      throw ApiException(
-          error: ApiError()
-            ..code.v = apiErrorCodeSecured
-            ..message.v = 'Invalid request'
-            ..noRetry.v = true
-            ..details.v = isDebug
-                ? (CvMapModel()..fromMap(innerRequestData.encDebugMap(options)))
-                : null);
-    }
-    return onSecuredCommand(innerRequest);
   }
 
   Future<ApiResult> onSecuredCommand(ApiRequest apiRequest) async {

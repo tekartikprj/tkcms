@@ -13,4 +13,5 @@ export 'src/api/model/api_secured.dart'
         ApiSecuredEncOptions,
         TekartikModelSecuredExt,
         TekartikApiQuerySecuredExt,
+        TekartikApiQuerySecuredRequestExt,
         ApiSecuredQuery;

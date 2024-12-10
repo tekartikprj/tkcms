@@ -93,7 +93,7 @@ void testServerTest(Future<TestApiContext> Function() initAllContext) {
     expect(result.data.v, {'message': 'hello'});
     expect(result.timestamp.v, timestamp);
   });
-  test('secure echo', () async {
+  test('secured echo', () async {
     var timestamp = (await apiService.getTimestamp()).timestamp.v!;
     var result = await apiService.securedEcho(ApiEchoQuery()
       ..data.v = {'message': 'hello'}

@@ -19,18 +19,34 @@ class ApiSecuredEncOptions {
 }
 
 class ApiSecuredQuery extends ApiQuery {
+  /// Generated client timestamp, always part of enc
+  final timestamp = CvField<String>('timestamp');
   final enc = CvField<String>('enc');
   final data = CvField<Map>('data');
+
   @override
-  CvFields get fields => [...super.fields, data, enc];
+  CvFields get fields => [...super.fields, timestamp, data, enc];
 
   String encReadHashText(ApiSecuredEncOptions options) =>
       aesDecrypt(enc.v!, options.password);
 }
 
-extension TekartikApiQuerySecuredExt on ApiRequest {
+/// Helpers
+extension TekartikApiQuerySecuredExt on ApiSecuredQuery {
+  /// Get inner query
+  ApiRequest get innerRequest {
+    return (data.v as Map).cv<ApiRequest>();
+  }
+}
+
+extension TekartikApiQuerySecuredRequestExt on ApiRequest {
   ApiRequest get securedInnerRequest {
     return (mapValueFromParts(data.v as Map, ['data']) as Map).cv<ApiRequest>();
+  }
+
+  String get securedInnerRequestCommand {
+    return (mapValueFromParts(data.v as Map, ['data']) as Map)['command']
+        as String;
   }
 
   @visibleForTesting
@@ -58,10 +74,9 @@ extension TekartikApiQuerySecuredExt on ApiRequest {
 
   ApiRequest unwrapSecuredRequest(ApiSecuredEncOptions options,
       {bool check = true}) {
-    // query
     var securedQuery = this.securedQuery;
-    var map = securedQuery.data.v!;
-    var innerRequest = map.cv<ApiRequest>();
+    // query
+    var innerRequest = securedQuery.innerRequest;
     if (check) {
       /*
       var innerRequestCommand = innerRequest.command.v!;

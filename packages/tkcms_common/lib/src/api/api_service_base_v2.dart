@@ -34,8 +34,15 @@ class TkCmsApiSecuredOptions {
   }
 
   ApiRequest unwrapSecuredRequest(ApiRequest apiRequest, {bool check = true}) {
-    var innerRequest = apiRequest.securedInnerRequest;
-    var options = get(innerRequest.apiCommand)!;
+    var command = apiRequest.securedInnerRequestCommand;
+
+    var options = get(command);
+    if (options == null) {
+      throw ApiException(
+          error: ApiError()
+            ..message.v = 'secured options not found for $command'
+            ..noRetry.v = true);
+    }
     return apiRequest.unwrapSecuredRequest(options, check: check);
   }
 
@@ -110,7 +117,7 @@ class TkCmsApiServiceBaseV2 {
 
   Future<ApiEchoResult> securedEcho(ApiEchoQuery query) async {
     var apiRequest = ApiRequest(command: apiCommandEcho, data: query.toMap());
-    return getSecuredApiResult(apiRequest);
+    return getSecuredApiResult<ApiEchoResult>(apiRequest);
   }
 
   Future<ApiEmpty> cron() async {
