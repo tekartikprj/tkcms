@@ -37,10 +37,10 @@ class LocalDbFromFsOptions {
 Future<void>
     generateLocalDbFromEntitiesUserAccess<TFsEntity extends fbfs.TkCmsFsEntity>(
         {required sembast.Database db,
-        required fbfs.Firestore firestore,
         required fbfs.TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity>
             entityAccess,
         required LocalDbFromFsOptions options}) async {
+  var firestore = entityAccess.firestore;
   var userId = options.userId;
   var userEntityAccessMap = (await entityAccess
           .fsUserEntityAccessCollectionRef(userId)
@@ -92,11 +92,11 @@ Future<void>
             localDbEntity.copyFrom(fsEntity);
             await sembast.cvDbEntityStore.record(id).put(txn, localDbEntity);
             localDbEntityMap.remove(id);
-          } else {
-            await sembast.cvDbEntityStore
-                .record(id)
-                .put(txn, dbEntityFromFsEntity(fsEntity));
           }
+        } else {
+          await sembast.cvDbEntityStore
+              .record(id)
+              .put(txn, dbEntityFromFsEntity(fsEntity));
         }
       }
     });
