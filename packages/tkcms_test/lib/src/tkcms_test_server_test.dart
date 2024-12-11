@@ -101,6 +101,30 @@ void testServerTest(Future<TestApiContext> Function() initAllContext) {
     expect(result.data.v, {'message': 'hello'});
     expect(result.timestamp.v, timestamp);
   });
+  test('secured echo v1', () async {
+    var timestamp = (await apiService.getTimestamp()).timestamp.v!;
+    var result = await apiService.securedEchoV1(ApiEchoQuery()
+      ..data.v = {'message': 'hello'}
+      ..timestamp.v = timestamp);
+    expect(result.data.v, {'message': 'hello'});
+    expect(result.timestamp.v, timestamp);
+  });
+  test('secured echo v2', () async {
+    var timestamp = (await apiService.getTimestamp()).timestamp.v!;
+    var result = await apiService.securedEchoV2(ApiEchoQuery()
+      ..data.v = {'message': 'hello'}
+      ..timestamp.v = timestamp);
+    expect(result.data.v, {'message': 'hello'});
+    expect(result.timestamp.v, timestamp);
+  });
+  test('secured echo v3', () async {
+    var timestamp = (await apiService.getTimestamp()).timestamp.v!;
+    var result = await apiService.securedEchoV3(ApiEchoQuery()
+      ..data.v = {'message': 'hello'}
+      ..timestamp.v = timestamp);
+    expect(result.data.v, {'message': 'hello'});
+    expect(result.timestamp.v, timestamp);
+  });
   test('timestamp', () async {
     var timestamp = await apiService.getTimestamp();
     expect(Timestamp.tryParse(timestamp.timestamp.v!), isNotNull);

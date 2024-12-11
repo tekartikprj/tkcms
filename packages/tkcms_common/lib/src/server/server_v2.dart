@@ -1,4 +1,3 @@
-import 'package:tkcms_common/src/api/api_command.dart';
 import 'package:tkcms_common/src/firebase/firebase.dart';
 import 'package:tkcms_common/src/flavor/flavor.dart';
 import 'package:tkcms_common/tkcms_common.dart';
@@ -14,6 +13,10 @@ const callableFunctionCommandV2Prod = 'callcommandv2prod';
 
 var functionDailyCronV2Dev = 'daylycronv2dev';
 var functionDailyCronV2Prod = 'daylycronv2prod';
+
+final baseCmsServerSecuredOptions = TkCmsApiSecuredOptions()
+  ..add(apiCommandEcho, apiCommandEchoSecuredOptions)
+  ..add(apiCommandEchoSecured, apiCommandEchoSecuredOptionsV2);
 
 class TkCmsServerAppV2 implements TkCmsCommonServerApp {
   final securedOptions = TkCmsApiSecuredOptions();
@@ -39,6 +42,7 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
     assert(apiVersion >= apiVersion2);
     initApiBuilders();
     securedOptions.add(apiCommandEcho, apiCommandEchoSecuredOptions);
+    securedOptions.timestampServiceOrNull = TkCmsTimestampService.local();
   }
 
   /// Default read config and call each app read
@@ -74,7 +78,23 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
 
   Future<ApiResult> handleSecuredCommandRequest(ApiRequest apiRequest) async {
     try {
-      var innerRequest = securedOptions.unwrapSecuredRequest(apiRequest);
+      var options =
+          securedOptions.getOrThrow(apiRequest.securedInnerRequestCommand);
+      late ApiRequest innerRequest;
+      if (options.version == apiSecuredEncOptionsVersion1) {
+        innerRequest = securedOptions.unwrapSecuredRequest(apiRequest);
+      } else if (options.version == apiSecuredEncOptionsVersion2) {
+        // Handle missing timestamp as v1
+        if (apiRequest.securedQueryTimestampOrNull == null) {
+          innerRequest = securedOptions.unwrapSecuredRequest(apiRequest);
+        } else {
+          innerRequest =
+              await securedOptions.unwrapSecuredRequestV2Async(apiRequest);
+        }
+      } else {
+        throw StateError('Invalid encoding options');
+      }
+
       return onSecuredCommand(innerRequest);
     } catch (e, st) {
       if (isDebug) {

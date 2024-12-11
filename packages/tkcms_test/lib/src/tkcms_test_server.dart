@@ -12,6 +12,7 @@ class TkCmsTestServerApp extends TkCmsServerAppV2 {
   TkCmsTestServerApp({required super.context})
       : super(apiVersion: apiVersion2) {
     initTestApiBuilders();
+    securedOptions.addAll(serverTestServerSecuredOptions);
   }
 
   Future<ApiTestResult> onTestCommand(ApiTestQuery query) async {
@@ -26,6 +27,19 @@ class TkCmsTestServerApp extends TkCmsServerAppV2 {
       }
     }
     return ApiTestResult();
+  }
+
+  @override
+  Future<ApiResult> onSecuredCommand(ApiRequest apiRequest) {
+    switch (apiRequest.command.v!) {
+      case apiCommandTestEchoV1:
+        return onEchoCommand(apiRequest);
+      case apiCommandTestEchoV2:
+        return onEchoCommand(apiRequest);
+      case apiCommandTestEchoV3:
+        return onEchoCommand(apiRequest);
+    }
+    return super.onSecuredCommand(apiRequest);
   }
 
   @override

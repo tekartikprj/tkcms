@@ -1,18 +1,21 @@
-import 'package:test/test.dart';
 import 'package:tkcms_common/tkcms_common.dart';
 
+/// Timestamp async provider
 abstract class TkCmsTimestampProvider {
   Future<DateTime> fetchNow();
 }
 
+/// Timestamp service
 abstract class TkCmsTimestampService {
   Future<DateTime> now({bool forceFetch = false});
 
+  /// Local timestamp service
   factory TkCmsTimestampService.local() {
     return TkCmsTimestampService.withProvider(
         timestampProvider: _TkCmsTimestampProviderLocal());
   }
 
+  /// Create a timestamp service with a provider
   factory TkCmsTimestampService.withProvider(
       {required TkCmsTimestampProvider timestampProvider}) {
     return _TkCmsTimestampService(timestampProvider: timestampProvider);
@@ -28,12 +31,17 @@ class _TkCmsTimestampService implements TkCmsTimestampService {
 
   /// Null only at the beginning
   DateTime? _fetchTimestamp;
+
+  /// Null when invalidated
   Stopwatch? _stopwatch;
 
   final _fetchLock = Lock();
   @override
   Future<DateTime> now({bool forceFetch = false}) async {
-    if (_stopwatch != null && !forceFetch) {
+    if (forceFetch) {
+      _stopwatch = null;
+    }
+    if (_stopwatch != null) {
       return _fetchTimestamp!
           .add(Duration(milliseconds: _stopwatch!.elapsedMilliseconds));
     }
@@ -42,29 +50,14 @@ class _TkCmsTimestampService implements TkCmsTimestampService {
       if (_fetchTimestamp != previousFetchTimestamp) {
         return;
       }
-      try {
-        _fetchTimestamp = await timestampProvider.fetchNow();
-      } catch (_) {
-        await sleep(1000);
-        while (!_disposed) {
-          try {
-            _fetchTimestamp = await timestampProvider.fetchNow();
-            return;
-          } catch (_) {
-            await sleep(10000);
-          }
-        }
-      }
+
+      _fetchTimestamp = await timestampProvider.fetchNow();
     });
     return _fetchTimestamp!;
   }
 
-  var _disposed = false;
-
   @override
-  void dispose() {
-    _disposed = true;
-  }
+  void dispose() {}
 }
 
 class _TkCmsTimestampProviderLocal implements TkCmsTimestampProvider {
@@ -72,15 +65,4 @@ class _TkCmsTimestampProviderLocal implements TkCmsTimestampProvider {
   Future<DateTime> fetchNow() async {
     return DateTime.timestamp();
   }
-}
-
-Future<void> main() async {
-  test('time_service', () async {
-    var timeService = TkCmsTimestampService.local();
-    var now = await timeService.now();
-    await sleep(300);
-    var now2 = await timeService.now();
-    expect(now2.millisecondsSinceEpoch - now.millisecondsSinceEpoch,
-        closeTo(300, 50));
-  });
 }
