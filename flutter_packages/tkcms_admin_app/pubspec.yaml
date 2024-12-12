@@ -101,6 +101,11 @@ dependencies:
       ref: dart3a
       path: flutter_packages/tkcms_user_app
   url_launcher: ">=6.0.0"
+  tekartik_web_splash:
+    git:
+      url: https://github.com/tekartik/app_web_utils.dart
+      ref: dart3a
+      path: packages/web_splash
 dev_dependencies:
   flutter_test:
     sdk: flutter
