@@ -4,7 +4,7 @@ import 'package:tkcms_common/tkcms_firestore.dart';
 
 class TkCmsFirestoreDatabaseServiceEntityAccess<
     TFsEntity extends TkCmsFsEntity> {
-  final CvDocumentReference? rootDocument;
+  late final CvDocumentReference? rootDocument;
   CvCollectionReference<T> _rootCollection<T extends CvFirestoreDocument>(
           String id) =>
       CvCollectionReference<T>(getRootPath(id));
@@ -24,10 +24,20 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<
   TkCmsFirestoreDatabaseEntityCollectionInfo get _info => entityCollectionInfo;
 
   late final Firestore firestore;
+  //FirestoreDatabaseContext? firestoreDatabaseContext;
   TkCmsFirestoreDatabaseServiceEntityAccess(
       {required this.entityCollectionInfo,
-      required this.firestore,
-      this.rootDocument}) {
+
+      /// to prefer
+      FirestoreDatabaseContext? firestoreDatabaseContext,
+      // prefer using firestoreDatabaseContext
+      Firestore? firestore,
+      // prefer using firestoreDatabaseContext
+      CvDocumentReference? rootDocument}) {
+    this.firestore =
+        firestore ?? firestoreDatabaseContext?.firestore ?? Firestore.instance;
+    this.rootDocument = rootDocument ?? firestoreDatabaseContext?.rootDocument;
+
     _init();
   }
   // ignore: unused_element
@@ -97,7 +107,7 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<
       _userAccessTop(userId)
           .collection<TkCmsFsUserAccess>(tkCmsFsEntityAccessCollectionId);
 
-  /// Helper to get the entity reference
+  /// Helper to get the entity reference, user might have write access (to check)
   CvDocumentReference<TkCmsFsUserAccess> fsUserEntityAccessRef(
           String userId, String entityId) =>
       fsUserEntityAccessCollectionRef(userId).doc(entityId);

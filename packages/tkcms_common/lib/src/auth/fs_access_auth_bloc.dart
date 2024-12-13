@@ -71,6 +71,8 @@ abstract class TkCmsAuthBloc {
 
   ValueStream<TkCmsLoggedInUserAccess> get loggedInUserAccess;
 
+  /// Crash if not logged in
+  String get currentUserId;
   Future<void> signInWithEmailAndPassword(
       {required String email, required String password});
 
@@ -161,7 +163,8 @@ abstract class AuthBlocBase implements TkCmsAuthBloc {
   @override
   ValueStream<TkCmsLoggedInUser> get loggedInUser =>
       _loggedInUserSubject.stream;
-
+  @override
+  String get currentUserId => loggedInUser.value.uid;
   StreamSubscription? _loggedInUserSubscription;
   StreamSubscription? _loggedInUserAccessSubscription;
   String?

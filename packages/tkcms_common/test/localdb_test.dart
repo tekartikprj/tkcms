@@ -29,11 +29,12 @@ Future<void> main() async {
   test('generate', () async {
     var userId = 'user1';
     var options = LocalDbFromFsOptions(userId: userId);
-
-    await generateLocalDbFromEntitiesUserAccess(
+    var helper = SembastFirestoreSyncHelper<TestFsEntity>(
         db: localDb.db, entityAccess: fsDb, options: options);
+    await helper.generateLocalDbFromEntitiesUserAccess();
     expect(await cvDbUserAccessStore.find(localDb.db), isEmpty);
 
+    var db = localDb.db;
     // Simple access
     await fsDb.fsEntityRef('e1').set(firestore, TestFsEntity()..name.v = 'E1');
     await fsDb
@@ -42,12 +43,23 @@ Future<void> main() async {
 
     expect(await cvDbUserAccessStore.find(localDb.db), isEmpty);
     expect(await cvDbEntityStore.find(localDb.db), isEmpty);
-    await generateLocalDbFromEntitiesUserAccess(
-        db: localDb.db, entityAccess: fsDb, options: options);
+    await helper.generateLocalDbFromEntitiesUserAccess();
+    expect(await cvDbUserAccessStore.find(localDb.db), isNotEmpty);
+    expect(await cvDbEntityStore.find(localDb.db), isNotEmpty);
+    // Sync again to make sure no change
+    await helper.generateLocalDbFromEntitiesUserAccess();
+    expect(await cvDbUserAccessStore.find(localDb.db), isNotEmpty);
+    expect(await cvDbEntityStore.find(localDb.db), isNotEmpty);
+
+    // Clear an re-sync
+    await cvDbUserAccessStore.delete(db);
+    await cvDbEntityStore.delete(db);
+    await helper.generateLocalDbFromEntitiesUserAccess();
     expect(await cvDbUserAccessStore.find(localDb.db), isNotEmpty);
     expect(await cvDbEntityStore.find(localDb.db), isNotEmpty);
     //expect(await cvDbUserAccessStore.find(localDb.db), isEmpty);
   });
+
   test('auto synced and generate', () async {
     var databaseFactory = newDatabaseFactoryMemory();
     var options = AutoSynchronizedFirestoreSyncedDbOptions(
