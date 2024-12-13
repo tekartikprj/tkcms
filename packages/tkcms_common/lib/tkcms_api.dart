@@ -14,6 +14,7 @@ export 'src/api/api_command.dart'
 export 'src/api/api_exception.dart';
 export 'src/api/api_service_base_v1.dart';
 export 'src/api/api_service_base_v2.dart';
+export 'src/api/api_service_common.dart';
 export 'src/api/model/api_models.dart';
 export 'src/api/model/api_secured.dart'
     show

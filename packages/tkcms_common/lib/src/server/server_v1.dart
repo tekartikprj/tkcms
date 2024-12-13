@@ -17,14 +17,6 @@ const callableFunctionCommandV1Prod = 'callcommandv1prod';
 var functionDailyCronV1Dev = 'daylycronv1dev';
 var functionDailyCronV1Prod = 'daylycronv1prod';
 
-const timezoneEuropeParis = 'Europe/Paris';
-
-const commandTimestamp = 'timestamp';
-const commandProxy = 'proxy';
-const commandCron = 'cron';
-const commandInfo = 'info';
-const commandInfoFb = 'infofb';
-
 class CommandHandler {
   final TkCmsServerApp serverApp;
   final ExpressHttpRequest request;

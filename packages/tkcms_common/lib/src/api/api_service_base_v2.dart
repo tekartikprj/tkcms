@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:tekartik_common_utils/log_format.dart';
 import 'package:tekartik_firebase_functions_call/functions_call.dart';
-import 'package:tkcms_common/src/server/server_v1.dart';
 import 'package:tkcms_common/tkcms_api.dart';
 import 'package:tkcms_common/tkcms_common.dart';
 
@@ -211,6 +210,12 @@ class TkCmsApiServiceBaseV2 implements TkCmsTimestampProvider {
         rethrow;
       }
     });
+  }
+
+  /// Fix the request filling the app
+  ApiRequest fixRequestApp(ApiRequest request) {
+    request.app.v ??= app;
+    return request;
   }
 
   Future<R> _getApiResult<R extends ApiResult>(ApiRequest request,
