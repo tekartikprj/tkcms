@@ -1,0 +1,298 @@
+{
+  "acceptButtonLabel": "Accept",
+  "@acceptButtonLabel": {
+    "description": "Accept button label"
+  },
+  "appVersion": "Version",
+  "@appVersion": {
+    "description": "App version"
+  },
+  "bookletAccessAdmin": "Admin access",
+  "@bookletAccessAdmin": {
+    "description": "Booklet access admin"
+  },
+  "bookletAccessRead": "Reader access",
+  "@bookletAccessRead": {
+    "description": "Booklet access read"
+  },
+  "@bookletAccessReadWrite": {
+    "description": "Booklet access read/write"
+  },
+  "bookletAccessWrite": "Editor access",
+  "bookletDefaultName": "Booklet",
+  "@bookletDefaultName": {
+    "description": "Booklet default name"
+  },
+  "bookletDelete": "Delete Booklet",
+  "@bookletDelete": {
+    "description": "Delete booklet"
+  },
+  "bookletDeleteConfirm": "Are you sure you want to delete this booklet?\nAll notes in this booklet will be deleted",
+  "@bookletDeleteConfirm": {
+    "description": "Delete booklet confirmation message"
+  },
+  "bookletEditTitle": "Edit Booklet",
+  "@bookletEditTitle": {
+    "description": "Edit booklet title"
+  },
+  "bookletInviteAccept": "Accept booklet invite",
+  "@bookletInviteAccept": {
+    "description": "Accept booklet"
+  },
+  "bookletInviteAcceptConfirm": "Are you sure you want to accept this booklet invite?",
+  "@bookletInviteAcceptConfirm": {
+    "description": "Accept booklet invite confirmation message"
+  },
+  "bookletInviteDelete": "Delete Booklet invite",
+  "@bookletInviteDelete": {
+    "description": "Delete booklet invite"
+  },
+  "bookletInviteDeleteConfirm": "Are you sure you want to delete this booklet invite?",
+  "@bookletInviteDeleteConfirm": {
+    "description": "Delete booklet invite confirmation message"
+  },
+  "bookletInviteLink": "Booklet invite link",
+  "@bookletInviteLink": {
+    "description": "Booklet invite link"
+  },
+  "bookletInviteLinkInformation": "Send this link to invite someone to this booklet",
+  "@bookletInviteLinkInformation": {
+    "description": "Booklet invite link information"
+  },
+  "bookletInviteMessage": "You have a booklet invite",
+  "@bookletInviteMessage": {
+    "description": "Booklet invite message"
+  },
+  "bookletInviteMustBeLoggedIn": "You must be logged in to accept a booklet invite",
+  "@bookletInviteMustBeLoggedIn": {
+    "description": "Booklet invite not logged in message"
+  },
+  "bookletInviteNotFound": "Booklet invite not found",
+  "@bookletInviteNotFound": {
+    "description": "Booklet invite not found"
+  },
+  "bookletInviteTitle": "Accept booklet invite",
+  "@bookletInviteTitle": {
+    "description": "Booklet invite title"
+  },
+  "bookletInviteView": "View invite",
+  "@bookletInviteView": {
+    "description": "View invite"
+  },
+  "bookletLeave": "Leave Booklet",
+  "@bookletLeave": {
+    "description": "Leave booklet"
+  },
+  "bookletLeaveConfirm": "Are you sure you want to leave this booklet?\nYou won't be able to access any notes contained in this booklet",
+  "@bookletLeaveConfirm": {
+    "description": "Leave booklet confirmation message"
+  },
+  "bookletNotFound": "Booklet not found",
+  "@bookletNotFound": {
+    "description": "Booklet not found"
+  },
+  "bookletShare": "Share booklet",
+  "@bookletShare": {
+    "description": "Share booklet"
+  },
+  "bookletShareInformation": "Click on the Share button below to invite someone to this booklet",
+  "@bookletShareInformation": {
+    "description": "Booklet share information"
+  },
+  "bookletTypeLocal": "Local",
+  "@bookletTypeLocal": {
+    "description": "Local booklet type"
+  },
+  "bookletTypeSynced": "Synced",
+  "@bookletTypeSynced": {
+    "description": "Synced booklet type"
+  },
+  "bookletViewNotes": "View notes",
+  "@bookletViewNotes": {
+    "description": "View notes"
+  },
+  "bookletsTitle": "Booklets",
+  "@bookletsTitle": {
+    "description": "Booklets title"
+  },
+  "cancelButtonLabel": "Cancel",
+  "@cancelButtonLabel": {
+    "description": "Cancel button label"
+  },
+  "contentMarkdownInfo": "Content in markdown format",
+  "@contentMarkdownInfo": {
+    "description": "Content markdown info message"
+  },
+  "createBookletInfo": "Create a booklet to start storing your notes, local booklets are stored on your device, synced booklets are stored in the cloud",
+  "@createBookletInfo": {
+    "description": "Create booklet info message"
+  },
+  "createBookletTitle": "Create Booklet",
+  "@createBookletTitle": {
+    "description": "Create booklet title"
+  },
+  "deleteButtonLabel": "Delete",
+  "@deleteButtonLabel": {
+    "description": "Delete button label"
+  },
+  "editDiscardChanges": "Discard",
+  "@editDiscardChanges": {
+    "description": "Edit discard changes"
+  },
+  "editSaveChanges": "Save",
+  "@editSaveChanges": {
+    "description": "Edit save changes"
+  },
+  "editUnsavedChangesTitle": "Unsaved changes",
+  "@editUnsavedChangesTitle": {
+    "description": "Unsaved changes title"
+  },
+  "editYouHaveUnsavedChanges": "You have unsaved changes\n\nYou can continue editing by choosing cancel or quit edition, saving or discarding your changes",
+  "@editYouHaveUnsavedChanges": {
+    "description": "Edit unsaved changes"
+  },
+  "genericCopied": "Copied to clipboard",
+  "@genericCopied": {
+    "description": "Copied to clipboard"
+  },
+  "leaveButtonLabel": "Leave",
+  "@leaveButtonLabel": {
+    "description": "Delete button label"
+  },
+  "localBookletTitle": "Local Booklet",
+  "@localBookletTitle": {
+    "description": "Local booklet title"
+  },
+  "manageBookletTitle": "Manage Booklet",
+  "@manageBookletTitle": {
+    "description": "Manage booklet title"
+  },
+  "manageBookletsTitle": "Manage Booklets",
+  "@manageBookletsTitle": {
+    "description": "Manage booklets title"
+  },
+  "markdownGuideAsset": "markdown_guide_en.md",
+  "@markdownGuideAsset": {
+    "description": "Markdown guide asset"
+  },
+  "markdownGuideTitle": "Markdown Guide",
+  "@markdownGuideTitle": {
+    "description": "Markdown guide title"
+  },
+  "nameRequired": "Name is required",
+  "@nameRequired": {
+    "description": "Name required error message"
+  },
+  "notSignedInInfo": "You are not signed in",
+  "@notSignedInInfo": {
+    "description": "Info message when user is not signed in"
+  },
+  "noteContentHint": "Note content",
+  "@noteContentHint": {
+    "description": "Note content hint"
+  },
+  "noteContentLabel": "Content",
+  "@noteContentLabel": {
+    "description": "Note content label"
+  },
+  "noteCreateTitle": "Create Note",
+  "@noteCreateTitle": {
+    "description": "Create note title"
+  },
+  "noteDelete": "Delete Note",
+  "@noteDelete": {
+    "description": "Delete note"
+  },
+  "noteDeleteConfirm": "Are you sure you want to delete this note?",
+  "@noteDeleteConfirm": {
+    "description": "Delete note confirmation message"
+  },
+  "noteDescriptionHint": "Note description",
+  "@noteDescriptionHint": {
+    "description": "Note description hint"
+  },
+  "noteDescriptionLabel": "Description",
+  "@noteDescriptionLabel": {
+    "description": "Note description label"
+  },
+  "noteEditTitle": "Edit Note",
+  "@noteEditTitle": {
+    "description": "Edit note title"
+  },
+  "noteTitleHint": "Note title",
+  "@noteTitleHint": {
+    "description": "Note title hint"
+  },
+  "noteTitleLabel": "Title",
+  "@noteTitleLabel": {
+    "description": "Note title label"
+  },
+  "notelioTitle": "Notelio",
+  "@notelioTitle": {
+    "description": "App title"
+  },
+  "notesOthers": "Other notes",
+  "@notesOthers": {
+    "description": "Other notes"
+  },
+  "notesPinned": "Pinned notes",
+  "@notesPinned": {
+    "description": "Pinned notes"
+  },
+  "notesTitle": "Notes",
+  "@notesTitle": {
+    "description": "Notes title"
+  },
+  "operationFailed": "Operation failed\nPlease try again",
+  "@operationFailed": {
+    "description": "Operation failed"
+  },
+  "privacyPolicy": "Privacy Policy",
+  "@privacyPolicy": {
+    "description": "Privacy policy"
+  },
+  "settingCurrentBooklet": "Current booklet '{booklet}'",
+  "@settingCurrentBooklet": {
+    "description": "Current booklet setting",
+    "placeholders": {
+      "booklet": {
+        "type": "String",
+        "example": "My booklet"
+      }
+    }
+  },
+  "settingManageBooklet": "Manage Booklet",
+  "@settingManageBooklet": {
+    "description": "Manage current booklet"
+  },
+  "settingSwitchBooklet": "Switch Booklet",
+  "@settingSwitchBooklet": {
+    "description": "Switch current booklet"
+  },
+  "settingsTitle": "Settings",
+  "@settingsTitle": {
+    "description": "Settings title"
+  },
+  "signInButtonLabel": "Sign in",
+  "@signInButtonLabel": {
+    "description": "Sign in button label"
+  },
+  "userNotSignedInInfo": "You are not signed in",
+  "@userNotSignedInInfo": {
+    "description": "User not signed in info message"
+  },
+  "userSignedInInfo": "You are signed in as {user}",
+  "@userSignedInInfo": {
+    "description": "User sign in info message",
+    "placeholders": {
+      "user": {
+        "type": "String",
+        "example": "Alex"
+      }
+    }
+  },
+  "userTitle": "User",
+  "@userTitle": {
+    "description": "User title"
+  }
+}

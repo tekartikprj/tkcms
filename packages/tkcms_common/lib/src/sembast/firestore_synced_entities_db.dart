@@ -1,5 +1,5 @@
 import 'package:tekaly_sembast_synced/synced_db_firestore.dart';
-import 'package:tkcms_common/src/localdb/sembast.dart';
+import 'package:tkcms_common/src/sembast/sembast.dart';
 import 'package:tkcms_common/tkcms_firestore.dart';
 import 'package:tkcms_common/tkcms_sembast.dart';
 
@@ -114,6 +114,33 @@ class SyncedEntitiesDb<T extends TkCmsFsEntity> {
     db = syncedDb.database;
     await syncedDb.initialSynchronizationDone();
   }();
+
+  Future<void> syncOneFromFirestore(
+      {required String entityId, required String userId}) async {
+    var helper = SembastFirestoreSyncHelper<T>(
+        db: db,
+        entityAccess: entityAccess,
+        options: LocalDbFromFsOptions(userId: userId));
+    await helper.localDbSyncOne(entityId: entityId);
+  }
+
+  /// Throw on failure
+  Future<TkCmsEntityAndUserAccess?> getOrSyncEntity(
+      {required String userId, required String entityId}) async {
+    var entity = await cvDbEntityStore.record(entityId).get(db);
+    var userAccess = await cvDbUserAccessStore.record(entityId).get(db);
+    if (entity != null && userAccess != null) {
+      return TkCmsEntityAndUserAccess(entity: entity, userAccess: userAccess);
+    }
+    await syncOneFromFirestore(entityId: entityId, userId: userId);
+    entity = await cvDbEntityStore.record(entityId).get(db);
+    if (entity != null) {
+      var userAccess = await cvDbUserAccessStore.record(entityId).get(db);
+      return TkCmsEntityAndUserAccess(
+          entity: entity, userAccess: userAccess ?? TkCmsDbUserAccess());
+    }
+    return null;
+  }
 
 /*
   /// on booklets

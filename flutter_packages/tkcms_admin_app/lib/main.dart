@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:tekartik_app_flutter_common_utils/common_utils_import.dart';
 import 'package:tekartik_app_flutter_widget/mini_ui.dart';
 import 'package:tekartik_app_prefs/app_prefs.dart';
@@ -12,12 +13,13 @@ import 'package:tkcms_common/tkcms_auth.dart';
 import 'package:tkcms_common/tkcms_firebase.dart';
 import 'package:tkcms_common/tkcms_firestore.dart';
 import 'package:tkcms_common/tkcms_flavor.dart';
-import 'package:tkcms_common/tkcms_sembast.dart';
 import 'package:tkcms_user_app/theme/theme1.dart';
 
 import 'app/tkcms_admin_app.dart';
+import 'l10n/app_localizations.dart';
 import 'screen/debug_screen.dart';
 import 'screen/project_screen.dart';
+import 'sembast/sembast.dart';
 
 Future<void> main() async {
   //debugTkCmsAuthBloc = devWarning(true);
@@ -32,10 +34,10 @@ Future<void> main() async {
   globalTkCmsAdminAppFlavorContext = AppFlavorContext.testLocal;
   globalTkCmsAdminAppFirebaseContext = context;
   var sembastDatabaseFactory = await initLocalSembastFactory();
-  var sembastDatabaseContext = SembastDatabaseContext(
+  var sembastDatabaseContext = SembastDatabasesContext(
       factory: sembastDatabaseFactory,
       path: '.local/tkcms_${globalTkCmsAdminAppFlavorContext.appKeySuffix}');
-
+  globalSembastDatabasesContext = sembastDatabaseContext;
   gAuthBloc = TkCmsAuthBloc.local(db: gFsDatabaseService, prefs: prefs);
   globalAuthFlutterUiService = FirebaseUiAuthServiceBasic();
   gDebugUsername = 'admin';
@@ -57,6 +59,13 @@ class MyApp extends StatelessWidget {
       title: 'Tkcms admin Demo',
       theme: themeData1(),
       home: const TkCmsAdminStartScreen(),
+      localizationsDelegates: const [
+        FirebaseUiAuthServiceBasicLocalizations.delegate,
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
     );
   }
 }

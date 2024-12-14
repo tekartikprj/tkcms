@@ -11,3 +11,12 @@ class TkCmsDbEntity extends DbStringRecordBase {
   @override
   CvFields get fields => [name, created, active];
 }
+
+class TkCmsEntityAndUserAccess {
+  final TkCmsDbEntity entity;
+  final TkCmsDbUserAccess userAccess;
+
+  TkCmsEntityAndUserAccess({required this.entity, required this.userAccess});
+
+  String get id => entity.id;
+}

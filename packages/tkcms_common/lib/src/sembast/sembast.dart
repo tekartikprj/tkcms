@@ -19,6 +19,9 @@ class SembastDatabaseContext {
 /// Convenient databases context
 class SembastDatabasesContext extends SembastDatabaseContext {
   SembastDatabasesContext({required super.factory, required super.path});
+
+  SembastDatabaseContext db(String name) =>
+      SembastDatabaseContext(factory: factory, path: join(path, name));
 }
 
 /// Initialize the local sembast factory
