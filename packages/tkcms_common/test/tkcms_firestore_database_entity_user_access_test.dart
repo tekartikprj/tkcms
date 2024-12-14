@@ -4,7 +4,7 @@ import 'package:tkcms_common/tkcms_firestore.dart';
 
 const tkTestCmsProjectId = 'tkcms_test';
 
-class _TFsEntity extends TkCmsFsEntity {
+class TestFsEntity extends TkCmsFsEntity {
   final specific = CvField<String>('specific');
   @override
   CvFields get fields => [specific, ...super.fields];
@@ -16,29 +16,32 @@ class _Content extends CvFirestoreDocumentBase {
   CvFields get fields => [text];
 }
 
-final _entityCollectionInfo =
-    TkCmsFirestoreDatabaseEntityCollectionInfo<_TFsEntity>(
+final testFsEntityCollectionInfo =
+    TkCmsFirestoreDatabaseEntityCollectionInfo<TestFsEntity>(
         id: 'type1',
         name: 'Type1',
         treeDef: TkCmsCollectionsTreeDef(map: {
           'type1': {'subType2': null}
         }));
 void main() {
-  late TkCmsFirestoreDatabaseServiceEntityAccess<_TFsEntity> db;
+  late TkCmsFirestoreDatabaseServiceEntityAccess<TestFsEntity> db;
   late Firestore firestore;
   setUp(() async {
-    cvAddConstructors(
-        [_TFsEntity.new, TkCmsFsInviteEntity<_TFsEntity>.new, _Content.new]);
+    cvAddConstructors([
+      TestFsEntity.new,
+      TkCmsFsInviteEntity<TestFsEntity>.new,
+      _Content.new
+    ]);
     var firebaseContext = initFirebaseSimMemory(projectId: tkTestCmsProjectId);
     firestore = firebaseContext.firestore;
     // firestore = firestore.debugQuickLoggerWrapper();
-    db = TkCmsFirestoreDatabaseServiceEntityAccess<_TFsEntity>(
-      entityCollectionInfo: _entityCollectionInfo,
+    db = TkCmsFirestoreDatabaseServiceEntityAccess<TestFsEntity>(
+      entityCollectionInfo: testFsEntityCollectionInfo,
       firestore: firestore,
     );
   });
   test('entity', () async {
-    var entity = _TFsEntity()
+    var entity = TestFsEntity()
       ..name.v = 'e1'
       ..specific.v = 's1';
     var userId = 'user1';
@@ -76,7 +79,7 @@ void main() {
 
     var inviteIdRef =
         db.rootDocRef<TkCmsFsInviteId>('invite/type1/invite_id/$inviteId');
-    var inviteEntityRef = db.rootDocRef<TkCmsFsInviteEntity<_TFsEntity>>(
+    var inviteEntityRef = db.rootDocRef<TkCmsFsInviteEntity<TestFsEntity>>(
         'invite/type1/invite_id/$inviteId/invite_entity/$entityId');
     var inviteEntity = await inviteEntityRef.get(firestore);
 

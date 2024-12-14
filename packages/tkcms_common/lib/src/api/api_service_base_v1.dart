@@ -1,7 +1,14 @@
 import 'package:tekartik_app_http/app_http.dart' as universal;
-import 'package:tkcms_common/src/server/server_v1.dart';
 import 'package:tkcms_common/tkcms_api.dart';
 import 'package:tkcms_common/tkcms_common.dart';
+
+const timezoneEuropeParis = 'Europe/Paris';
+
+const commandTimestamp = 'timestamp';
+const commandProxy = 'proxy';
+const commandCron = 'cron';
+const commandInfo = 'info';
+const commandInfoFb = 'infofb';
 
 var debugWebServices = false; // devWarning(true);
 late TkCmsApiServiceBase gApiService;

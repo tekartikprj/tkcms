@@ -2,14 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:tekartik_app_flutter_common_utils/common_utils_import.dart';
 import 'package:tekartik_app_flutter_widget/mini_ui.dart';
 import 'package:tekartik_app_prefs/app_prefs.dart';
+import 'package:tekartik_firebase_ui_auth/ui_auth.dart';
 import 'package:tkcms_admin_app/auth/auth.dart';
 import 'package:tkcms_admin_app/firebase/database_service.dart';
 import 'package:tkcms_admin_app/screen/logged_in_screen.dart';
 import 'package:tkcms_admin_app/screen/login_screen.dart';
+import 'package:tkcms_admin_app/screen/start_screen.dart';
 import 'package:tkcms_common/tkcms_auth.dart';
 import 'package:tkcms_common/tkcms_firebase.dart';
 import 'package:tkcms_common/tkcms_firestore.dart';
 import 'package:tkcms_common/tkcms_flavor.dart';
+import 'package:tkcms_common/tkcms_sembast.dart';
+import 'package:tkcms_user_app/theme/theme1.dart';
+
+import 'app/tkcms_admin_app.dart';
+import 'screen/debug_screen.dart';
+import 'screen/project_screen.dart';
 
 Future<void> main() async {
   //debugTkCmsAuthBloc = devWarning(true);
@@ -17,14 +25,25 @@ Future<void> main() async {
   var packageName = 'tkcms.example';
   var prefsFactory = getPrefsFactory(packageName: 'tkcms.example');
   var prefs = await prefsFactory.openPreferences('tkcms_example_prefs.db');
-  var context = initFirebaseSim(projectId: 'tkcmd', packageName: packageName);
+  var context = initFirebaseSim(projectId: 'tkcms', packageName: packageName);
   gFsDatabaseService = TkCmsFirestoreDatabaseService(
       firebaseContext: context, flavorContext: AppFlavorContext.testLocal);
 
-  gAuthBloc = TkCmsAuthBloc.local(db: gFsDatabaseService, prefs: prefs);
+  globalTkCmsAdminAppFlavorContext = AppFlavorContext.testLocal;
+  globalTkCmsAdminAppFirebaseContext = context;
+  var sembastDatabaseFactory = await initLocalSembastFactory();
+  var sembastDatabaseContext = SembastDatabaseContext(
+      factory: sembastDatabaseFactory,
+      path: '.local/tkcms_${globalTkCmsAdminAppFlavorContext.appKeySuffix}');
 
+  gAuthBloc = TkCmsAuthBloc.local(db: gFsDatabaseService, prefs: prefs);
+  globalAuthFlutterUiService = FirebaseUiAuthServiceBasic();
   gDebugUsername = 'admin';
   gDebugPassword = '__admin__'; // irrelevant
+  fsProjectSyncedDb = SyncedEntitiesDb<TkCmsFsProject>(
+      entityAccess: tkCmsFsProjectAccess,
+      options: SyncedEntitiesOptions(
+          sembastDatabaseContext: sembastDatabaseContext));
   runApp(const MyApp());
 }
 
@@ -35,12 +54,29 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Tkcms Demo',
+      title: 'Tkcms admin Demo',
+      theme: themeData1(),
+      home: const TkCmsAdminStartScreen(),
+    );
+  }
+}
+
+class MyAppOld extends StatelessWidget {
+  const MyAppOld({super.key});
+
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Tkcms admin Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
       home: muiScreenWidget('Tkcms', () {
+        muiItem('debug', () {
+          goToAdminDebugScreen(muiBuildContext);
+        });
         muiItem('snack', () {
           muiSnack(muiBuildContext, 'test');
         });

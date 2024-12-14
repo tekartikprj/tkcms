@@ -1,5 +1,3 @@
-import 'package:tkcms_common/src/api/api_command.dart';
-import 'package:tkcms_common/src/api/model/api_secured.dart';
 import 'package:tkcms_common/src/firebase/firebase.dart';
 import 'package:tkcms_common/src/flavor/flavor.dart';
 import 'package:tkcms_common/tkcms_common.dart';
@@ -15,6 +13,10 @@ const callableFunctionCommandV2Prod = 'callcommandv2prod';
 
 var functionDailyCronV2Dev = 'daylycronv2dev';
 var functionDailyCronV2Prod = 'daylycronv2prod';
+
+final baseCmsServerSecuredOptions = TkCmsApiSecuredOptions()
+  ..add(apiCommandEcho, apiCommandEchoSecuredOptions)
+  ..add(apiCommandEchoSecured, apiCommandEchoSecuredOptionsV2);
 
 class TkCmsServerAppV2 implements TkCmsCommonServerApp {
   final securedOptions = TkCmsApiSecuredOptions();
@@ -40,6 +42,7 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
     assert(apiVersion >= apiVersion2);
     initApiBuilders();
     securedOptions.add(apiCommandEcho, apiCommandEchoSecuredOptions);
+    securedOptions.timestampServiceOrNull = TkCmsTimestampService.local();
   }
 
   /// Default read config and call each app read
@@ -74,30 +77,34 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
       callableOptions: HttpsCallableOptions(region: regionBelgium, cors: true));
 
   Future<ApiResult> handleSecuredCommandRequest(ApiRequest apiRequest) async {
-    var securedApiQuery = apiRequest.data.v!.cv<ApiSecuredQuery>();
-    var innerRequest = securedApiQuery.data.v!.cv<ApiRequest>();
-    var innerRequestCommand = innerRequest.command.v!;
-    var options = securedOptions.get(innerRequestCommand);
-    if (options == null) {
-      throw ApiException(
-          error: ApiError()
-            ..message.v = 'options not found for $innerRequestCommand'
-            ..noRetry.v = true);
+    try {
+      var options =
+          securedOptions.getOrThrow(apiRequest.securedInnerRequestCommand);
+      late ApiRequest innerRequest;
+      if (options.version == apiSecuredEncOptionsVersion1) {
+        innerRequest = securedOptions.unwrapSecuredRequest(apiRequest);
+      } else if (options.version == apiSecuredEncOptionsVersion2) {
+        // Handle missing timestamp as v1
+        if (apiRequest.securedQueryTimestampOrNull == null) {
+          innerRequest = securedOptions.unwrapSecuredRequest(apiRequest);
+        } else {
+          innerRequest =
+              await securedOptions.unwrapSecuredRequestV2Async(apiRequest);
+        }
+      } else {
+        throw StateError('Invalid encoding options');
+      }
+
+      return onSecuredCommand(innerRequest);
+    } catch (e, st) {
+      if (isDebug) {
+        // ignore: avoid_print
+        print('handleSecuredCommand error $e');
+        // ignore: avoid_print
+        print(st);
+      }
+      rethrow;
     }
-    var innerRequestData = innerRequest.data.v!;
-    var encHashText = innerRequestData.encGenerateHashText(options);
-    var readHashText = securedApiQuery.encReadHashText(options);
-    if (encHashText != readHashText) {
-      throw ApiException(
-          error: ApiError()
-            ..code.v = apiErrorCodeSecured
-            ..message.v = 'Invalid request'
-            ..noRetry.v = true
-            ..details.v = isDebug
-                ? (CvMapModel()..fromMap(innerRequestData.encDebugMap(options)))
-                : null);
-    }
-    return onSecuredCommand(innerRequest);
   }
 
   Future<ApiResult> onSecuredCommand(ApiRequest apiRequest) async {

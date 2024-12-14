@@ -1,5 +1,12 @@
 import 'package:tkcms_common/tkcms_firestore.dart';
 
+// <entity>/{entity_id} * content
+// <user>/{user_id}/<entity>/{entity_id} * entity id and name user cache in a synchronized database
+// <entity>/access/{entity_id}/user_access/{user_id}
+// <entity>/access/{entity_id}/entity_access/{user_id}
+// <entity>/access/{entity_id}/invite_access/{user_id}
+// <entity>/invite/{entity_id}/invite_entity/{user_id}
+
 const tkCmsFsEntityCollectionId = 'entity';
 const tkCmsFsEntityTypeAccessCollectionId = 'access';
 const tkCmsFsEntityTypeInviteCollectionId = 'invite';
@@ -75,47 +82,11 @@ class TkCmsFsEntityId extends CvFirestoreDocumentBase {
   CvFields get fields => [];
 }
 
-/// User access common
-abstract class TkCmsCvUserAccessCommon {
-  CvField<bool> get admin;
-  CvField<bool> get write;
-  CvField<bool> get read;
-
-  /// Informative for UI "user,admin,super_admin"
-  CvField<String> get role;
-}
-
-/// User access mixin
-mixin TkCmsCvUserAccessMixin implements TkCmsCvUserAccessCommon {
-  /// Admin access
-  @override
-  late final admin = CvField<bool>('admin');
-
-  /// Write access
-  @override
-  final write = CvField<bool>('write');
-
-  /// Read access
-  @override
-  final read = CvField<bool>('read');
-
-  @override
-  late final role = CvField<String>('role');
-
-  List<CvField<Object>> get userAccessMixinfields => [admin, write, read, role];
-}
-
 class TkCmsFsUserAccess extends CvFirestoreDocumentBase
     with TkCmsCvUserAccessMixin {
   final inviteId = CvField<String>('inviteId');
   @override
-  CvFields get fields => [...userAccessMixinfields];
-}
-
-/// Inside invite
-class TkCmsCvUserAccess extends CvModelBase with TkCmsCvUserAccessMixin {
-  @override
-  late final fields = [...userAccessMixinfields];
+  CvFields get fields => [...userAccessMixinFields];
 }
 
 extension TkCmsCvUserAccessCommonExt on TkCmsCvUserAccessCommon {

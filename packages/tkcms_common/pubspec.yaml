@@ -12,6 +12,7 @@ environment:
 dependencies:
   path:
   http:
+  sembast: ">=3.8.0+1"
   cv: '>=0.2.20'
   tekartik_app_rx:
     git:
@@ -146,6 +147,20 @@ dependencies:
       url: https://github.com/tekartik/app_common_utils.dart
       ref: dart3a
       path: app_rx_bloc
+  tekartik_app_cv_sembast:
+    git:
+      url: https://github.com/tekartik/app_common_utils.dart
+      ref: dart3a
+      path: app_cv_sembast
+  tekartik_common_utils:
+    git:
+      url: https://github.com/tekartik/common_utils.dart
+      ref: dart3a
+  tekaly_sembast_synced:
+    git:
+      url: https://github.com/tekartikprj/tekaly
+      ref: dart3a
+      path: packages/sembast_synced
 
 dev_dependencies:
   lints: '>=2.1.0'

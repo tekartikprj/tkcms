@@ -8,6 +8,9 @@ class TkCmsFirestoreDatabaseService {
 
   String get app => flavorContext.app;
 
+  FirestoreDatabaseContext get firestoreDatabaseContext =>
+      FirestoreDatabaseContext(firestore: firestore, rootDocument: fsApp);
+
   TkCmsFirestoreDatabaseService(
       {required this.firebaseContext, required this.flavorContext}) {
     initFsBuilders();
@@ -15,11 +18,9 @@ class TkCmsFirestoreDatabaseService {
 
   Firestore get firestore => firebaseContext.firestore;
 
+  /// Keep for notelio
   CvCollectionReference<FsUser> get fsUserCollection =>
       fsAppUserCollection(app);
-
-  CvCollectionReference<FsUserAccess> get fsSessionCollection =>
-      fsAppUserAccessCollection(app);
 
   CvDocumentReference<FsApp> get fsApp => fsAppRoot(app);
 }

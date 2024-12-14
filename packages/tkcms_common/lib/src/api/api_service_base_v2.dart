@@ -1,13 +1,14 @@
 import 'dart:math';
 
+import 'package:tekartik_common_utils/log_format.dart';
 import 'package:tekartik_firebase_functions_call/functions_call.dart';
-import 'package:tkcms_common/src/api/api_command.dart';
-import 'package:tkcms_common/src/server/server_v1.dart';
 import 'package:tkcms_common/tkcms_api.dart';
 import 'package:tkcms_common/tkcms_common.dart';
 
 /// Secured options
 class TkCmsApiSecuredOptions {
+  /// Timestamp service to set by client and server
+  TkCmsTimestampService? timestampServiceOrNull;
   final _map = <String, ApiSecuredEncOptions>{};
 
   /// Add a secured option
@@ -15,12 +16,72 @@ class TkCmsApiSecuredOptions {
     _map[command] = options;
   }
 
+  // ignore: unused_element
+  void _assertCompatible(ApiSecuredEncOptions options) {
+    if (options.version == apiSecuredEncOptionsVersion2) {
+      assert(timestampServiceOrNull != null,
+          'timestampService not set for $options');
+    }
+  }
+
   ApiSecuredEncOptions? get(String command) {
     return _map[command];
   }
+
+  ApiSecuredEncOptions getOrThrow(String command) {
+    var options = get(command);
+    if (options == null) {
+      throw ArgumentError('No options for $command in ${logFormat(_map)}');
+    }
+    return options;
+  }
+
+  ApiRequest wrapInSecuredRequest(ApiRequest apiRequest) {
+    var options = get(apiRequest.apiCommand)!;
+    return apiRequest.wrapInSecuredRequest(options);
+  }
+
+  Future<ApiRequest> wrapInSecuredRequestV2Async(ApiRequest apiRequest) {
+    var options = get(apiRequest.apiCommand)!;
+    var timestampService = timestampServiceOrNull!;
+    return apiRequest.wrapInSecuredRequestV2Async(options,
+        timestampService: timestampService);
+  }
+
+  ApiRequest unwrapSecuredRequest(ApiRequest apiRequest, {bool check = true}) {
+    var command = apiRequest.securedInnerRequestCommand;
+
+    var options = get(command);
+    if (options == null) {
+      throw ApiException(
+          error: ApiError()
+            ..message.v = 'secured options not found for $command'
+            ..noRetry.v = true);
+    }
+    return apiRequest.unwrapSecuredRequest(options, check: check);
+  }
+
+  Future<ApiRequest> unwrapSecuredRequestV2Async(ApiRequest apiRequest,
+      {bool check = true}) async {
+    var command = apiRequest.securedInnerRequestCommand;
+
+    var options = get(command);
+    if (options == null) {
+      throw ApiException(
+          error: ApiError()
+            ..message.v = 'secured options not found for $command'
+            ..noRetry.v = true);
+    }
+    return await apiRequest.unwrapSecuredRequestV2Async(options,
+        check: check, timestampService: timestampServiceOrNull!);
+  }
+
+  void addAll(TkCmsApiSecuredOptions other) {
+    _map.addAll(other._map);
+  }
 }
 
-class TkCmsApiServiceBaseV2 {
+class TkCmsApiServiceBaseV2 implements TkCmsTimestampProvider {
   final secureOptions = TkCmsApiSecuredOptions();
 
   final int apiVersion;
@@ -53,6 +114,8 @@ class TkCmsApiServiceBaseV2 {
     assert(apiVersion >= apiVersion2);
     initApiBuilders();
     secureOptions.add(apiCommandEcho, apiCommandEchoSecuredOptions);
+    secureOptions.timestampServiceOrNull =
+        TkCmsTimestampService.withProvider(timestampProvider: this);
 
     if (app != null) {
       this.app = app;
@@ -86,7 +149,7 @@ class TkCmsApiServiceBaseV2 {
 
   Future<ApiEchoResult> securedEcho(ApiEchoQuery query) async {
     var apiRequest = ApiRequest(command: apiCommandEcho, data: query.toMap());
-    return getSecuredApiResult(apiRequest);
+    return getSecuredApiResult<ApiEchoResult>(apiRequest);
   }
 
   Future<ApiEmpty> cron() async {
@@ -124,12 +187,35 @@ class TkCmsApiServiceBaseV2 {
   }
 
   Future<R> getSecuredApiResult<R extends ApiResult>(ApiRequest apiRequest,
-      {bool? preferHttp}) {
-    var options = secureOptions.get(apiRequest.apiCommand)!;
-    var securedApiRequest = apiRequest.wrapInSecuredRequest(options);
-    return _retry(() {
-      return _getApiResult<R>(securedApiRequest, preferHttp: preferHttp);
+      {bool? preferHttp}) async {
+    var options = secureOptions.getOrThrow(apiRequest.apiCommand);
+    late ApiRequest securedApiRequest;
+    if (options.version == apiSecuredEncOptionsVersion1) {
+      securedApiRequest = apiRequest.wrapInSecuredRequest(options);
+    } else if (options.version == apiSecuredEncOptionsVersion2) {
+      securedApiRequest =
+          await secureOptions.wrapInSecuredRequestV2Async(apiRequest);
+    }
+    return await _retry(() async {
+      try {
+        return await _getApiResult<R>(securedApiRequest,
+            preferHttp: preferHttp);
+      } on ApiException catch (e) {
+        if (e.error?.code.v == apiErrorCodeSecuredTimestamp) {
+          // restart timestamp services
+          secureOptions.timestampServiceOrNull!.now(forceFetch: true).unawait();
+          return await _getApiResult<R>(securedApiRequest,
+              preferHttp: preferHttp);
+        }
+        rethrow;
+      }
     });
+  }
+
+  /// Fix the request filling the app
+  ApiRequest fixRequestApp(ApiRequest request) {
+    request.app.v ??= app;
+    return request;
   }
 
   Future<R> _getApiResult<R extends ApiResult>(ApiRequest request,
@@ -220,5 +306,11 @@ class TkCmsApiServiceBaseV2 {
       _client.close();
     } catch (_) {}
     // keep local server on
+  }
+
+  @override
+  Future<DateTime> fetchNow() async {
+    var timestamp = DateTime.parse((await getTimestamp()).timestamp.v!);
+    return timestamp;
   }
 }
