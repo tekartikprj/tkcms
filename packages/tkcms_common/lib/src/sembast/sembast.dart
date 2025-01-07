@@ -16,6 +16,11 @@ class SembastDatabaseContext {
   }
 }
 
+/// Helpers
+extension SembastDatabaseContextExt on SembastDatabaseContext {
+
+}
+
 /// Convenient databases context
 class SembastDatabasesContext extends SembastDatabaseContext {
   SembastDatabasesContext({required super.factory, required super.path});
