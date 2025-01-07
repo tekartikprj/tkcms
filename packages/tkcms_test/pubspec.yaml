@@ -20,6 +20,4 @@ dev_dependencies:
   lints: '>=4.0.0'
   test: '>=1.24.0'
 
-dependency_overrides:
-  tkcms_common:
-    path: ../tkcms_common
+resolution: workspace

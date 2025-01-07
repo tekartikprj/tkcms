@@ -17,9 +17,7 @@ class SembastDatabaseContext {
 }
 
 /// Helpers
-extension SembastDatabaseContextExt on SembastDatabaseContext {
-
-}
+extension SembastDatabaseContextExt on SembastDatabaseContext {}
 
 /// Convenient databases context
 class SembastDatabasesContext extends SembastDatabaseContext {
