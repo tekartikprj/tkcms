@@ -35,6 +35,9 @@ class ContentDb {
   final String app;
   final String bookletId;
 
+  /// Synced db
+  SyncedDb get syncedDb => _syncedDb.syncedDb;
+
   late final AutoSynchronizedFirestoreSyncedDb _syncedDb;
 
   late final Database db;

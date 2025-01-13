@@ -16,7 +16,15 @@ class ContentDbBloc {
   final String app;
   final _lock = Lock();
   final _map = <String, _ContentDbInfo>{};
-  Future<ContentDb?> grabContentDb(String projectId) async {
+  Future<ContentDb> grabContentDb(String projectId) async {
+    var contentDb = await grabContentDbOrNull(projectId);
+    if (contentDb == null) {
+      throw StateError('ContentDb not found for $projectId');
+    }
+    return contentDb;
+  }
+
+  Future<ContentDb?> grabContentDbOrNull(String projectId) async {
     return await _lock.synchronized(() async {
       var info = _map[projectId];
       if (info != null) {
