@@ -74,7 +74,7 @@ class SyncedEntitiesOptions {
   SyncedEntitiesOptions({required this.sembastDatabaseContext});
 }
 
-/// Booklets db
+/// Projects db, synchronized with firestore projects
 class SyncedEntitiesDb<T extends TkCmsFsEntity> {
   late final TkCmsFirestoreDatabaseServiceEntityAccess<T> entityAccess;
   late final AutoSynchronizedFirestoreSyncedDb syncedDb;

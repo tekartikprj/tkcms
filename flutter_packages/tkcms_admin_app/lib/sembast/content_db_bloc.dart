@@ -1,5 +1,5 @@
 import 'package:tkcms_admin_app/firebase/database_service.dart';
-import 'package:tkcms_admin_app/screen/project_screen.dart';
+import 'package:tkcms_admin_app/screen/project_info.dart';
 import 'package:tkcms_admin_app/sembast/sembast.dart';
 import 'package:tkcms_common/tkcms_common.dart';
 import 'package:tkcms_common/tkcms_content.dart';

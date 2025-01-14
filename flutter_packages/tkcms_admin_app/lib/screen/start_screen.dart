@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tekartik_app_flutter_widget/view/body_container.dart';
 import 'package:tkcms_admin_app/firebase/database_service.dart';
 import 'package:tkcms_admin_app/screen/debug_screen.dart';
-import 'package:tkcms_admin_app/screen/project_screen.dart';
+import 'package:tkcms_admin_app/screen/project_info.dart';
 import 'package:tkcms_admin_app/screen/synced_entities_screen.dart';
 import 'package:tkcms_admin_app/src/import_common.dart';
 import 'package:tkcms_common/tkcms_firestore_v2.dart';
@@ -32,8 +32,7 @@ class _TkCmsAdminStartScreenState extends State<TkCmsAdminStartScreen> {
                   ListTile(
                     title: const Text('Projects'),
                     onTap: () async {
-                      await goToSyncedEntitiesScreenBloc<TkCmsFsProject>(
-                          context,
+                      await goToSyncedEntitiesScreen<TkCmsFsProject>(context,
                           syncedEntitiesDb: fsProjectSyncedDb);
                     },
                   ),

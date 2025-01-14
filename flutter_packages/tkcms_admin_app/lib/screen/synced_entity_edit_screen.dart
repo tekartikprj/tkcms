@@ -1,10 +1,13 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:tekartik_app_flutter_widget/mini_ui.dart';
+import 'package:tekartik_app_flutter_widget/view/body_h_padding.dart';
 import 'package:tekartik_app_flutter_widget/view/busy_indicator.dart';
 import 'package:tekartik_app_flutter_widget/view/busy_screen_state_mixin.dart';
 import 'package:tkcms_admin_app/audi/tkcms_audi.dart';
 import 'package:tkcms_admin_app/auth/auth.dart';
 import 'package:tkcms_admin_app/src/import_common.dart';
+import 'package:tkcms_admin_app/view/body_container.dart';
 import 'package:tkcms_common/tkcms_firestore.dart';
 import 'package:tkcms_common/tkcms_sembast.dart';
 
@@ -20,38 +23,68 @@ class SyncedEntityEditScreenBlocState<T extends TkCmsFsEntity> {
 
 class SyncedEntityEditScreenBloc<T extends TkCmsFsEntity>
     extends AutoDisposeStateBaseBloc<SyncedEntityEditScreenBlocState<T>> {
-  final String entityId;
+  final String? entityId;
   var userId = gAuthBloc.currentUserId;
+
+  bool get isCreate => entityId == null;
   TkCmsFirestoreDatabaseServiceEntityAccess<T> get entityAccess =>
       syncedEntityDb.entityAccess;
+
   String get entityName =>
       syncedEntityDb.entityAccess.entityCollectionInfo.name;
   final SyncedEntitiesDb<T> syncedEntityDb;
+
   Database get db => syncedEntityDb.db;
+
   SyncedEntityEditScreenBloc(
       {required this.syncedEntityDb, required this.entityId}) {
     _init();
   }
+
   Future<void> _init() async {
     await syncedEntityDb.ready;
-    audiAddStreamSubscription(streamJoin2(
-            cvDbEntityStore.record(entityId).onRecord(db),
-            cvDbUserAccessStore.record(entityId).onRecord(db))
-        .listen((event) {
-      var dbEntity = event.$1 ?? TkCmsDbEntity();
-      var dbUserAccess = event.$2 ?? TkCmsDbUserAccess();
+    var entityId = this.entityId;
+    if (entityId != null) {
+      audiAddStreamSubscription(streamJoin2(
+              cvDbEntityStore.record(entityId).onRecord(db),
+              cvDbUserAccessStore.record(entityId).onRecord(db))
+          .listen((event) {
+        var dbEntity = event.$1 ?? TkCmsDbEntity();
+        var dbUserAccess = event.$2 ?? TkCmsDbUserAccess();
 
+        add(SyncedEntityEditScreenBlocState<T>(
+            dbEntity: dbEntity, dbUserAccess: dbUserAccess));
+      }));
+    } else {
       add(SyncedEntityEditScreenBlocState<T>(
-          dbEntity: dbEntity, dbUserAccess: dbUserAccess));
-    }));
+          dbEntity: TkCmsDbEntity(), dbUserAccess: TkCmsDbUserAccess()));
+    }
   }
 
-  Future<void> syncFromFirestore() async {
+  Future<void> syncFromFirestore({String? entityId}) async {
+    entityId ??= this.entityId!;
     var helper = SembastFirestoreSyncHelper<T>(
         db: db,
         entityAccess: entityAccess,
         options: LocalDbFromFsOptions(userId: userId));
     await helper.localDbSyncOne(entityId: entityId);
+  }
+
+  Future<void> save(TkCmsDbEntity dbEntity) async {
+    var fsEntity = cvNewModel<T>();
+    fsEntity.name.v = dbEntity.name.v;
+    String entityId;
+    if (isCreate) {
+      entityId = await entityAccess.createEntity(
+          userId: gAuthBloc.currentUserId, entity: fsEntity);
+    } else {
+      entityId = this.entityId!;
+      fsEntity.path = entityAccess.fsEntityRef(entityId).path;
+
+      var firestore = entityAccess.firestore;
+      await firestore.cvSet(fsEntity);
+    }
+    await syncFromFirestore(entityId: entityId);
   }
 }
 
@@ -68,6 +101,9 @@ class _SyncedEntityEditScreenState<T extends TkCmsFsEntity>
     with
         PopOnLoggedOutMixin<SyncedEntityEditScreen<T>>,
         AutoDisposedBusyScreenStateMixin<SyncedEntityEditScreen<T>> {
+  TextEditingController? _nameController;
+  final _formKey = GlobalKey<FormState>();
+
   @override
   void initState() {
     popOnLoggedOut();
@@ -77,62 +113,96 @@ class _SyncedEntityEditScreenState<T extends TkCmsFsEntity>
   @override
   Widget build(BuildContext context) {
     var bloc = BlocProvider.of<SyncedEntityEditScreenBloc<T>>(context);
-    return ValueStreamBuilder(
-        stream: bloc.state,
-        builder: (context, snapshot) {
-          var state = snapshot.data;
-          var dbEntity = state?.dbEntity;
-          var dbUserAccess = state?.dbUserAccess;
-          return Scaffold(
-            appBar: AppBar(
-              title: Text(bloc.entityName),
-              actions: [
-                IconButton(
-                    icon: const Icon(Icons.refresh),
-                    onPressed: () {
-                      busyAction(() async {
-                        await bloc.syncFromFirestore();
-                      });
-                    })
-              ],
-            ),
-            body: dbEntity == null
-                ? const Center(
-                    child: CircularProgressIndicator(),
-                  )
-                : Stack(
-                    children: [
-                      ListView(
-                        children: [
-                          ListTile(
-                              title: Text(dbEntity.name.v ?? ''),
-                              subtitle: Text(dbEntity.id),
-                              onTap: () {
-                                // TODO
-                              }),
-                          if (dbUserAccess != null) ...[
-                            DbUserAccessWidget(dbUserAccess: dbUserAccess),
+    return Form(
+      key: _formKey,
+      child: ValueStreamBuilder(
+          stream: bloc.state,
+          builder: (context, snapshot) {
+            var state = snapshot.data;
+            var dbEntity = state?.dbEntity;
+            //var dbUserAccess = state?.dbUserAccess;
+            if (dbEntity != null) {
+              _nameController ??= TextEditingController(text: dbEntity.name.v);
+            }
+            return Scaffold(
+              appBar: AppBar(
+                title: Text(bloc.entityName),
+              ),
+              body: dbEntity == null
+                  ? const Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : Stack(
+                      children: [
+                        ListView(
+                          children: [
+                            const SizedBox(
+                              height: 16,
+                            ),
+                            BodyContainer(
+                              child: Column(
+                                children: [
+                                  BodyHPadding(
+                                    child: TextFormField(
+                                      controller: _nameController,
+                                      decoration: const InputDecoration(
+                                          labelText: 'Name', hintText: 'Name'),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ],
-                        ],
-                      ),
-                      BusyIndicator(busy: busyStream)
-                    ],
-                  ),
-            floatingActionButton: FloatingActionButton(
-              onPressed: () async {
-                await muiSnack(context, 'Not implemented');
+                        ),
+                        BusyIndicator(busy: busyStream)
+                      ],
+                    ),
+              floatingActionButton: (dbEntity != null)
+                  ? FloatingActionButton(
+                      onPressed: () {
+                        _saveAndClose(dbEntity);
+                      },
+                      child: const Icon(Icons.save),
+                    )
+                  : null,
+            );
+          }),
+    );
+  }
 
-                //print(fsProject);
-              },
-              child: const Icon(Icons.edit),
-            ),
-          );
-        });
+  Future<void> _saveAndClose(TkCmsDbEntity dbEntity) async {
+    var busyResult = await busyAction(() async {
+      if (_formKey.currentState!.validate()) {
+        var bloc = BlocProvider.of<SyncedEntityEditScreenBloc<T>>(context);
+
+        var newEntity = TkCmsDbEntity()..copyFrom(dbEntity);
+        var name = _nameController!.text.trimmedNonEmpty();
+        if (name != null) {
+          newEntity.name.v = name;
+        }
+        await bloc.save(newEntity);
+        if (mounted) {
+          Navigator.of(context).pop();
+        }
+      }
+    });
+    if (!busyResult.busy) {
+      if (busyResult.error != null) {
+        if (mounted) {
+          if (kDebugMode) {
+            print('error: ${busyResult.error}');
+            print('st: ${busyResult.errorStackTrace}');
+          }
+          await muiSnack(context, '${busyResult.error}');
+        }
+      }
+    }
   }
 }
 
 class _Property extends StatelessWidget {
   final String name;
+
   const _Property({required this.name});
 
   @override
@@ -166,14 +236,14 @@ class DbUserAccessWidget extends StatelessWidget {
   }
 }
 
-Future<void> goToSyncedEntityViewScreenBloc<T extends TkCmsFsEntity>(
+Future<void> goToSyncedEntityEditScreen<T extends TkCmsFsEntity>(
     BuildContext context,
-    {required SyncedEntitiesDb<T> syncedEntityDb,
-    required String entityId}) async {
+    {required SyncedEntitiesDb<T> syncedEntitiesDb,
+    required String? entityId}) async {
   await Navigator.of(context).push<void>(MaterialPageRoute(builder: (context) {
     return BlocProvider(
         blocBuilder: () => SyncedEntityEditScreenBloc<T>(
-            syncedEntityDb: syncedEntityDb, entityId: entityId),
+            syncedEntityDb: syncedEntitiesDb, entityId: entityId),
         child: SyncedEntityEditScreen<T>());
   }));
 }

@@ -2,19 +2,19 @@ import 'package:tekartik_app_flutter_common_utils/common_utils_import.dart';
 
 import 'package:tkcms_admin_app/audi/tkcms_audi.dart';
 import 'package:tkcms_admin_app/auth/auth.dart';
-import 'package:tkcms_admin_app/screen/project_screen.dart';
+import 'package:tkcms_admin_app/screen/project_info.dart';
 import 'package:tkcms_admin_app/sembast/content_db_bloc.dart';
 import 'package:tkcms_common/tkcms_content.dart';
 
 import 'package:tkcms_common/tkcms_sembast.dart';
 
 class NotesScreenBlocState {
-  final TkCmsEntityAndUserAccess? booklet;
+  final TkCmsEntityAndUserAccess? project;
   final List<DbNote>? notes;
   String? firstPinnedNoteId;
   String? firstUnpinnedNoteId;
 
-  NotesScreenBlocState({required this.booklet, required this.notes}) {
+  NotesScreenBlocState({required this.project, required this.notes}) {
     var notes = this.notes;
     if (notes != null) {
       for (var note in notes) {
@@ -44,17 +44,17 @@ class NotesScreenBloc extends AutoDisposeStateBaseBloc<NotesScreenBlocState> {
   StreamSubscription? _notesSubscription;
   NotesScreenBloc({required this.projectId}) {
     _lock.synchronized(() async {
-      var booklet = (await fsProjectSyncedDb.getOrSyncEntity(
+      var project = (await fsProjectSyncedDb.getOrSyncEntity(
           entityId: projectId, userId: userId));
-      if (booklet == null) {
-        add(NotesScreenBlocState(booklet: null, notes: null));
+      if (project == null) {
+        add(NotesScreenBlocState(project: null, notes: null));
       } else {
-        _notesDb = await globalContentBloc.grabContentDb(booklet.id);
+        _notesDb = await globalContentBloc.grabContentDb(project.id);
         var db = _notesDb!.db;
 
-        add(NotesScreenBlocState(booklet: booklet, notes: []));
+        add(NotesScreenBlocState(project: project, notes: []));
         _notesSubscription = dbNoteStore.query().onRecords(db).listen((notes) {
-          add(NotesScreenBlocState(booklet: booklet, notes: notes));
+          add(NotesScreenBlocState(project: project, notes: notes));
         });
       }
     });

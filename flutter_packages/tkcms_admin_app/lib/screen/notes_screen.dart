@@ -28,13 +28,13 @@ class _NotesScreenState extends State<NotesScreen> {
         builder: (context, snapshot) {
           var state = snapshot.data;
           var notes = state?.notes;
-          var booklet = state?.booklet;
+          var booklet = state?.project;
           var canAdd = booklet?.userAccess.isWrite ?? false;
           // print('canAdd: $canAdd ($booklet)');
           return Scaffold(
             appBar: AppBar(
               title: (state != null)
-                  ? Text(state.booklet?.entity.name.v ??
+                  ? Text(state.project?.entity.name.v ??
                       appIntl(context).notesTitle)
                   : null,
               actions: [
@@ -145,9 +145,14 @@ class NoteItemTile extends StatelessWidget {
   }
 }
 
-/*
-Future<void> goToNotesScreen(BuildContext context, BookletRef bookletRef,
+Future<void> goToNotesScreen(BuildContext context, String projectId,
     {TransitionDelegate? transitionDelegate}) async {
+  await Navigator.of(context).push<void>(MaterialPageRoute(builder: (context) {
+    return BlocProvider(
+        blocBuilder: () => NotesScreenBloc(projectId: projectId),
+        child: const NotesScreen());
+  }));
+  /*
   var cn = ContentNavigator.of(context);
   globalNotelioPrefs.setLatestBookletRef(bookletRef);
   if (bookletRef.isLocal) {
@@ -162,5 +167,6 @@ Future<void> goToNotesScreen(BuildContext context, BookletRef bookletRef,
         SyncedBookletNotesContentPath()..booklet.value = syncedBookletId,
         transitionDelegate: transitionDelegate);
   }
+
+   */
 }
-*/

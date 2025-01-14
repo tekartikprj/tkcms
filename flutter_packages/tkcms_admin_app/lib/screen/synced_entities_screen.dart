@@ -3,6 +3,7 @@ import 'package:tekartik_app_flutter_widget/view/busy_indicator.dart';
 import 'package:tekartik_app_flutter_widget/view/busy_screen_state_mixin.dart';
 import 'package:tkcms_admin_app/audi/tkcms_audi.dart';
 import 'package:tkcms_admin_app/auth/auth.dart';
+import 'package:tkcms_admin_app/screen/synced_entity_edit_screen.dart';
 import 'package:tkcms_admin_app/screen/synced_entity_view_screen.dart';
 import 'package:tkcms_admin_app/src/import_common.dart';
 import 'package:tkcms_common/tkcms_firestore.dart';
@@ -110,7 +111,7 @@ class _SyncedEntitiesScreenState<T extends TkCmsFsEntity>
                               title: Text(dbEntity.name.v ?? ''),
                               subtitle: Text(dbEntity.id),
                               onTap: () async {
-                                await goToSyncedEntityViewScreenBloc(context,
+                                await goToSyncedEntityViewScreen(context,
                                     syncedEntityDb: bloc.syncedEntitiesDb,
                                     entityId: dbEntity.id);
                               },
@@ -121,8 +122,8 @@ class _SyncedEntitiesScreenState<T extends TkCmsFsEntity>
                   ),
             floatingActionButton: FloatingActionButton(
               onPressed: () async {
-                await bloc.createTestEntity();
-                //print(fsProject);
+                await goToSyncedEntityEditScreen(context,
+                    syncedEntitiesDb: bloc.syncedEntitiesDb, entityId: null);
               },
               child: const Icon(Icons.add),
             ),
@@ -131,7 +132,7 @@ class _SyncedEntitiesScreenState<T extends TkCmsFsEntity>
   }
 }
 
-Future<void> goToSyncedEntitiesScreenBloc<T extends TkCmsFsEntity>(
+Future<void> goToSyncedEntitiesScreen<T extends TkCmsFsEntity>(
     BuildContext context,
     {required SyncedEntitiesDb<T> syncedEntitiesDb}) async {
   await Navigator.of(context).push<void>(MaterialPageRoute(builder: (context) {
