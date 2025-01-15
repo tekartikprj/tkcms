@@ -28,6 +28,8 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  flutter_localizations:
+    sdk: flutter
   flutter:
     sdk: flutter
   tekaly_firestore_explorer:
@@ -111,6 +113,10 @@ dependencies:
       url: https://github.com/tekartik/firebase_ui.dart
       ref: dart3a
       path: packages/firebase_ui_auth
+  tekartik_common_utils:
+    git:
+      url: https://github.com/tekartik/common_utils.dart
+      ref: dart3a
 dev_dependencies:
   flutter_test:
     sdk: flutter

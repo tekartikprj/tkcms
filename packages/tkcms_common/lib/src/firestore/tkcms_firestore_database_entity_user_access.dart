@@ -276,6 +276,10 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<
     });
   }
 
+  Future<void> writeEntity({required TFsEntity entity}) async {
+    await entity.ref.set(firestore, entity);
+  }
+
   /// Create a booklet, return the id
   Future<String> createEntity(
       {required String userId, required TFsEntity entity}) async {
@@ -305,7 +309,7 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<
     });
   }
 
-  /// Mar as deleted and non active
+  /// Mark as deleted and non active
   Future<void> leaveEntity(String entityId, {required String userId}) async {
     var entityUserAccessRef = _entityUserAccessDoc(entityId, userId);
     var userEntityAccessRef = _userEntityAccessDoc(userId, entityId);

@@ -1,7 +1,7 @@
 import 'package:sembast/sembast_memory.dart';
 import 'package:tekartik_firebase_firestore_sembast/firestore_sembast.dart';
 import 'package:test/test.dart';
-import 'package:tkcms_common/src/localdb/sembast.dart';
+import 'package:tkcms_common/src/sembast/sembast.dart';
 import 'package:tkcms_common/tkcms_firestore_v2.dart';
 import 'package:tkcms_common/tkcms_sembast.dart';
 

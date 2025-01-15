@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:tekartik_app_flutter_widget/mini_ui.dart';
 import 'package:tekartik_app_flutter_widget/view/busy_indicator.dart';
 import 'package:tekartik_app_flutter_widget/view/busy_screen_state_mixin.dart';
 import 'package:tkcms_admin_app/audi/tkcms_audi.dart';
 import 'package:tkcms_admin_app/auth/auth.dart';
+import 'package:tkcms_admin_app/screen/synced_entity_edit_screen.dart';
 import 'package:tkcms_admin_app/src/import_common.dart';
 import 'package:tkcms_common/tkcms_firestore.dart';
 import 'package:tkcms_common/tkcms_sembast.dart';
@@ -117,14 +117,16 @@ class _SyncedEntityScreenState<T extends TkCmsFsEntity>
                       BusyIndicator(busy: busyStream)
                     ],
                   ),
-            floatingActionButton: FloatingActionButton(
-              onPressed: () async {
-                await muiSnack(context, 'Not implemented');
-
-                //print(fsProject);
-              },
-              child: const Icon(Icons.edit),
-            ),
+            floatingActionButton: (dbUserAccess?.isWrite ?? false)
+                ? FloatingActionButton(
+                    onPressed: () async {
+                      await goToSyncedEntityEditScreen(context,
+                          syncedEntitiesDb: bloc.syncedEntityDb,
+                          entityId: bloc.entityId);
+                    },
+                    child: const Icon(Icons.edit),
+                  )
+                : null,
           );
         });
   }
@@ -165,7 +167,7 @@ class DbUserAccessWidget extends StatelessWidget {
   }
 }
 
-Future<void> goToSyncedEntityViewScreenBloc<T extends TkCmsFsEntity>(
+Future<void> goToSyncedEntityViewScreen<T extends TkCmsFsEntity>(
     BuildContext context,
     {required SyncedEntitiesDb<T> syncedEntityDb,
     required String entityId}) async {

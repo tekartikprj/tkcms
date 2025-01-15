@@ -5,3 +5,9 @@ class LoginContentPath extends ContentPathBase {
   @override
   late final List<ContentPathField> fields = [part];
 }
+
+class ProjectsContentPath extends ContentPathBase {
+  final part = ContentPathPart('projects');
+  @override
+  late final List<ContentPathField> fields = [part];
+}

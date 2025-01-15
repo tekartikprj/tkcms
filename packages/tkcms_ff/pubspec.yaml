@@ -73,6 +73,4 @@ dev_dependencies:
       ref: dart3a
   dev_build: '>=0.16.5-4'
 
-dependency_overrides:
-  tkcms_common:
-    path: ../tkcms_common
+resolution: workspace
