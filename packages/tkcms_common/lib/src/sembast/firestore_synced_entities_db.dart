@@ -141,5 +141,4 @@ class SyncedEntitiesDb<T extends TkCmsFsEntity> {
     }
     return null;
   }
-
 }
