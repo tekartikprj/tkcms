@@ -27,13 +27,13 @@ void initDbNotesBuilders() {
 
 final dbNoteStore = cvStringStoreFactory.store<DbNote>('note');
 
-String notesDbName(String bookletId) => 'notes_${bookletId}_v1.db';
+String notesDbName(String projectId) => 'notes_${projectId}_v1.db';
 
 class ContentDb {
   final SembastDatabaseContext sembastDatabaseContext;
   final FirestoreDatabaseContext firestoreDatabaseContext;
   final String app;
-  final String bookletId;
+  final String projectId;
 
   /// Synced db
   SyncedDb get syncedDb => _syncedDb.syncedDb;
@@ -60,11 +60,11 @@ class ContentDb {
   }
 
   @override
-  String toString() => 'ContextDb(app, $bookletId, $hashCode)';
+  String toString() => 'ContextDb(app, $projectId, $hashCode)';
 
   ContentDb(
       {required this.app,
-      required this.bookletId,
+      required this.projectId,
       required this.sembastDatabaseContext,
       required this.firestoreDatabaseContext});
 }

@@ -13,92 +13,92 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appVersion => 'Version';
 
   @override
-  String get bookletAccessAdmin => 'Admin access';
+  String get projectAccessAdmin => 'Admin access';
 
   @override
-  String get bookletAccessRead => 'Reader access';
+  String get projectAccessRead => 'Reader access';
 
   @override
-  String get bookletAccessWrite => 'Editor access';
+  String get projectAccessWrite => 'Editor access';
 
   @override
-  String get bookletDefaultName => 'Booklet';
+  String get projectDefaultName => 'Project';
 
   @override
-  String get bookletDelete => 'Delete Booklet';
+  String get projectDelete => 'Delete Project';
 
   @override
-  String get bookletDeleteConfirm =>
-      'Are you sure you want to delete this booklet?\nAll notes in this booklet will be deleted';
+  String get projectDeleteConfirm =>
+      'Are you sure you want to delete this project?\nAll notes in this project will be deleted';
 
   @override
-  String get bookletEditTitle => 'Edit Booklet';
+  String get projectEditTitle => 'Edit Project';
 
   @override
-  String get bookletInviteAccept => 'Accept booklet invite';
+  String get projectInviteAccept => 'Accept project invite';
 
   @override
-  String get bookletInviteAcceptConfirm =>
-      'Are you sure you want to accept this booklet invite?';
+  String get projectInviteAcceptConfirm =>
+      'Are you sure you want to accept this project invite?';
 
   @override
-  String get bookletInviteDelete => 'Delete Booklet invite';
+  String get projectInviteDelete => 'Delete Project invite';
 
   @override
-  String get bookletInviteDeleteConfirm =>
-      'Are you sure you want to delete this booklet invite?';
+  String get projectInviteDeleteConfirm =>
+      'Are you sure you want to delete this project invite?';
 
   @override
-  String get bookletInviteLink => 'Booklet invite link';
+  String get projectInviteLink => 'Project invite link';
 
   @override
-  String get bookletInviteLinkInformation =>
-      'Send this link to invite someone to this booklet';
+  String get projectInviteLinkInformation =>
+      'Send this link to invite someone to this project';
 
   @override
-  String get bookletInviteMessage => 'You have a booklet invite';
+  String get projectInviteMessage => 'You have a project invite';
 
   @override
-  String get bookletInviteMustBeLoggedIn =>
-      'You must be logged in to accept a booklet invite';
+  String get projectInviteMustBeLoggedIn =>
+      'You must be logged in to accept a project invite';
 
   @override
-  String get bookletInviteNotFound => 'Booklet invite not found';
+  String get projectInviteNotFound => 'Project invite not found';
 
   @override
-  String get bookletInviteTitle => 'Accept booklet invite';
+  String get projectInviteTitle => 'Accept project invite';
 
   @override
-  String get bookletInviteView => 'View invite';
+  String get projectInviteView => 'View invite';
 
   @override
-  String get bookletLeave => 'Leave Booklet';
+  String get projectLeave => 'Leave Project';
 
   @override
-  String get bookletLeaveConfirm =>
-      'Are you sure you want to leave this booklet?\nYou won\'t be able to access any notes contained in this booklet';
+  String get projectLeaveConfirm =>
+      'Are you sure you want to leave this project?\nYou won\'t be able to access any notes contained in this project';
 
   @override
-  String get bookletNotFound => 'Booklet not found';
+  String get projectNotFound => 'Project not found';
 
   @override
-  String get bookletShare => 'Share booklet';
+  String get projectShare => 'Share project';
 
   @override
-  String get bookletShareInformation =>
-      'Click on the Share button below to invite someone to this booklet';
+  String get projectShareInformation =>
+      'Click on the Share button below to invite someone to this project';
 
   @override
-  String get bookletTypeLocal => 'Local';
+  String get projectTypeLocal => 'Local';
 
   @override
-  String get bookletTypeSynced => 'Synced';
+  String get projectTypeSynced => 'Synced';
 
   @override
-  String get bookletViewNotes => 'View notes';
+  String get projectViewNotes => 'View notes';
 
   @override
-  String get bookletsTitle => 'Booklets';
+  String get projectsTitle => 'Projects';
 
   @override
   String get cancelButtonLabel => 'Cancel';
@@ -107,11 +107,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get contentMarkdownInfo => 'Content in markdown format';
 
   @override
-  String get createBookletInfo =>
-      'Create a booklet to start storing your notes, local booklets are stored on your device, synced booklets are stored in the cloud';
+  String get createProjectInfo =>
+      'Create a project to start storing your notes, local projects are stored on your device, synced projects are stored in the cloud';
 
   @override
-  String get createBookletTitle => 'Create Booklet';
+  String get createProjectTitle => 'Create Project';
 
   @override
   String get deleteButtonLabel => 'Delete';
@@ -136,13 +136,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get leaveButtonLabel => 'Leave';
 
   @override
-  String get localBookletTitle => 'Local Booklet';
+  String get localProjectTitle => 'Local Project';
 
   @override
-  String get manageBookletTitle => 'Manage Booklet';
+  String get manageProjectTitle => 'Manage Project';
 
   @override
-  String get manageBookletsTitle => 'Manage Booklets';
+  String get manageProjectsTitle => 'Manage Projects';
 
   @override
   String get markdownGuideAsset => 'markdown_guide_en.md';
@@ -205,15 +205,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get privacyPolicy => 'Privacy Policy';
 
   @override
-  String settingCurrentBooklet(String booklet) {
-    return 'Current booklet \'$booklet\'';
+  String settingCurrentProject(String project) {
+    return 'Current project \'$project\'';
   }
 
   @override
-  String get settingManageBooklet => 'Manage Booklet';
+  String get settingManageProject => 'Manage Project';
 
   @override
-  String get settingSwitchBooklet => 'Switch Booklet';
+  String get settingSwitchProject => 'Switch Project';
 
   @override
   String get settingsTitle => 'Settings';

@@ -6,7 +6,7 @@ import 'package:tkcms_common/tkcms_sembast.dart';
 export 'package:tekartik_app_cv_sembast/app_cv_sembast.dart';
 
 /// Key is the user id
-class DbBookletUser extends DbStringRecordBase {
+class DbProjectUser extends DbStringRecordBase {
   /// Timestamp when the user is ready
   final readyTimestamp = CvField<DbTimestamp>('readyTimestamp');
 
@@ -15,8 +15,8 @@ class DbBookletUser extends DbStringRecordBase {
 }
 
 /*
-/// Booklet
-class DbBooklet extends DbStringRecordBase with TkCmsCvUserAccessMixin {
+/// Project
+class DbProject extends DbStringRecordBase with TkCmsCvUserAccessMixin {
   /// Name
   final name = CvField<String>('name');
 
@@ -35,7 +35,7 @@ class DbBooklet extends DbStringRecordBase with TkCmsCvUserAccessMixin {
   @override
   CvFields get fields => [name, uid, userId, ...userAccessMixinfields];
 
-  /// Booklet ref
+  /// Project ref
   EntityRef get ref {
     return EntityRef(id: id, syncedId: uid.v);
   }
@@ -51,22 +51,22 @@ class DbBooklet extends DbStringRecordBase with TkCmsCvUserAccessMixin {
 }
 
 /// The model
-final dbBookletModel = DbBooklet();
+final dbProjectModel = DbProject();
 
 /// Initialize the db builders
-void initDbBookletsBuilders() {
-  cvAddConstructors([DbBooklet.new, DbBookletUser.new]);
+void initDbProjectsBuilders() {
+  cvAddConstructors([DbProject.new, DbProjectUser.new]);
 }
 
-/// Booklets db
-const bookletsDbName = 'booklets_v1.db';
+/// Projects db
+const projectsDbName = 'projects_v1.db';
 
-/// Booklet store
-final dbBookletStore = cvStringStoreFactory.store<DbBooklet>('booklet');
+/// Project store
+final dbProjectStore = cvStringStoreFactory.store<DbProject>('project');
 
-/// Booklet user store
-final dbBookletUserStore =
-    cvStringStoreFactory.store<DbBookletUser>('bookletUser');
+/// Project user store
+final dbProjectUserStore =
+    cvStringStoreFactory.store<DbProjectUser>('projectUser');
 */
 class SyncedEntitiesOptions {
   final SembastDatabaseContext sembastDatabaseContext;

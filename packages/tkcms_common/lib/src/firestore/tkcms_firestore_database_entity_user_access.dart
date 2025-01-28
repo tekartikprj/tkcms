@@ -131,7 +131,7 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<
     await inviteAccessRef.set(firestore, userAccess);
   }
 
-  /// Create a booklet invite, return the id
+  /// Create a project invite, return the id
   Future<String> createInviteEntity(
       {required String userId,
       required String entityId,
@@ -219,7 +219,7 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<
     txn.refSet(userEntityAccessRef, userAccess);
   }
 
-  /// Create a booklet invite, return the id
+  /// Create a project invite, return the id
   Future<void> acceptInviteEntity(
       {required String userId,
       required String inviteId,
@@ -265,7 +265,7 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<
     });
   }
 
-  /// Create a booklet invite, return the id
+  /// Create a project invite, return the id
   Future<void> deleteInviteEntity(
       {required String inviteId, required String entityId}) async {
     return await firestore.cvRunTransaction((txn) async {
@@ -280,7 +280,7 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<
     await entity.ref.set(firestore, entity);
   }
 
-  /// Create a booklet, return the id
+  /// Create a project, return the id
   Future<String> createEntity(
       {required String userId, required TFsEntity entity}) async {
     entity.created.v ??= Timestamp.now();
@@ -315,7 +315,7 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<
     var userEntityAccessRef = _userEntityAccessDoc(userId, entityId);
     var entityUserAccess = await firestore.refGet(entityUserAccessRef);
     if (!entityUserAccess.exists) {
-      throw Exception('User $userId not part of booklet $entityId');
+      throw Exception('User $userId not part of project $entityId');
     }
     await firestore.cvRunTransaction((txn) async {
       txn.refDelete(entityUserAccessRef);
@@ -353,11 +353,11 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<
   /// if userId != null, delete users last
   Future<void> purgeEntity(String entityId, {String? userId}) async {
     var entityRef = _entityCollection.doc(entityId);
-    var booklet = await firestore.refGet(entityRef);
-    if (!booklet.exists) {
+    var project = await firestore.refGet(entityRef);
+    if (!project.exists) {
       return;
     }
-    if (booklet.deleted.v != true) {
+    if (project.deleted.v != true) {
       throw ArgumentError('$_entityName $entityId not deleted');
     }
     var entityUserAccessCrollRef = _entityUserAccessColl(entityId);
@@ -473,7 +473,7 @@ class TkCmsFirestoreDatabaseEntityCollectionInfo<
   /// Display name
   final String name;
 
-  /// The id of the collection (i.e. project, app, booklet, site...)
+  /// The id of the collection (i.e. project, app, project, site...)
   final String id;
 
   /// The entity type is the id!
