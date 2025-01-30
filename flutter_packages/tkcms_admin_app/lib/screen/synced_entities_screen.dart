@@ -16,6 +16,11 @@ class SyncedEntitiesSelectResult {
   final String entityId;
 
   SyncedEntitiesSelectResult({required this.entityId});
+
+  @override
+  String toString() {
+    return 'SyncedEntitiesSelectResult(entityId: $entityId)';
+  }
 }
 
 class SyncedEntitiesScreenBlocState<T extends TkCmsFsEntity> {

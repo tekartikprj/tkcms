@@ -1,5 +1,6 @@
 // ignore_for_file: depend_on_referenced_packages
 
+import 'package:fs_shim/fs_shim.dart';
 import 'package:process_run/shell.dart';
 import 'package:tekartik_app_sembast/sembast.dart';
 import 'package:tekartik_firebase_auth_local/auth_local.dart';
@@ -8,6 +9,7 @@ import 'package:tekartik_firebase_firestore_sembast/firestore_sembast.dart';
 import 'package:tekartik_firebase_functions_call_http/functions_call_memory.dart';
 import 'package:tekartik_firebase_functions_http/firebase_functions_memory.dart';
 import 'package:tekartik_firebase_local/firebase_local.dart';
+import 'package:tekartik_firebase_storage_fs/storage_fs.dart';
 import 'package:tkcms_common/tkcms_common.dart';
 import 'package:tkcms_common/tkcms_firebase.dart';
 
@@ -26,6 +28,9 @@ FirebaseServicesContext initFirebaseServicesLocalSembast(
       getDatabaseFactory(rootPath: join(firebase.localPath!, 'firestore'));
   var authSembastDatabaseFactory =
       getDatabaseFactory(rootPath: join(firebase.localPath!, 'auth'));
+  var storageService = newStorageServiceFs(
+      fileSystem: fileSystemDefault,
+      basePath: join(firebase.localPath!, 'storage'));
   var firestoreService =
       FirestoreServiceSembast(firestoreSembastDatabaseFactory);
   var authService =
@@ -34,6 +39,7 @@ FirebaseServicesContext initFirebaseServicesLocalSembast(
   var functionsService = firebaseFunctionsServiceMemory;
   return FirebaseServicesContext(
       appOptions: FirebaseAppOptions(projectId: projectId),
+      storageService: storageService,
       firebase: firebase,
       functionsCallService: functionsCallService,
       functionsCallRegion: regionBelgium,
