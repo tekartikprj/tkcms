@@ -12,8 +12,8 @@ class _ContentDbInfo {
 }
 
 class ContentDbBloc {
-  ContentDbBloc({required this.app});
-  final String app;
+  ContentDbBloc();
+
   final _lock = Lock();
   final _map = <String, _ContentDbInfo>{};
   Future<ContentDb> grabContentDb(String projectId) async {
@@ -45,7 +45,6 @@ class ContentDbBloc {
                   .firestoreDatabaseContext.rootDocument!
                   .collection(fsProjectCollectionInfo.id)
                   .doc(projectId)),
-          app: app,
           sembastDatabaseContext:
               globalSembastDatabasesContext.db('content.db'));
       await contentDb.ready;

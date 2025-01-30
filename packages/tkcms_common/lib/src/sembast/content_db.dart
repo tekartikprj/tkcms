@@ -32,7 +32,7 @@ String notesDbName(String projectId) => 'notes_${projectId}_v1.db';
 class ContentDb {
   final SembastDatabaseContext sembastDatabaseContext;
   final FirestoreDatabaseContext firestoreDatabaseContext;
-  final String app;
+
   final String projectId;
 
   /// Synced db
@@ -63,8 +63,7 @@ class ContentDb {
   String toString() => 'ContextDb(app, $projectId, $hashCode)';
 
   ContentDb(
-      {required this.app,
-      required this.projectId,
+      {required this.projectId,
       required this.sembastDatabaseContext,
       required this.firestoreDatabaseContext});
 }
