@@ -43,7 +43,7 @@ class ContentDbBloc {
               firestore: gFsDatabaseService.firestore,
               rootDocument: gFsDatabaseService
                   .firestoreDatabaseContext.rootDocument!
-                  .collection('projects')
+                  .collection(fsProjectCollectionInfo.id)
                   .doc(projectId)),
           app: app,
           sembastDatabaseContext:
