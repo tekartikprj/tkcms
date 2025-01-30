@@ -42,7 +42,7 @@ class AppFlavorContext {
 
   String get uniqueAppName =>
       '${app}_${flavorContext.flavor}${local ? '_local' : ''}';
-  late final appKeySuffix = '_$uniqueAppName}';
+  late final appKeySuffix = '_$uniqueAppName';
 
   static final testLocal = AppFlavorContext(
       app: 'test', flavorContext: FlavorContext.test, local: true);
