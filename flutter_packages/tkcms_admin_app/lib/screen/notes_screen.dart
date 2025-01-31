@@ -28,9 +28,9 @@ class _NotesScreenState extends State<NotesScreen> {
         builder: (context, snapshot) {
           var state = snapshot.data;
           var notes = state?.notes;
-          var booklet = state?.project;
-          var canAdd = booklet?.userAccess.isWrite ?? false;
-          // print('canAdd: $canAdd ($booklet)');
+          var project = state?.project;
+          var canAdd = project?.userAccess.isWrite ?? false;
+          // print('canAdd: $canAdd ($project)');
           return Scaffold(
             appBar: AppBar(
               title: (state != null)
@@ -46,7 +46,7 @@ class _NotesScreenState extends State<NotesScreen> {
                 return const CenteredProgress();
               }
 
-              if (notes == null || booklet == null) {
+              if (notes == null || project == null) {
                 return const Center(
                   child: Icon(Icons.error),
                 ); //edError();
@@ -55,7 +55,7 @@ class _NotesScreenState extends State<NotesScreen> {
                   itemCount: notes.length,
                   itemBuilder: (context, index) {
                     var note = notes[index];
-                    // devPrint('note: $note booklet: $booklet');
+                    // devPrint('note: $note project: $project');
 
                     return BodyContainer(
                       child: Column(
@@ -82,7 +82,7 @@ class _NotesScreenState extends State<NotesScreen> {
                                 ],
                               ),
                             ),
-                          NoteItemTile(note: note, eua: booklet),
+                          NoteItemTile(note: note, eua: project),
                         ],
                       ),
                     );
@@ -93,7 +93,7 @@ class _NotesScreenState extends State<NotesScreen> {
                 : FloatingActionButton(
                     onPressed: () async {
                       //await goToNoteEditScreen(context,
-                      //    booklet: booklet!, note: null);
+                      //    project: project!, note: null);
                       //await goToCreateNoteScreen(context);
                     },
                     child: const Icon(Icons.add),
@@ -137,7 +137,7 @@ class NoteItemTile extends StatelessWidget {
       title: Text(title),
       subtitle: subtitle == null ? null : Text(subtitle!),
       onTap: () async {
-        //await goToNoteViewScreen(context, note: note, bookletRef: eua.ref);
+        //await goToNoteViewScreen(context, note: note, projectRef: eua.ref);
         //var cn = ContentNavigator.of(context);
         //cn.pushPath<void>(NoteContentPath(note: note));
       },
@@ -154,17 +154,17 @@ Future<void> goToNotesScreen(BuildContext context, String projectId,
   }));
   /*
   var cn = ContentNavigator.of(context);
-  globalNotelioPrefs.setLatestBookletRef(bookletRef);
-  if (bookletRef.isLocal) {
-    var bookletId = bookletRef.id;
+  globalNotelioPrefs.setLatestProjectRef(projectRef);
+  if (projectRef.isLocal) {
+    var projectId = projectRef.id;
     await cn.pushPath<void>(
-        LocalBookletNotesContentPath()..booklet.value = bookletId,
+        LocalProjectNotesContentPath()..project.value = projectId,
         transitionDelegate: transitionDelegate);
   } else {
-    var syncedBookletId = bookletRef.syncedId!;
+    var syncedProjectId = projectRef.syncedId!;
 
     await cn.pushPath<void>(
-        SyncedBookletNotesContentPath()..booklet.value = syncedBookletId,
+        SyncedProjectNotesContentPath()..project.value = syncedProjectId,
         transitionDelegate: transitionDelegate);
   }
 

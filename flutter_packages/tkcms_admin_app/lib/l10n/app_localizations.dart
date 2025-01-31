@@ -110,167 +110,167 @@ abstract class AppLocalizations {
   /// **'Version'**
   String get appVersion;
 
-  /// Booklet access admin
+  /// Project access admin
   ///
   /// In en, this message translates to:
   /// **'Admin access'**
-  String get bookletAccessAdmin;
+  String get projectAccessAdmin;
 
-  /// Booklet access read
+  /// Project access read
   ///
   /// In en, this message translates to:
   /// **'Reader access'**
-  String get bookletAccessRead;
+  String get projectAccessRead;
 
-  /// No description provided for @bookletAccessWrite.
+  /// No description provided for @projectAccessWrite.
   ///
   /// In en, this message translates to:
   /// **'Editor access'**
-  String get bookletAccessWrite;
+  String get projectAccessWrite;
 
-  /// Booklet default name
+  /// Project default name
   ///
   /// In en, this message translates to:
-  /// **'Booklet'**
-  String get bookletDefaultName;
+  /// **'Project'**
+  String get projectDefaultName;
 
-  /// Delete booklet
+  /// Delete project
   ///
   /// In en, this message translates to:
-  /// **'Delete Booklet'**
-  String get bookletDelete;
+  /// **'Delete Project'**
+  String get projectDelete;
 
-  /// Delete booklet confirmation message
+  /// Delete project confirmation message
   ///
   /// In en, this message translates to:
-  /// **'Are you sure you want to delete this booklet?\nAll notes in this booklet will be deleted'**
-  String get bookletDeleteConfirm;
+  /// **'Are you sure you want to delete this project?\nAll notes in this project will be deleted'**
+  String get projectDeleteConfirm;
 
-  /// Edit booklet title
+  /// Edit project title
   ///
   /// In en, this message translates to:
-  /// **'Edit Booklet'**
-  String get bookletEditTitle;
+  /// **'Edit Project'**
+  String get projectEditTitle;
 
-  /// Accept booklet
+  /// Accept project
   ///
   /// In en, this message translates to:
-  /// **'Accept booklet invite'**
-  String get bookletInviteAccept;
+  /// **'Accept project invite'**
+  String get projectInviteAccept;
 
-  /// Accept booklet invite confirmation message
+  /// Accept project invite confirmation message
   ///
   /// In en, this message translates to:
-  /// **'Are you sure you want to accept this booklet invite?'**
-  String get bookletInviteAcceptConfirm;
+  /// **'Are you sure you want to accept this project invite?'**
+  String get projectInviteAcceptConfirm;
 
-  /// Delete booklet invite
+  /// Delete project invite
   ///
   /// In en, this message translates to:
-  /// **'Delete Booklet invite'**
-  String get bookletInviteDelete;
+  /// **'Delete Project invite'**
+  String get projectInviteDelete;
 
-  /// Delete booklet invite confirmation message
+  /// Delete project invite confirmation message
   ///
   /// In en, this message translates to:
-  /// **'Are you sure you want to delete this booklet invite?'**
-  String get bookletInviteDeleteConfirm;
+  /// **'Are you sure you want to delete this project invite?'**
+  String get projectInviteDeleteConfirm;
 
-  /// Booklet invite link
+  /// Project invite link
   ///
   /// In en, this message translates to:
-  /// **'Booklet invite link'**
-  String get bookletInviteLink;
+  /// **'Project invite link'**
+  String get projectInviteLink;
 
-  /// Booklet invite link information
+  /// Project invite link information
   ///
   /// In en, this message translates to:
-  /// **'Send this link to invite someone to this booklet'**
-  String get bookletInviteLinkInformation;
+  /// **'Send this link to invite someone to this project'**
+  String get projectInviteLinkInformation;
 
-  /// Booklet invite message
+  /// Project invite message
   ///
   /// In en, this message translates to:
-  /// **'You have a booklet invite'**
-  String get bookletInviteMessage;
+  /// **'You have a project invite'**
+  String get projectInviteMessage;
 
-  /// Booklet invite not logged in message
+  /// Project invite not logged in message
   ///
   /// In en, this message translates to:
-  /// **'You must be logged in to accept a booklet invite'**
-  String get bookletInviteMustBeLoggedIn;
+  /// **'You must be logged in to accept a project invite'**
+  String get projectInviteMustBeLoggedIn;
 
-  /// Booklet invite not found
+  /// Project invite not found
   ///
   /// In en, this message translates to:
-  /// **'Booklet invite not found'**
-  String get bookletInviteNotFound;
+  /// **'Project invite not found'**
+  String get projectInviteNotFound;
 
-  /// Booklet invite title
+  /// Project invite title
   ///
   /// In en, this message translates to:
-  /// **'Accept booklet invite'**
-  String get bookletInviteTitle;
+  /// **'Accept project invite'**
+  String get projectInviteTitle;
 
   /// View invite
   ///
   /// In en, this message translates to:
   /// **'View invite'**
-  String get bookletInviteView;
+  String get projectInviteView;
 
-  /// Leave booklet
+  /// Leave project
   ///
   /// In en, this message translates to:
-  /// **'Leave Booklet'**
-  String get bookletLeave;
+  /// **'Leave Project'**
+  String get projectLeave;
 
-  /// Leave booklet confirmation message
+  /// Leave project confirmation message
   ///
   /// In en, this message translates to:
-  /// **'Are you sure you want to leave this booklet?\nYou won\'t be able to access any notes contained in this booklet'**
-  String get bookletLeaveConfirm;
+  /// **'Are you sure you want to leave this project?\nYou won\'t be able to access any notes contained in this project'**
+  String get projectLeaveConfirm;
 
-  /// Booklet not found
+  /// Project not found
   ///
   /// In en, this message translates to:
-  /// **'Booklet not found'**
-  String get bookletNotFound;
+  /// **'Project not found'**
+  String get projectNotFound;
 
-  /// Share booklet
+  /// Share project
   ///
   /// In en, this message translates to:
-  /// **'Share booklet'**
-  String get bookletShare;
+  /// **'Share project'**
+  String get projectShare;
 
-  /// Booklet share information
+  /// Project share information
   ///
   /// In en, this message translates to:
-  /// **'Click on the Share button below to invite someone to this booklet'**
-  String get bookletShareInformation;
+  /// **'Click on the Share button below to invite someone to this project'**
+  String get projectShareInformation;
 
-  /// Local booklet type
+  /// Local project type
   ///
   /// In en, this message translates to:
   /// **'Local'**
-  String get bookletTypeLocal;
+  String get projectTypeLocal;
 
-  /// Synced booklet type
+  /// Synced project type
   ///
   /// In en, this message translates to:
   /// **'Synced'**
-  String get bookletTypeSynced;
+  String get projectTypeSynced;
 
   /// View notes
   ///
   /// In en, this message translates to:
   /// **'View notes'**
-  String get bookletViewNotes;
+  String get projectViewNotes;
 
-  /// Booklets title
+  /// Projects title
   ///
   /// In en, this message translates to:
-  /// **'Booklets'**
-  String get bookletsTitle;
+  /// **'Projects'**
+  String get projectsTitle;
 
   /// Cancel button label
   ///
@@ -284,17 +284,17 @@ abstract class AppLocalizations {
   /// **'Content in markdown format'**
   String get contentMarkdownInfo;
 
-  /// Create booklet info message
+  /// Create project info message
   ///
   /// In en, this message translates to:
-  /// **'Create a booklet to start storing your notes, local booklets are stored on your device, synced booklets are stored in the cloud'**
-  String get createBookletInfo;
+  /// **'Create a project to start storing your notes, local projects are stored on your device, synced projects are stored in the cloud'**
+  String get createProjectInfo;
 
-  /// Create booklet title
+  /// Create project title
   ///
   /// In en, this message translates to:
-  /// **'Create Booklet'**
-  String get createBookletTitle;
+  /// **'Create Project'**
+  String get createProjectTitle;
 
   /// Delete button label
   ///
@@ -338,23 +338,23 @@ abstract class AppLocalizations {
   /// **'Leave'**
   String get leaveButtonLabel;
 
-  /// Local booklet title
+  /// Local project title
   ///
   /// In en, this message translates to:
-  /// **'Local Booklet'**
-  String get localBookletTitle;
+  /// **'Local Project'**
+  String get localProjectTitle;
 
-  /// Manage booklet title
+  /// Manage project title
   ///
   /// In en, this message translates to:
-  /// **'Manage Booklet'**
-  String get manageBookletTitle;
+  /// **'Manage Project'**
+  String get manageProjectTitle;
 
-  /// Manage booklets title
+  /// Manage projects title
   ///
   /// In en, this message translates to:
-  /// **'Manage Booklets'**
-  String get manageBookletsTitle;
+  /// **'Manage Projects'**
+  String get manageProjectsTitle;
 
   /// Markdown guide asset
   ///
@@ -476,23 +476,23 @@ abstract class AppLocalizations {
   /// **'Privacy Policy'**
   String get privacyPolicy;
 
-  /// Current booklet setting
+  /// Current project setting
   ///
   /// In en, this message translates to:
-  /// **'Current booklet \'{booklet}\''**
-  String settingCurrentBooklet(String booklet);
+  /// **'Current project \'{project}\''**
+  String settingCurrentProject(String project);
 
-  /// Manage current booklet
+  /// Manage current project
   ///
   /// In en, this message translates to:
-  /// **'Manage Booklet'**
-  String get settingManageBooklet;
+  /// **'Manage Project'**
+  String get settingManageProject;
 
-  /// Switch current booklet
+  /// Switch current project
   ///
   /// In en, this message translates to:
-  /// **'Switch Booklet'**
-  String get settingSwitchBooklet;
+  /// **'Switch Project'**
+  String get settingSwitchProject;
 
   /// Settings title
   ///

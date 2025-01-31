@@ -37,7 +37,7 @@ class NotesScreenBlocState {
 
 class NotesScreenBloc extends AutoDisposeStateBaseBloc<NotesScreenBlocState> {
   final String projectId;
-  // late final String bookletId;
+  // late final String projectId;
   ContentDb? _notesDb;
   var userId = gAuthBloc.currentUserId;
   final _lock = Lock();

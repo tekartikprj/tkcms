@@ -12,8 +12,8 @@ class _ContentDbInfo {
 }
 
 class ContentDbBloc {
-  ContentDbBloc({required this.app});
-  final String app;
+  ContentDbBloc();
+
   final _lock = Lock();
   final _map = <String, _ContentDbInfo>{};
   Future<ContentDb> grabContentDb(String projectId) async {
@@ -33,19 +33,18 @@ class ContentDbBloc {
       }
       await fsProjectSyncedDb.ready;
       var db = fsProjectSyncedDb.db;
-      var dbBooklet = cvDbEntityStore.record(projectId).getSync(db);
-      if (dbBooklet == null) {
+      var dbProject = cvDbEntityStore.record(projectId).getSync(db);
+      if (dbProject == null) {
         return null;
       }
       var contentDb = ContentDb(
-          bookletId: projectId,
+          projectId: projectId,
           firestoreDatabaseContext: FirestoreDatabaseContext(
               firestore: gFsDatabaseService.firestore,
               rootDocument: gFsDatabaseService
                   .firestoreDatabaseContext.rootDocument!
-                  .collection('projects')
+                  .collection(fsProjectCollectionInfo.id)
                   .doc(projectId)),
-          app: app,
           sembastDatabaseContext:
               globalSembastDatabasesContext.db('content.db'));
       await contentDb.ready;
@@ -55,25 +54,25 @@ class ContentDbBloc {
   }
 
   @protected
-  Future<void> closeContentDb(String bookletId) async {
+  Future<void> closeContentDb(String projectId) async {
     await _lock.synchronized(() {
-      var info = _map[bookletId];
+      var info = _map[projectId];
       if (info != null) {
         info.contentDb.close();
-        _map.remove(bookletId);
+        _map.remove(projectId);
       }
     });
   }
 
   Future<void> releaseContentDb(ContentDb contentDb) async {
     return await _lock.synchronized(() async {
-      var info = _map[contentDb.bookletId];
+      var info = _map[contentDb.projectId];
       if (info?.contentDb == contentDb) {
         var refCount = --info!.refCount;
 
         if (refCount == 0) {
           await contentDb.close();
-          _map.remove(contentDb.bookletId);
+          _map.remove(contentDb.projectId);
         }
       }
     });

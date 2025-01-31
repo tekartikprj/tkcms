@@ -13,92 +13,92 @@ class AppLocalizationsFr extends AppLocalizations {
   String get appVersion => 'Version :';
 
   @override
-  String get bookletAccessAdmin => 'Accès administrateur';
+  String get projectAccessAdmin => 'Accès administrateur';
 
   @override
-  String get bookletAccessRead => 'Accès lecteur';
+  String get projectAccessRead => 'Accès lecteur';
 
   @override
-  String get bookletAccessWrite => 'Accès éditeur';
+  String get projectAccessWrite => 'Accès éditeur';
 
   @override
-  String get bookletDefaultName => 'Livret';
+  String get projectDefaultName => 'Projet';
 
   @override
-  String get bookletDelete => 'Supprimer le livret';
+  String get projectDelete => 'Supprimer le projet';
 
   @override
-  String get bookletDeleteConfirm =>
-      'Êtes-vous sûr de vouloir supprimer ce livret ?\nToutes les notes de ce livret seront supprimées.';
+  String get projectDeleteConfirm =>
+      'Êtes-vous sûr de vouloir supprimer ce projet ?\nToutes les notes de ce projet seront supprimées.';
 
   @override
-  String get bookletEditTitle => 'Modifier le livret';
+  String get projectEditTitle => 'Modifier le projet';
 
   @override
-  String get bookletInviteAccept => 'Accepter l\'invitation du livret';
+  String get projectInviteAccept => 'Accepter l\'invitation du projet';
 
   @override
-  String get bookletInviteAcceptConfirm =>
-      'Êtes-vous sûr de vouloir accepter l\'invitation de ce livret ?';
+  String get projectInviteAcceptConfirm =>
+      'Êtes-vous sûr de vouloir accepter l\'invitation de ce projet ?';
 
   @override
-  String get bookletInviteDelete => 'Supprimer l\'invitation du livret';
+  String get projectInviteDelete => 'Supprimer l\'invitation du projet';
 
   @override
-  String get bookletInviteDeleteConfirm =>
-      'Êtes-vous sûr de vouloir supprimer cette invitation du livret ?';
+  String get projectInviteDeleteConfirm =>
+      'Êtes-vous sûr de vouloir supprimer cette invitation du projet ?';
 
   @override
-  String get bookletInviteLink => 'Lien d\'invitation du livret';
+  String get projectInviteLink => 'Lien d\'invitation du projet';
 
   @override
-  String get bookletInviteLinkInformation =>
-      'Envoyez ce lien pour inviter quelqu\'un à ce livret';
+  String get projectInviteLinkInformation =>
+      'Envoyez ce lien pour inviter quelqu\'un à ce projet';
 
   @override
-  String get bookletInviteMessage => 'Vous avez une invitation de livret';
+  String get projectInviteMessage => 'Vous avez une invitation de projet';
 
   @override
-  String get bookletInviteMustBeLoggedIn =>
-      'Vous devez être connecté pour accepter l\'invitation du livret';
+  String get projectInviteMustBeLoggedIn =>
+      'Vous devez être connecté pour accepter l\'invitation du projet';
 
   @override
-  String get bookletInviteNotFound => 'L\'invitation du livret est introuvable';
+  String get projectInviteNotFound => 'L\'invitation du projet est introuvable';
 
   @override
-  String get bookletInviteTitle => 'Accepter l\'invitation du livret';
+  String get projectInviteTitle => 'Accepter l\'invitation du projet';
 
   @override
-  String get bookletInviteView => 'Voir l\'invitation';
+  String get projectInviteView => 'Voir l\'invitation';
 
   @override
-  String get bookletLeave => 'Quitter le livret';
+  String get projectLeave => 'Quitter le projet';
 
   @override
-  String get bookletLeaveConfirm =>
-      'Êtes-vous sûr de vouloir quitter ce livret ?\nVous ne pourrez pas accéder aux notes contenues dans ce livret';
+  String get projectLeaveConfirm =>
+      'Êtes-vous sûr de vouloir quitter ce projet ?\nVous ne pourrez pas accéder aux notes contenues dans ce projet';
 
   @override
-  String get bookletNotFound => 'Livret introuvable';
+  String get projectNotFound => 'Projet introuvable';
 
   @override
-  String get bookletShare => 'Partager le livret';
+  String get projectShare => 'Partager le projet';
 
   @override
-  String get bookletShareInformation =>
-      'Cliquez sur le bouton Partager ci-dessous pour inviter quelqu\'un à rejoindre ce livret';
+  String get projectShareInformation =>
+      'Cliquez sur le bouton Partager ci-dessous pour inviter quelqu\'un à rejoindre ce projet';
 
   @override
-  String get bookletTypeLocal => 'Local';
+  String get projectTypeLocal => 'Local';
 
   @override
-  String get bookletTypeSynced => 'Synchronisé';
+  String get projectTypeSynced => 'Synchronisé';
 
   @override
-  String get bookletViewNotes => 'Voir les notes';
+  String get projectViewNotes => 'Voir les notes';
 
   @override
-  String get bookletsTitle => 'Carnets';
+  String get projectsTitle => 'Carnets';
 
   @override
   String get cancelButtonLabel => 'Annuler';
@@ -107,11 +107,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get contentMarkdownInfo => 'Contenu au format Markdown';
 
   @override
-  String get createBookletInfo =>
-      'Créez un livret pour commencer à stocker vos notes. Les livrets locaux sont stockés sur votre appareil, tandis que les livrets synchronisés sont stockés dans le cloud.';
+  String get createProjectInfo =>
+      'Créez un projet pour commencer à stocker vos notes. Les projets locaux sont stockés sur votre appareil, tandis que les projets synchronisés sont stockés dans le cloud.';
 
   @override
-  String get createBookletTitle => 'Créer un livret';
+  String get createProjectTitle => 'Créer un projet';
 
   @override
   String get deleteButtonLabel => 'Supprimer';
@@ -136,13 +136,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get leaveButtonLabel => 'Quitter';
 
   @override
-  String get localBookletTitle => 'Livret local';
+  String get localProjectTitle => 'Projet local';
 
   @override
-  String get manageBookletTitle => 'Gérer le livret';
+  String get manageProjectTitle => 'Gérer le projet';
 
   @override
-  String get manageBookletsTitle => 'Gérer les livrets';
+  String get manageProjectsTitle => 'Gérer les projets';
 
   @override
   String get markdownGuideAsset => 'markdown_guide_fr.md';
@@ -206,15 +206,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String get privacyPolicy => 'Politique de confidentialité';
 
   @override
-  String settingCurrentBooklet(String booklet) {
-    return 'Livret actuel \'$booklet\'';
+  String settingCurrentProject(String project) {
+    return 'Projet actuel \'$project\'';
   }
 
   @override
-  String get settingManageBooklet => 'Gérer le livret';
+  String get settingManageProject => 'Gérer le projet';
 
   @override
-  String get settingSwitchBooklet => 'Changer de livret';
+  String get settingSwitchProject => 'Changer de projet';
 
   @override
   String get settingsTitle => 'Paramètres';

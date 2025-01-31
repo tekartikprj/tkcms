@@ -7,113 +7,113 @@
   "@appVersion": {
     "description": "App version"
   },
-  "bookletAccessAdmin": "Admin access",
-  "@bookletAccessAdmin": {
-    "description": "Booklet access admin"
+  "projectAccessAdmin": "Admin access",
+  "@projectAccessAdmin": {
+    "description": "Project access admin"
   },
-  "bookletAccessRead": "Reader access",
-  "@bookletAccessRead": {
-    "description": "Booklet access read"
+  "projectAccessRead": "Reader access",
+  "@projectAccessRead": {
+    "description": "Project access read"
   },
-  "@bookletAccessReadWrite": {
-    "description": "Booklet access read/write"
+  "@projectAccessReadWrite": {
+    "description": "Project access read/write"
   },
-  "bookletAccessWrite": "Editor access",
-  "bookletDefaultName": "Booklet",
-  "@bookletDefaultName": {
-    "description": "Booklet default name"
+  "projectAccessWrite": "Editor access",
+  "projectDefaultName": "Project",
+  "@projectDefaultName": {
+    "description": "Project default name"
   },
-  "bookletDelete": "Delete Booklet",
-  "@bookletDelete": {
-    "description": "Delete booklet"
+  "projectDelete": "Delete Project",
+  "@projectDelete": {
+    "description": "Delete project"
   },
-  "bookletDeleteConfirm": "Are you sure you want to delete this booklet?\nAll notes in this booklet will be deleted",
-  "@bookletDeleteConfirm": {
-    "description": "Delete booklet confirmation message"
+  "projectDeleteConfirm": "Are you sure you want to delete this project?\nAll notes in this project will be deleted",
+  "@projectDeleteConfirm": {
+    "description": "Delete project confirmation message"
   },
-  "bookletEditTitle": "Edit Booklet",
-  "@bookletEditTitle": {
-    "description": "Edit booklet title"
+  "projectEditTitle": "Edit Project",
+  "@projectEditTitle": {
+    "description": "Edit project title"
   },
-  "bookletInviteAccept": "Accept booklet invite",
-  "@bookletInviteAccept": {
-    "description": "Accept booklet"
+  "projectInviteAccept": "Accept project invite",
+  "@projectInviteAccept": {
+    "description": "Accept project"
   },
-  "bookletInviteAcceptConfirm": "Are you sure you want to accept this booklet invite?",
-  "@bookletInviteAcceptConfirm": {
-    "description": "Accept booklet invite confirmation message"
+  "projectInviteAcceptConfirm": "Are you sure you want to accept this project invite?",
+  "@projectInviteAcceptConfirm": {
+    "description": "Accept project invite confirmation message"
   },
-  "bookletInviteDelete": "Delete Booklet invite",
-  "@bookletInviteDelete": {
-    "description": "Delete booklet invite"
+  "projectInviteDelete": "Delete Project invite",
+  "@projectInviteDelete": {
+    "description": "Delete project invite"
   },
-  "bookletInviteDeleteConfirm": "Are you sure you want to delete this booklet invite?",
-  "@bookletInviteDeleteConfirm": {
-    "description": "Delete booklet invite confirmation message"
+  "projectInviteDeleteConfirm": "Are you sure you want to delete this project invite?",
+  "@projectInviteDeleteConfirm": {
+    "description": "Delete project invite confirmation message"
   },
-  "bookletInviteLink": "Booklet invite link",
-  "@bookletInviteLink": {
-    "description": "Booklet invite link"
+  "projectInviteLink": "Project invite link",
+  "@projectInviteLink": {
+    "description": "Project invite link"
   },
-  "bookletInviteLinkInformation": "Send this link to invite someone to this booklet",
-  "@bookletInviteLinkInformation": {
-    "description": "Booklet invite link information"
+  "projectInviteLinkInformation": "Send this link to invite someone to this project",
+  "@projectInviteLinkInformation": {
+    "description": "Project invite link information"
   },
-  "bookletInviteMessage": "You have a booklet invite",
-  "@bookletInviteMessage": {
-    "description": "Booklet invite message"
+  "projectInviteMessage": "You have a project invite",
+  "@projectInviteMessage": {
+    "description": "Project invite message"
   },
-  "bookletInviteMustBeLoggedIn": "You must be logged in to accept a booklet invite",
-  "@bookletInviteMustBeLoggedIn": {
-    "description": "Booklet invite not logged in message"
+  "projectInviteMustBeLoggedIn": "You must be logged in to accept a project invite",
+  "@projectInviteMustBeLoggedIn": {
+    "description": "Project invite not logged in message"
   },
-  "bookletInviteNotFound": "Booklet invite not found",
-  "@bookletInviteNotFound": {
-    "description": "Booklet invite not found"
+  "projectInviteNotFound": "Project invite not found",
+  "@projectInviteNotFound": {
+    "description": "Project invite not found"
   },
-  "bookletInviteTitle": "Accept booklet invite",
-  "@bookletInviteTitle": {
-    "description": "Booklet invite title"
+  "projectInviteTitle": "Accept project invite",
+  "@projectInviteTitle": {
+    "description": "Project invite title"
   },
-  "bookletInviteView": "View invite",
-  "@bookletInviteView": {
+  "projectInviteView": "View invite",
+  "@projectInviteView": {
     "description": "View invite"
   },
-  "bookletLeave": "Leave Booklet",
-  "@bookletLeave": {
-    "description": "Leave booklet"
+  "projectLeave": "Leave Project",
+  "@projectLeave": {
+    "description": "Leave project"
   },
-  "bookletLeaveConfirm": "Are you sure you want to leave this booklet?\nYou won't be able to access any notes contained in this booklet",
-  "@bookletLeaveConfirm": {
-    "description": "Leave booklet confirmation message"
+  "projectLeaveConfirm": "Are you sure you want to leave this project?\nYou won't be able to access any notes contained in this project",
+  "@projectLeaveConfirm": {
+    "description": "Leave project confirmation message"
   },
-  "bookletNotFound": "Booklet not found",
-  "@bookletNotFound": {
-    "description": "Booklet not found"
+  "projectNotFound": "Project not found",
+  "@projectNotFound": {
+    "description": "Project not found"
   },
-  "bookletShare": "Share booklet",
-  "@bookletShare": {
-    "description": "Share booklet"
+  "projectShare": "Share project",
+  "@projectShare": {
+    "description": "Share project"
   },
-  "bookletShareInformation": "Click on the Share button below to invite someone to this booklet",
-  "@bookletShareInformation": {
-    "description": "Booklet share information"
+  "projectShareInformation": "Click on the Share button below to invite someone to this project",
+  "@projectShareInformation": {
+    "description": "Project share information"
   },
-  "bookletTypeLocal": "Local",
-  "@bookletTypeLocal": {
-    "description": "Local booklet type"
+  "projectTypeLocal": "Local",
+  "@projectTypeLocal": {
+    "description": "Local project type"
   },
-  "bookletTypeSynced": "Synced",
-  "@bookletTypeSynced": {
-    "description": "Synced booklet type"
+  "projectTypeSynced": "Synced",
+  "@projectTypeSynced": {
+    "description": "Synced project type"
   },
-  "bookletViewNotes": "View notes",
-  "@bookletViewNotes": {
+  "projectViewNotes": "View notes",
+  "@projectViewNotes": {
     "description": "View notes"
   },
-  "bookletsTitle": "Booklets",
-  "@bookletsTitle": {
-    "description": "Booklets title"
+  "projectsTitle": "Projects",
+  "@projectsTitle": {
+    "description": "Projects title"
   },
   "cancelButtonLabel": "Cancel",
   "@cancelButtonLabel": {
@@ -123,13 +123,13 @@
   "@contentMarkdownInfo": {
     "description": "Content markdown info message"
   },
-  "createBookletInfo": "Create a booklet to start storing your notes, local booklets are stored on your device, synced booklets are stored in the cloud",
-  "@createBookletInfo": {
-    "description": "Create booklet info message"
+  "createProjectInfo": "Create a project to start storing your notes, local projects are stored on your device, synced projects are stored in the cloud",
+  "@createProjectInfo": {
+    "description": "Create project info message"
   },
-  "createBookletTitle": "Create Booklet",
-  "@createBookletTitle": {
-    "description": "Create booklet title"
+  "createProjectTitle": "Create Project",
+  "@createProjectTitle": {
+    "description": "Create project title"
   },
   "deleteButtonLabel": "Delete",
   "@deleteButtonLabel": {
@@ -159,17 +159,17 @@
   "@leaveButtonLabel": {
     "description": "Delete button label"
   },
-  "localBookletTitle": "Local Booklet",
-  "@localBookletTitle": {
-    "description": "Local booklet title"
+  "localProjectTitle": "Local Project",
+  "@localProjectTitle": {
+    "description": "Local project title"
   },
-  "manageBookletTitle": "Manage Booklet",
-  "@manageBookletTitle": {
-    "description": "Manage booklet title"
+  "manageProjectTitle": "Manage Project",
+  "@manageProjectTitle": {
+    "description": "Manage project title"
   },
-  "manageBookletsTitle": "Manage Booklets",
-  "@manageBookletsTitle": {
-    "description": "Manage booklets title"
+  "manageProjectsTitle": "Manage Projects",
+  "@manageProjectsTitle": {
+    "description": "Manage projects title"
   },
   "markdownGuideAsset": "markdown_guide_en.md",
   "@markdownGuideAsset": {
@@ -251,23 +251,23 @@
   "@privacyPolicy": {
     "description": "Privacy policy"
   },
-  "settingCurrentBooklet": "Current booklet '{booklet}'",
-  "@settingCurrentBooklet": {
-    "description": "Current booklet setting",
+  "settingCurrentProject": "Current project '{project}'",
+  "@settingCurrentProject": {
+    "description": "Current project setting",
     "placeholders": {
-      "booklet": {
+      "project": {
         "type": "String",
-        "example": "My booklet"
+        "example": "My project"
       }
     }
   },
-  "settingManageBooklet": "Manage Booklet",
-  "@settingManageBooklet": {
-    "description": "Manage current booklet"
+  "settingManageProject": "Manage Project",
+  "@settingManageProject": {
+    "description": "Manage current project"
   },
-  "settingSwitchBooklet": "Switch Booklet",
-  "@settingSwitchBooklet": {
-    "description": "Switch current booklet"
+  "settingSwitchProject": "Switch Project",
+  "@settingSwitchProject": {
+    "description": "Switch current project"
   },
   "settingsTitle": "Settings",
   "@settingsTitle": {
