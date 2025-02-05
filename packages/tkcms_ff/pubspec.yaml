@@ -4,7 +4,7 @@ version: 0.1.0+1
 publish_to: none
 
 environment:
-  sdk: ^3.5.0
+  sdk: ^3.6.0
 
 # Add regular dependencies here.
 dependencies:
@@ -28,7 +28,7 @@ dependencies:
       ref: dart3a
       path: app_http
     version: '>=0.1.0'
-  cv:
+  cv: ">=1.1.0+4"
   tekartik_firebase_firestore:
     git:
       url: https://github.com/tekartik/firebase_firestore.dart
@@ -40,7 +40,7 @@ dependencies:
       url: https://github.com/tekartik/common_node.dart
       path: http_node
       ref: dart3a
-  path:
+  path: ">=1.9.0"
   http:
   tkcms_common:
     git:
@@ -48,8 +48,8 @@ dependencies:
       ref: dart3a
       path: packages/tkcms_common
 dev_dependencies:
-  lints: '>=2.0.0'
-  test: '>=1.21.0'
+  lints: ">=5.0.0"
+  test: ">=1.24.0"
   tekartik_app_node_build_menu:
     git:
       url: https://github.com/tekartik/app_node_utils.dart
@@ -64,13 +64,13 @@ dev_dependencies:
     version: '>=0.1.0'
 
   # needed node dependencies
-  build_web_compilers:
-  build_runner:
+  build_web_compilers: ">=4.0.11"
+  build_runner: ">=2.4.13"
   tekartik_build_node:
     git:
       url: https://github.com/tekartik/build_node.dart
       path: packages/build_node
       ref: dart3a
-  dev_build: '>=0.16.5-4'
+  dev_build: ">=1.1.0+2"
 
 resolution: workspace
