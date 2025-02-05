@@ -4,12 +4,12 @@ version: 1.0.0
 publish_to: none
 
 environment:
-  sdk: ^3.5.0
+  sdk: ^3.6.0
 
 # Add regular dependencies here.
 dependencies:
-  dev_build: '>=0.16.5-4'
-  process_run:
+  dev_build: ">=1.1.0+2"
+  process_run: ">=1.2.1+1"
 
   tekartik_firebase_build:
     git:
@@ -22,7 +22,7 @@ dependencies:
       url: https://github.com/tekartik/app_node_utils.dart
       ref: dart3a
       path: app_build_menu
-  path:
+  path: ">=1.9.0"
   tekartik_build_menu_flutter:
     git:
       url: https://github.com/tekartik/build_flutter.dart
@@ -53,7 +53,7 @@ dependencies:
       path: packages/firebase_build_menu_flutter
 
 dev_dependencies:
-  lints: '>=3.0.0'
+  lints: ">=5.0.0"
   test: '>=1.24.0'
 
   tekartik_common_utils:
@@ -61,9 +61,9 @@ dev_dependencies:
       url: https://github.com/tekartik/common_utils.dart
       ref: dart3a
     version: '>=0.15.8'
-  collection:
+  collection: ">=1.18.0"
   csv:
-  cv:
+  cv: ">=1.1.0+4"
   tekartik_firebase_firestore:
     git:
       url: https://github.com/tekartik/firebase_firestore.dart
