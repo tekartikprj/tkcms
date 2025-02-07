@@ -9,7 +9,7 @@ void main() {
 
   test('FsApp', () {
     var app = newModel().cv<FsApp>()..fillModel(fillOptions);
-    expect((newModel().cv<FsApp>()..fillModel(fillOptions)).toMap(), {
+    expect(app.toMap(), {
       'name': 'text_1',
       'created': FsTimestamp(2, 0),
       'active': false,
