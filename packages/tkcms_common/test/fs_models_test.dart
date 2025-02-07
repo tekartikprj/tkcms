@@ -3,12 +3,19 @@ import 'package:test/test.dart';
 import 'package:tkcms_common/tkcms_firestore.dart';
 
 CvFillOptions get fillOptions => cvFirestoreFillOptions1;
+
 void main() {
   initFsBuilders();
 
   test('FsApp', () {
-    expect((newModel().cv<FsApp>()..fillModel(fillOptions)).toMap(),
-        {'name': 'text_1'});
+    var app = newModel().cv<FsApp>()..fillModel(fillOptions);
+    expect((newModel().cv<FsApp>()..fillModel(fillOptions)).toMap(), {
+      'name': 'text_1',
+      'created': FsTimestamp(2, 0),
+      'active': false,
+      'deleted': true,
+      'deletedTimestamp': FsTimestamp(5, 0)
+    });
   });
   test('FsUser', () {
     expect((newModel().cv<FsUser>()..fillModel(fillOptions)).toMap(), {
