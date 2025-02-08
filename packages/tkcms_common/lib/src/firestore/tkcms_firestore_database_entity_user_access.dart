@@ -210,6 +210,16 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<
     });
   }
 
+  /// Set user access
+  Future<void> setEntityUserAccess(
+      {required String entityId,
+      required String userId,
+      required TkCmsFsUserAccess userAccess}) async {
+    await firestore.cvRunTransaction((txn) async {
+      txnSetEntityUserAccess(txn, entityId, userId, userAccess);
+    });
+  }
+
   /// Set user access in a transaction.
   void txnSetEntityUserAccess(CvFirestoreTransaction txn, String entityId,
       String userId, TkCmsFsUserAccess userAccess) {

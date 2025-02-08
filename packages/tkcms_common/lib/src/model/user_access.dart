@@ -8,7 +8,7 @@ abstract class TkCmsCvUserAccessCommon {
 
   /// Informative for UI "user,admin,super_admin"
   CvField<String> get role;
-  void copyFrom(TkCmsCvUserAccessCommon other);
+  void copyUserAccessFrom(TkCmsCvUserAccessCommon other);
 }
 
 class TkCmsCvUserAccess extends CvModelBase with TkCmsCvUserAccessMixin {
@@ -34,7 +34,7 @@ mixin TkCmsCvUserAccessMixin implements TkCmsCvUserAccessCommon {
   late final role = CvField<String>('role');
 
   @override
-  void copyFrom(TkCmsCvUserAccessCommon other) {
+  void copyUserAccessFrom(TkCmsCvUserAccessCommon other) {
     admin.v = other.admin.v;
     write.v = other.write.v;
     read.v = other.read.v;

@@ -7,7 +7,7 @@ import 'package:tkcms_common/tkcms_sembast.dart' as sembast;
 sembast.TkCmsDbUserAccess dbUserAccessFromFsUserAccess(
     fbfs.TkCmsFsUserAccess fsUserAccess) {
   return sembast.cvDbUserAccessStore.record(fsUserAccess.id).cv()
-    ..copyFrom(fsUserAccess);
+    ..copyUserAccessFrom(fsUserAccess);
 }
 
 /// Copy from fs
