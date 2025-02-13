@@ -27,7 +27,10 @@ Future<void> main() async {
 
     var options = LocalDbFromFsOptions(userId: userId);
     helper = SembastFirestoreSyncHelper<TestFsEntity>(
-        db: db, entityAccess: fsDb, options: options);
+      db: db,
+      entityAccess: fsDb,
+      options: options,
+    );
   });
   Future<void> createSimpleEntityAndAccess() async {
     await fsDb.fsEntityRef('e1').set(firestore, TestFsEntity()..name.v = 'E1');

@@ -62,15 +62,19 @@ class InfoCommandHandler extends CommandHandler {
   Future<bool> requireToken() async {
     var tokenInfo = getTokenOrNull();
     if (tokenInfo?.serverDateTime == null) {
-      await sendErrorResponse(httpStatusCodeForbidden,
-          ApiErrorResponse()..message.v = 'Invalid token');
+      await sendErrorResponse(
+        httpStatusCodeForbidden,
+        ApiErrorResponse()..message.v = 'Invalid token',
+      );
       return false;
     } else {
       var now = DateTime.timestamp();
       var secondDiff = now.difference(tokenInfo!.serverDateTime!).inSeconds;
       if (secondDiff > (isDebug ? 10 : 600)) {
-        await sendErrorResponse(httpStatusCodeForbidden,
-            ApiErrorResponse()..message.v = 'Token expired');
+        await sendErrorResponse(
+          httpStatusCodeForbidden,
+          ApiErrorResponse()..message.v = 'Token expired',
+        );
         return false;
       }
     }
@@ -83,10 +87,11 @@ class InfoCommandHandler extends CommandHandler {
   Future<void> handle() async {
     var instanceCallCount = ++serverApp.instanceCallCount;
     var globalInstanceCallCount = ++TkCmsServerApp.globalInstanceCallCount;
-    var info = ApiInfoResponse()
-      ..uri.v = request.uri.toString()
-      ..instanceCallCount.v = instanceCallCount
-      ..globalInstanceCallCount.v = globalInstanceCallCount;
+    var info =
+        ApiInfoResponse()
+          ..uri.v = request.uri.toString()
+          ..instanceCallCount.v = instanceCallCount
+          ..globalInstanceCallCount.v = globalInstanceCallCount;
     //..version.v = appVersion.toString()
     //..debug.setValue(isDebug ? true : null)
     //..projectId.v = serverApp.projectId;
@@ -109,13 +114,15 @@ class GetTimeCommandHandler extends CommandHandler {
 
   // Read clientDateTime and return client and server date time
   Future<void> handle() async {
-    await sendResponse(ApiGetTimestampResponse()
-      ..timestamp.v = DateTime.timestamp().toIso8601String());
+    await sendResponse(
+      ApiGetTimestampResponse()
+        ..timestamp.v = DateTime.timestamp().toIso8601String(),
+    );
   }
 }
 
-typedef TkCmsCreateServerAppFunction = TkCmsCommonServerApp Function(
-    TkCmsServerAppContext context);
+typedef TkCmsCreateServerAppFunction =
+    TkCmsCommonServerApp Function(TkCmsServerAppContext context);
 
 abstract interface class TkCmsCommonServerApp {
   int get apiVersion;
@@ -132,13 +139,12 @@ class TkCmsServerAppContext {
   late final FirebaseContext firebaseContext;
   final FlavorContext flavorContext;
 
-  TkCmsServerAppContext(
-      {
-      /// Compat
-      FirebaseFunctionsContext? firebaseFunctionsContext,
-      FirebaseContext? firebaseContext,
-      required this.flavorContext})
-      : firebaseContext = firebaseContext ?? firebaseFunctionsContext!;
+  TkCmsServerAppContext({
+    /// Compat
+    FirebaseFunctionsContext? firebaseFunctionsContext,
+    FirebaseContext? firebaseContext,
+    required this.flavorContext,
+  }) : firebaseContext = firebaseContext ?? firebaseFunctionsContext!;
 }
 
 /// Compat
@@ -182,19 +188,22 @@ class TkCmsServerAppV1 implements TkCmsCommonServerApp {
             ).handle();
             return;
           case commandInfo:
-            await InfoCommandHandler(serverApp: this, request: request)
-                .handle();
+            await InfoCommandHandler(
+              serverApp: this,
+              request: request,
+            ).handle();
             return;
         }
       }
       await handleDefault(request);
     } catch (e, st) {
       await sendErrorResponse(
-          request,
-          httpStatusCodeInternalServerError,
-          ApiErrorResponse()
-            ..message.v = e.toString()
-            ..stackTrace.v = st.toString());
+        request,
+        httpStatusCodeInternalServerError,
+        ApiErrorResponse()
+          ..message.v = e.toString()
+          ..stackTrace.v = st.toString(),
+      );
     }
   }
 
@@ -221,8 +230,10 @@ class TkCmsServerAppV1 implements TkCmsCommonServerApp {
             return true;
 
           case commandInfo:
-            await InfoCommandHandler(serverApp: this, request: request)
-                .handle();
+            await InfoCommandHandler(
+              serverApp: this,
+              request: request,
+            ).handle();
             return true;
           case commandInfoFb:
             await GetInfoFbCommandHandler(
@@ -242,11 +253,12 @@ class TkCmsServerAppV1 implements TkCmsCommonServerApp {
       return false;
     } catch (e, st) {
       await sendErrorResponse(
-          request,
-          httpStatusCodeInternalServerError,
-          ApiErrorResponse()
-            ..message.v = e.toString()
-            ..stackTrace.v = st.toString());
+        request,
+        httpStatusCodeInternalServerError,
+        ApiErrorResponse()
+          ..message.v = e.toString()
+          ..stackTrace.v = st.toString(),
+      );
       return true;
     }
   }
@@ -255,15 +267,19 @@ class TkCmsServerAppV1 implements TkCmsCommonServerApp {
     var uri = request.uri;
 
     try {
-      await sendErrorResponse(request, httpStatusCodeInternalServerError,
-          ApiErrorResponse()..message.v = 'Missing command in $uri');
+      await sendErrorResponse(
+        request,
+        httpStatusCodeInternalServerError,
+        ApiErrorResponse()..message.v = 'Missing command in $uri',
+      );
     } catch (e, st) {
       await sendErrorResponse(
-          request,
-          httpStatusCodeInternalServerError,
-          ApiErrorResponse()
-            ..message.v = e.toString()
-            ..stackTrace.v = st.toString());
+        request,
+        httpStatusCodeInternalServerError,
+        ApiErrorResponse()
+          ..message.v = e.toString()
+          ..stackTrace.v = st.toString(),
+      );
     }
   }
 
@@ -273,7 +289,8 @@ class TkCmsServerAppV1 implements TkCmsCommonServerApp {
     try {
       // ignore: avoid_print
       print(
-          'dailyCron handler ${DateTime.now().toIso8601String()} ${event.jobName} ${event.scheduleTime}');
+        'dailyCron handler ${DateTime.now().toIso8601String()} ${event.jobName} ${event.scheduleTime}',
+      );
       try {
         await handleDailyCron();
       } catch (e) {
@@ -289,14 +306,19 @@ class TkCmsServerAppV1 implements TkCmsCommonServerApp {
   }
 
   HttpsFunction get commandV1 => functions.https.onRequestV2(
-      HttpsOptions(cors: true, region: regionBelgium), commandHttp);
+    HttpsOptions(cors: true, region: regionBelgium),
+    commandHttp,
+  );
 
   HttpsFunction get commandV2 => functions.https.onRequestV2(
-      HttpsOptions(cors: true, region: regionBelgium), onHttpsCommandV2);
+    HttpsOptions(cors: true, region: regionBelgium),
+    onHttpsCommandV2,
+  );
 
   HttpsCallableFunction get callCommandV2 => functions.https.onCall(
-      onCallableCommandV2,
-      callableOptions: HttpsCallableOptions(region: regionBelgium, cors: true));
+    onCallableCommandV2,
+    callableOptions: HttpsCallableOptions(region: regionBelgium, cors: true),
+  );
 
   Future<ApiResult> onCommandV2(ApiRequest apiRequest) async {
     switch (apiRequest.command.v!) {
@@ -346,7 +368,9 @@ class TkCmsServerAppV1 implements TkCmsCommonServerApp {
       var result = await onCommandV2(apiRequest);
 
       await sendResponse(
-          request, ApiResponse()..result.v = (CvMapModel()..copyFrom(result)));
+        request,
+        ApiResponse()..result.v = (CvMapModel()..copyFrom(result)),
+      );
     } on ApiException catch (e) {
       if (e.error != null) {
         await sendResponse(request, ApiResponse()..error.v = e.error);
@@ -376,13 +400,17 @@ class TkCmsServerAppV1 implements TkCmsCommonServerApp {
   }
 
   Future<void> sendCatchErrorResponse(
-      ExpressHttpRequest request, dynamic e, StackTrace st) async {
+    ExpressHttpRequest request,
+    dynamic e,
+    StackTrace st,
+  ) async {
     await sendErrorResponse(
-        request,
-        httpStatusCodeInternalServerError,
-        ApiErrorResponse()
-          ..message.v = e.toString()
-          ..stackTrace.v = st.toString());
+      request,
+      httpStatusCodeInternalServerError,
+      ApiErrorResponse()
+        ..message.v = e.toString()
+        ..stackTrace.v = st.toString(),
+    );
   }
 
   /// Send a response
@@ -393,7 +421,10 @@ class TkCmsServerAppV1 implements TkCmsCommonServerApp {
   }
 
   Future<void> sendErrorResponse(
-      ExpressHttpRequest request, int statusCode, CvModel model) async {
+    ExpressHttpRequest request,
+    int statusCode,
+    CvModel model,
+  ) async {
     var res = request.response;
     try {
       res.statusCode = statusCode;
@@ -453,11 +484,13 @@ class TkCmsServerAppV1 implements TkCmsCommonServerApp {
       try {
         // Every day at 11pm
         functions[cron] = functions.scheduler.onSchedule(
-            ScheduleOptions(
-                schedule: '0 23 * * *',
-                region: regionBelgium,
-                timeZone: timezoneEuropeParis),
-            dailyCronHandler);
+          ScheduleOptions(
+            schedule: '0 23 * * *',
+            region: regionBelgium,
+            timeZone: timezoneEuropeParis,
+          ),
+          dailyCronHandler,
+        );
       } catch (e, st) {
         if (isRunningAsJavascript) {
           // ignore: avoid_print
@@ -473,14 +506,16 @@ class TkCmsServerAppV1 implements TkCmsCommonServerApp {
 class GetInfoFbCommandHandler extends CommandHandler {
   final FirebaseContext firebaseContext;
 
-  GetInfoFbCommandHandler(
-      {required this.firebaseContext,
-      required super.request,
-      required super.serverApp});
+  GetInfoFbCommandHandler({
+    required this.firebaseContext,
+    required super.request,
+    required super.serverApp,
+  });
 
   // Read clientDateTime and return client and server date time
   Future<void> handle() async {
     await sendResponse(
-        ApiInfoFbResponse()..projectId.v = firebaseContext.projectId);
+      ApiInfoFbResponse()..projectId.v = firebaseContext.projectId,
+    );
   }
 }

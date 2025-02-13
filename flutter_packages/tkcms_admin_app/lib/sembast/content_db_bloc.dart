@@ -38,15 +38,17 @@ class ContentDbBloc {
         return null;
       }
       var contentDb = ContentDb(
-          projectId: projectId,
-          firestoreDatabaseContext: FirestoreDatabaseContext(
-              firestore: gFsDatabaseService.firestore,
-              rootDocument: gFsDatabaseService
-                  .firestoreDatabaseContext.rootDocument!
-                  .collection(fsProjectCollectionInfo.id)
-                  .doc(projectId)),
-          sembastDatabaseContext:
-              globalSembastDatabasesContext.db('content.db'));
+        projectId: projectId,
+        firestoreDatabaseContext: FirestoreDatabaseContext(
+          firestore: gFsDatabaseService.firestore,
+          rootDocument: gFsDatabaseService
+              .firestoreDatabaseContext
+              .rootDocument!
+              .collection(fsProjectCollectionInfo.id)
+              .doc(projectId),
+        ),
+        sembastDatabaseContext: globalSembastDatabasesContext.db('content.db'),
+      );
       await contentDb.ready;
       _map[projectId] = _ContentDbInfo(contentDb: contentDb);
       return contentDb;

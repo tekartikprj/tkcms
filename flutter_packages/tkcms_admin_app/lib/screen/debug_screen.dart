@@ -10,16 +10,23 @@ final adminDebugScreen = muiScreenWidget('Debug', () {
     await goToLoginScreen(muiBuildContext);
   });
   muiItem('Select project', () async {
-    var selectedProject = await selectSyncedEntity(muiBuildContext,
-        syncedEntitiesDb: fsProjectSyncedDb);
+    var selectedProject = await selectSyncedEntity(
+      muiBuildContext,
+      syncedEntitiesDb: fsProjectSyncedDb,
+    );
     if (muiBuildContext.mounted) {
       await muiSnack(
-          muiBuildContext, 'Selected project: ${selectedProject?.entityId}');
+        muiBuildContext,
+        'Selected project: ${selectedProject?.entityId}',
+      );
     }
   });
 });
-Future<Object?> goToAdminDebugScreen(BuildContext context,
-    {OnLoggedIn? onLoggedIn}) async {
-  return await Navigator.of(context)
-      .push<Object?>(MaterialPageRoute(builder: (_) => adminDebugScreen));
+Future<Object?> goToAdminDebugScreen(
+  BuildContext context, {
+  OnLoggedIn? onLoggedIn,
+}) async {
+  return await Navigator.of(
+    context,
+  ).push<Object?>(MaterialPageRoute(builder: (_) => adminDebugScreen));
 }

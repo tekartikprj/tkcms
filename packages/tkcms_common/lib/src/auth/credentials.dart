@@ -8,10 +8,7 @@ class TkCmsEmailPasswordCredentials {
   });
 
   Map<String, Object?> toMap() {
-    return {
-      'email': email,
-      'password': password,
-    };
+    return {'email': email, 'password': password};
   }
 
   @override
@@ -22,6 +19,8 @@ class TkCmsUidEmailPasswordCredentials extends TkCmsEmailPasswordCredentials {
   final String uid;
 
   const TkCmsUidEmailPasswordCredentials(
-      this.uid, String email, String password)
-      : super(email: email, password: password);
+    this.uid,
+    String email,
+    String password,
+  ) : super(email: email, password: password);
 }

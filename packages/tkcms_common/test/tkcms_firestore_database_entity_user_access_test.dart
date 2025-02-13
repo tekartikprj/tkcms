@@ -18,11 +18,14 @@ class _Content extends CvFirestoreDocumentBase {
 
 final testFsEntityCollectionInfo =
     TkCmsFirestoreDatabaseEntityCollectionInfo<TestFsEntity>(
-        id: 'type1',
-        name: 'Type1',
-        treeDef: TkCmsCollectionsTreeDef(map: {
-          'type1': {'subType2': null}
-        }));
+      id: 'type1',
+      name: 'Type1',
+      treeDef: TkCmsCollectionsTreeDef(
+        map: {
+          'type1': {'subType2': null},
+        },
+      ),
+    );
 void main() {
   late TkCmsFirestoreDatabaseServiceEntityAccess<TestFsEntity> db;
   late Firestore firestore;
@@ -30,7 +33,7 @@ void main() {
     cvAddConstructors([
       TestFsEntity.new,
       TkCmsFsInviteEntity<TestFsEntity>.new,
-      _Content.new
+      _Content.new,
     ]);
     var firebaseContext = initFirebaseSimMemory(projectId: tkTestCmsProjectId);
     firestore = firebaseContext.firestore;
@@ -41,9 +44,10 @@ void main() {
     );
   });
   test('entity', () async {
-    var entity = TestFsEntity()
-      ..name.v = 'e1'
-      ..specific.v = 's1';
+    var entity =
+        TestFsEntity()
+          ..name.v = 'e1'
+          ..specific.v = 's1';
     var userId = 'user1';
     var userId2 = 'user2';
     var entityId = await db.createEntity(userId: userId, entity: entity);
@@ -57,30 +61,36 @@ void main() {
     await firestore.cvSet(subContentRef.cv()..text.v = 'simple');
 
     var entityUserAccessRef = db.rootDocRef<TkCmsFsUserAccess>(
-        'access/type1/entity_id/$entityId/user_access/$userId');
+      'access/type1/entity_id/$entityId/user_access/$userId',
+    );
 
     var userEntityAccessRef = db.rootDocRef<TkCmsFsUserAccess>(
-        'access/type1/user_id/$userId/entity_access/$entityId');
+      'access/type1/user_id/$userId/entity_access/$entityId',
+    );
     var entityUserAccess = await entityUserAccessRef.get(firestore);
     var useEntityAccess = await userEntityAccessRef.get(firestore);
     expect(
-        entityUserAccess,
-        TkCmsFsUserAccess()
-          ..admin.v = true
-          ..read.v = true
-          ..write.v = true);
+      entityUserAccess,
+      TkCmsFsUserAccess()
+        ..admin.v = true
+        ..read.v = true
+        ..write.v = true,
+    );
     expect(entityUserAccess, useEntityAccess);
 
     var inviteId = await db.createInviteEntity(
-        userId: userId,
-        entityId: entityId,
-        userAccess: TkCmsCvUserAccess()..read.v = true,
-        entity: entity);
+      userId: userId,
+      entityId: entityId,
+      userAccess: TkCmsCvUserAccess()..read.v = true,
+      entity: entity,
+    );
 
-    var inviteIdRef =
-        db.rootDocRef<TkCmsFsInviteId>('invite/type1/invite_id/$inviteId');
+    var inviteIdRef = db.rootDocRef<TkCmsFsInviteId>(
+      'invite/type1/invite_id/$inviteId',
+    );
     var inviteEntityRef = db.rootDocRef<TkCmsFsInviteEntity<TestFsEntity>>(
-        'invite/type1/invite_id/$inviteId/invite_entity/$entityId');
+      'invite/type1/invite_id/$inviteId/invite_entity/$entityId',
+    );
     var inviteEntity = await inviteEntityRef.get(firestore);
 
     var inviteUserAccess = inviteEntity.userAccess.v!;
@@ -97,22 +107,27 @@ void main() {
     expect(inviteIdDoc.entityId.v, entityId);
 
     await db.acceptInviteEntity(
-        userId: userId2, inviteId: inviteId, entityId: entityId);
+      userId: userId2,
+      inviteId: inviteId,
+      entityId: entityId,
+    );
 
     var entityUserAccessRef2 = entityUserAccessRef.parent.doc(userId2);
     var userEntityAccessRef2 = db.rootDocRef<TkCmsFsUserAccess>(
-        'access/type1/user_id/$userId2/entity_access/$entityId');
+      'access/type1/user_id/$userId2/entity_access/$entityId',
+    );
     entityUserAccess = await entityUserAccessRef2.get(firestore);
     useEntityAccess = await userEntityAccessRef2.get(firestore);
     expect((await inviteIdRef.get(firestore)).exists, isFalse);
     expect((await inviteEntityRef.get(firestore)).exists, isFalse);
     expect(
-        entityUserAccess,
-        TkCmsFsUserAccess()
-          ..inviteId.v = inviteId
-          ..admin.v = false
-          ..write.v = false
-          ..read.v = true);
+      entityUserAccess,
+      TkCmsFsUserAccess()
+        ..inviteId.v = inviteId
+        ..admin.v = false
+        ..write.v = false
+        ..read.v = true,
+    );
     expect(entityUserAccess, useEntityAccess);
 
     await db.leaveEntity(entityId, userId: userId2);

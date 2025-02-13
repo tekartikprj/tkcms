@@ -11,8 +11,10 @@ class TkCmsFirestoreDatabaseService {
   FirestoreDatabaseContext get firestoreDatabaseContext =>
       FirestoreDatabaseContext(firestore: firestore, rootDocument: fsApp);
 
-  TkCmsFirestoreDatabaseService(
-      {required this.firebaseContext, required this.flavorContext}) {
+  TkCmsFirestoreDatabaseService({
+    required this.firebaseContext,
+    required this.flavorContext,
+  }) {
     initFsBuilders();
   }
 

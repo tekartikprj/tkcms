@@ -19,9 +19,7 @@ class _TkCmsAdminStartScreenState extends State<TkCmsAdminStartScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Bienvenue'),
-      ),
+      appBar: AppBar(title: const Text('Bienvenue')),
       body: Center(
         child: ListView(
           shrinkWrap: true,
@@ -32,16 +30,21 @@ class _TkCmsAdminStartScreenState extends State<TkCmsAdminStartScreen> {
                   ListTile(
                     title: const Text('Projects'),
                     onTap: () async {
-                      await goToSyncedEntitiesScreen<TkCmsFsProject>(context,
-                          syncedEntitiesDb: fsProjectSyncedDb);
+                      await goToSyncedEntitiesScreen<TkCmsFsProject>(
+                        context,
+                        syncedEntitiesDb: fsProjectSyncedDb,
+                      );
                     },
                   ),
                   ListTile(
                     title: const Text('User'),
                     onTap: () {
-                      Navigator.of(context).push<void>(MaterialPageRoute(
-                          builder: (_) =>
-                              globalAuthFlutterUiService.authScreen()));
+                      Navigator.of(context).push<void>(
+                        MaterialPageRoute(
+                          builder:
+                              (_) => globalAuthFlutterUiService.authScreen(),
+                        ),
+                      );
                     },
                   ),
                   if (isDebug)
@@ -53,7 +56,7 @@ class _TkCmsAdminStartScreenState extends State<TkCmsAdminStartScreen> {
                     ),
                 ],
               ),
-            )
+            ),
           ],
         ),
       ),

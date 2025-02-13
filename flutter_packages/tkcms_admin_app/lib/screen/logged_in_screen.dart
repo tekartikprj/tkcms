@@ -32,9 +32,7 @@ class _LoggedInScreenState extends State<LoggedInScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Utilisateur'),
-      ),
+      appBar: AppBar(title: const Text('Utilisateur')),
       body: ValueStreamBuilder<TkCmsLoggedInUserAccess>(
         stream: gAuthBloc.loggedInUserAccess,
         builder: (context, snapshot) {
@@ -82,7 +80,7 @@ class _LoggedInScreenState extends State<LoggedInScreen> {
                           ),
                           const Divider(),
                           const VersionTile(),
-                        ]
+                        ],
                       ],
                     ),
                   ),
@@ -108,6 +106,7 @@ class _LoggedInScreenState extends State<LoggedInScreen> {
 Future<void> goToLoggedInScreen(BuildContext context) async {
   // ignore: avoid_print
   print('goToLoggedInScreen()');
-  await Navigator.of(context)
-      .push(MaterialPageRoute<void>(builder: (_) => const LoggedInScreen()));
+  await Navigator.of(
+    context,
+  ).push(MaterialPageRoute<void>(builder: (_) => const LoggedInScreen()));
 }

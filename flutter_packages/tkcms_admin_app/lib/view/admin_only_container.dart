@@ -12,20 +12,21 @@ class AdminOnlyContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ValueStreamBuilder<TkCmsLoggedInUserAccess>(
-        stream: gAuthBloc.loggedInUserAccess,
-        builder: (_, userSnapshot) {
-          if (!userSnapshot.hasData) {
-            return const CenteredProgress();
+      stream: gAuthBloc.loggedInUserAccess,
+      builder: (_, userSnapshot) {
+        if (!userSnapshot.hasData) {
+          return const CenteredProgress();
+        } else {
+          var user = userSnapshot.data!;
+          if (user.fsUserAccess?.isAdmin ?? false) {
+            return child;
           } else {
-            var user = userSnapshot.data!;
-            if (user.fsUserAccess?.isAdmin ?? false) {
-              return child;
-            } else {
-              return const Center(
-                child: SizedBox(height: 240, child: Text('- Admin only -')),
-              );
-            }
+            return const Center(
+              child: SizedBox(height: 240, child: Text('- Admin only -')),
+            );
           }
-        });
+        }
+      },
+    );
   }
 }

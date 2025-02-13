@@ -4,7 +4,5 @@ class ApiInfoFbResponse extends CvModelBase {
   late final projectId = CvField<String>('projectId');
 
   @override
-  late final CvFields fields = [
-    projectId,
-  ];
+  late final CvFields fields = [projectId];
 }

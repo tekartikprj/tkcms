@@ -29,10 +29,11 @@ class ApiSecuredEncOptions {
   /// Encryption password
   final String password;
 
-  ApiSecuredEncOptions(
-      {required this.encPaths,
-      required this.password,
-      this.version = apiSecuredEncOptionsVersion1});
+  ApiSecuredEncOptions({
+    required this.encPaths,
+    required this.password,
+    this.version = apiSecuredEncOptionsVersion1,
+  });
 
   @override
   String toString() => 'EncPaths($encPaths, $version, ${password.obfuscate()})';
@@ -115,24 +116,29 @@ extension TekartikApiQuerySecuredRequestExt on ApiRequest {
   /// For secured request only
   ApiSecuredQuery get securedQuery => data.v!.cv<ApiSecuredQuery>();
 
-  ApiRequest wrapInSecuredRequest(ApiSecuredEncOptions options,
-      {TkCmsTimestampService? timestampService}) {
+  ApiRequest wrapInSecuredRequest(
+    ApiSecuredEncOptions options, {
+    TkCmsTimestampService? timestampService,
+  }) {
     assert(options.version == apiSecuredEncOptionsVersion1);
     var map = toMap();
-    var securedQuery = ApiSecuredQuery()
-      ..data.v = map
-
-      /// Generate from enclosed query
-      ..enc.v = data.v!.encGenerate(options);
-    var securedRequest = ApiRequest()
-      ..command.v = apiCommandSecured
-      ..data.v = securedQuery.toMap();
+    var securedQuery =
+        ApiSecuredQuery()
+          ..data.v = map
+          /// Generate from enclosed query
+          ..enc.v = data.v!.encGenerate(options);
+    var securedRequest =
+        ApiRequest()
+          ..command.v = apiCommandSecured
+          ..data.v = securedQuery.toMap();
     return securedRequest;
   }
 
   // Secured v2 only
-  Future<ApiRequest> wrapInSecuredRequestV2Async(ApiSecuredEncOptions options,
-      {required TkCmsTimestampService timestampService}) async {
+  Future<ApiRequest> wrapInSecuredRequestV2Async(
+    ApiSecuredEncOptions options, {
+    required TkCmsTimestampService timestampService,
+  }) async {
     assert(options.version == apiSecuredEncOptionsVersion2);
     var map = toMap();
     var timestamp = (await timestampService.now()).toIso8601String();
@@ -140,7 +146,7 @@ extension TekartikApiQuerySecuredRequestExt on ApiRequest {
     if (options.encPaths.isNotEmpty) {
       valuesToHash = [
         ...valuesToHash,
-        ...data.v!.valuesToHash(options.encPaths)
+        ...data.v!.valuesToHash(options.encPaths),
       ];
     }
     var hashValueDigest = options.hashValuesDigest(valuesToHash);
@@ -149,19 +155,23 @@ extension TekartikApiQuerySecuredRequestExt on ApiRequest {
       _log('cli_valuesToHash: $valuesToHash in $options');
       _log('cli_hashValueDigest: $hashValueDigest');
     }
-    var securedQuery = ApiSecuredQuery()
-      ..data.v = map
-      ..timestamp.v = timestamp
-      ..enc.v = enc;
-    var securedRequest = ApiRequest()
-      ..command.v = apiCommandSecured
-      ..data.v = securedQuery.toMap();
+    var securedQuery =
+        ApiSecuredQuery()
+          ..data.v = map
+          ..timestamp.v = timestamp
+          ..enc.v = enc;
+    var securedRequest =
+        ApiRequest()
+          ..command.v = apiCommandSecured
+          ..data.v = securedQuery.toMap();
     return securedRequest;
   }
 
-  Future<ApiRequest> unwrapSecuredRequestV2Async(ApiSecuredEncOptions options,
-      {required TkCmsTimestampService timestampService,
-      bool check = true}) async {
+  Future<ApiRequest> unwrapSecuredRequestV2Async(
+    ApiSecuredEncOptions options, {
+    required TkCmsTimestampService timestampService,
+    bool check = true,
+  }) async {
     assert(options.version == apiSecuredEncOptionsVersion2);
     var timestamp = (await timestampService.now()).toIso8601String();
     var securedQuery = this.securedQuery;
@@ -175,13 +185,16 @@ extension TekartikApiQuerySecuredRequestExt on ApiRequest {
               .abs() >
           300) {
         throw ApiException(
-            error: ApiError()
-              ..code.v = apiErrorCodeSecuredTimestamp
-              ..message.v = 'Invalid request'
-              ..noRetry.v = true
-              ..details.v = isDebug
-                  ? (CvMapModel()..fromMap(securedQuery.toMap()))
-                  : null);
+          error:
+              ApiError()
+                ..code.v = apiErrorCodeSecuredTimestamp
+                ..message.v = 'Invalid request'
+                ..noRetry.v = true
+                ..details.v =
+                    isDebug
+                        ? (CvMapModel()..fromMap(securedQuery.toMap()))
+                        : null,
+        );
       }
 
       var innerRequestData = innerRequest.data.v!;
@@ -189,7 +202,7 @@ extension TekartikApiQuerySecuredRequestExt on ApiRequest {
       if (options.encPaths.isNotEmpty) {
         valuesToHash = [
           ...valuesToHash,
-          ...innerRequestData.valuesToHash(options.encPaths)
+          ...innerRequestData.valuesToHash(options.encPaths),
         ];
       }
       var hashValueDigestComputed = options.hashValuesDigest(valuesToHash);
@@ -203,22 +216,27 @@ extension TekartikApiQuerySecuredRequestExt on ApiRequest {
 
       if (hashValueDigestComputed != hashValueDigestRead) {
         throw ApiException(
-            error: ApiError()
-              ..code.v = apiErrorCodeSecured
-              ..message.v = 'Invalid request'
-              ..noRetry.v = true
-              ..details.v = isDebug
-                  ? (CvMapModel()
-                    ..fromMap(innerRequestData.encDebugMap(options)))
-                  : null);
+          error:
+              ApiError()
+                ..code.v = apiErrorCodeSecured
+                ..message.v = 'Invalid request'
+                ..noRetry.v = true
+                ..details.v =
+                    isDebug
+                        ? (CvMapModel()
+                          ..fromMap(innerRequestData.encDebugMap(options)))
+                        : null,
+        );
       }
     }
 
     return innerRequest;
   }
 
-  ApiRequest unwrapSecuredRequest(ApiSecuredEncOptions options,
-      {bool check = true}) {
+  ApiRequest unwrapSecuredRequest(
+    ApiSecuredEncOptions options, {
+    bool check = true,
+  }) {
     var securedQuery = this.securedQuery;
     if (securedQuery.timestamp.isNotNull) {
       assert(options.version == apiSecuredEncOptionsVersion1);
@@ -241,14 +259,17 @@ extension TekartikApiQuerySecuredRequestExt on ApiRequest {
       var readHashText = securedQuery.encReadHashText(options);
       if (encHashText != readHashText) {
         throw ApiException(
-            error: ApiError()
-              ..code.v = apiErrorCodeSecured
-              ..message.v = 'Invalid request'
-              ..noRetry.v = true
-              ..details.v = isDebug
-                  ? (CvMapModel()
-                    ..fromMap(innerRequestData.encDebugMap(options)))
-                  : null);
+          error:
+              ApiError()
+                ..code.v = apiErrorCodeSecured
+                ..message.v = 'Invalid request'
+                ..noRetry.v = true
+                ..details.v =
+                    isDebug
+                        ? (CvMapModel()
+                          ..fromMap(innerRequestData.encDebugMap(options)))
+                        : null,
+        );
       }
     }
 
@@ -322,9 +343,10 @@ extension TekartikModelSecuredPrvExt on Map {
     return values;
   }
 
-  List<Object?> _rawValuesToHash(List<String> encPaths) => encPaths
-      .map((path) => getKeyPathValue(keyPartsFromString(path)))
-      .toList();
+  List<Object?> _rawValuesToHash(List<String> encPaths) =>
+      encPaths
+          .map((path) => getKeyPathValue(keyPartsFromString(path)))
+          .toList();
 }
 
 bool _isBasicUnambiguateType(Object? value) {

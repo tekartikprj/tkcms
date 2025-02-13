@@ -10,10 +10,13 @@ class SectionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-        dense: true,
-        title: Text(titleLabel ?? '',
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-        onTap: onTap,
-        onLongPress: onLongPress);
+      dense: true,
+      title: Text(
+        titleLabel ?? '',
+        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      ),
+      onTap: onTap,
+      onLongPress: onLongPress,
+    );
   }
 }

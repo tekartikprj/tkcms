@@ -6,17 +6,20 @@ class TkCmsFsProject extends TkCmsFsEntity {}
 
 var fsProjectCollectionInfo =
     TkCmsFirestoreDatabaseEntityCollectionInfo<TkCmsFsProject>(
-        id: 'project',
-        name: 'Project',
-        treeDef: TkCmsCollectionsTreeDef(map: {'item': null}));
+      id: 'project',
+      name: 'Project',
+      treeDef: TkCmsCollectionsTreeDef(map: {'item': null}),
+    );
 
 TkCmsFirestoreDatabaseServiceEntityAccess<TkCmsFsProject>
-    fsProjectAccessFromAppFlavorContext(
-        {required AppFlavorContext appFlavorContext,
-        required FirestoreDatabaseContext? firestoreDatabaseContext}) {
+fsProjectAccessFromAppFlavorContext({
+  required AppFlavorContext appFlavorContext,
+  required FirestoreDatabaseContext? firestoreDatabaseContext,
+}) {
   var fsProjectAccess =
       TkCmsFirestoreDatabaseServiceEntityAccess<TkCmsFsProject>(
-          entityCollectionInfo: fsProjectCollectionInfo,
-          firestoreDatabaseContext: firestoreDatabaseContext);
+        entityCollectionInfo: fsProjectCollectionInfo,
+        firestoreDatabaseContext: firestoreDatabaseContext,
+      );
   return fsProjectAccess;
 }

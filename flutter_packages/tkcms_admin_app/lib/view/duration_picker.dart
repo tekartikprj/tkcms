@@ -30,44 +30,51 @@ class _DurationPickerState extends State<DurationPicker> {
   @override
   Widget build(BuildContext context) {
     return ValueStreamBuilder(
-        stream: widget.subject,
-        builder: (context, snapshot) {
-          var timestamp = snapshot.data;
+      stream: widget.subject,
+      builder: (context, snapshot) {
+        var timestamp = snapshot.data;
 
-          var time = CalendarTime(
-              seconds: (timestamp ??
-                      widget.defaultValue ??
-                      const Duration(minutes: 30))
-                  .inSeconds);
+        var time = CalendarTime(
+          seconds:
+              (timestamp ?? widget.defaultValue ?? const Duration(minutes: 30))
+                  .inSeconds,
+        );
 
-          return Row(
-            children: [
-              SizedBox(
-                  width: 196,
-                  child: ListTile(
-                    onTap: () async {
-                      var tod = TimeOfDay(
-                          hour: time.fullHours, minute: time.hourMinutes);
+        return Row(
+          children: [
+            SizedBox(
+              width: 196,
+              child: ListTile(
+                onTap: () async {
+                  var tod = TimeOfDay(
+                    hour: time.fullHours,
+                    minute: time.hourMinutes,
+                  );
 
-                      var newTime = await showTimePicker(
-                          context: context, initialTime: tod);
-                      if (newTime != null) {
-                        widget.subject
-                            .add(Duration(seconds: newTime.inSeconds));
-                      }
-                    },
-                    title: const Text('Duration'),
-                    subtitle: Row(children: [
-                      Text(time.text),
-                      if (timestamp == null)
-                        const Text('  default',
-                            style: TextStyle(
-                              fontStyle: FontStyle.italic,
-                            ))
-                    ]),
-                  ))
-            ],
-          );
-        });
+                  var newTime = await showTimePicker(
+                    context: context,
+                    initialTime: tod,
+                  );
+                  if (newTime != null) {
+                    widget.subject.add(Duration(seconds: newTime.inSeconds));
+                  }
+                },
+                title: const Text('Duration'),
+                subtitle: Row(
+                  children: [
+                    Text(time.text),
+                    if (timestamp == null)
+                      const Text(
+                        '  default',
+                        style: TextStyle(fontStyle: FontStyle.italic),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

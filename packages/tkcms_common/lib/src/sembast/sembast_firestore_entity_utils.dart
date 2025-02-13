@@ -5,7 +5,8 @@ import 'package:tkcms_common/tkcms_sembast.dart' as sembast;
 
 /// Copy from fs
 sembast.TkCmsDbUserAccess dbUserAccessFromFsUserAccess(
-    fbfs.TkCmsFsUserAccess fsUserAccess) {
+  fbfs.TkCmsFsUserAccess fsUserAccess,
+) {
   return sembast.cvDbUserAccessStore.record(fsUserAccess.id).cv()
     ..copyUserAccessFrom(fsUserAccess);
 }
@@ -41,13 +42,19 @@ class SembastFirestoreSyncHelper<TFsEntity extends fbfs.TkCmsFsEntity> {
   final fbfs.TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity> entityAccess;
   final LocalDbFromFsOptions options;
 
-  SembastFirestoreSyncHelper(
-      {required this.db, required this.entityAccess, required this.options}) {
+  SembastFirestoreSyncHelper({
+    required this.db,
+    required this.entityAccess,
+    required this.options,
+  }) {
     sembast.initTkCmsDbEntityBuilders();
   }
 
-  Future<void> _dbCheckAndPutEntity(DatabaseClient db,
-      sembast.TkCmsDbEntity localDbEntity, TFsEntity fsEntity) async {
+  Future<void> _dbCheckAndPutEntity(
+    DatabaseClient db,
+    sembast.TkCmsDbEntity localDbEntity,
+    TFsEntity fsEntity,
+  ) async {
     if (localDbEntity.name.v != fsEntity.name.v ||
         localDbEntity.active.v != fsEntity.active.v ||
         localDbEntity.created.v != fsEntity.created.v?.toDbTimestamp()) {
@@ -57,9 +64,10 @@ class SembastFirestoreSyncHelper<TFsEntity extends fbfs.TkCmsFsEntity> {
   }
 
   Future<void> _dbCheckAndPutUserAccess(
-      DatabaseClient db,
-      sembast.TkCmsDbUserAccess localDbUserAccess,
-      fbfs.TkCmsFsUserAccess fsUserAccess) async {
+    DatabaseClient db,
+    sembast.TkCmsDbUserAccess localDbUserAccess,
+    fbfs.TkCmsFsUserAccess fsUserAccess,
+  ) async {
     if (localDbUserAccess.admin.v != fsUserAccess.admin.v ||
         localDbUserAccess.role.v != fsUserAccess.role.v ||
         localDbUserAccess.read.v != fsUserAccess.read.v ||
@@ -81,8 +89,10 @@ class SembastFirestoreSyncHelper<TFsEntity extends fbfs.TkCmsFsEntity> {
     });
   }
 
-  Future<void> localDbSyncUserAccess(String entityId,
-      {required LocalDbFromFsOptions options}) async {
+  Future<void> localDbSyncUserAccess(
+    String entityId, {
+    required LocalDbFromFsOptions options,
+  }) async {
     var userId = options.userId;
 
     var fsUserEntityAccess = await entityAccess
@@ -129,10 +139,10 @@ class SembastFirestoreSyncHelper<TFsEntity extends fbfs.TkCmsFsEntity> {
   Future<void> generateLocalDbFromEntitiesUserAccess() async {
     var firestore = entityAccess.firestore;
     var userId = options.userId;
-    var fsUserEntityAccessMap = (await entityAccess
+    var fsUserEntityAccessMap =
+        (await entityAccess
             .fsUserEntityAccessCollectionRef(userId)
-            .get(firestore))
-        .toMap();
+            .get(firestore)).toMap();
     var localDbEntityMap =
         (await sembast.cvDbEntityStore.query().getRecords(db)).toMap();
     var localDbUserAccessMap =
@@ -154,7 +164,10 @@ class SembastFirestoreSyncHelper<TFsEntity extends fbfs.TkCmsFsEntity> {
           }
           if (localDbUserAccess != null) {
             await _dbCheckAndPutUserAccess(
-                txn, localDbUserAccess, fsUserAccess);
+              txn,
+              localDbUserAccess,
+              fsUserAccess,
+            );
             if (localDbUserAccess.admin.v != fsUserAccess.admin.v ||
                 localDbUserAccess.role.v != fsUserAccess.role.v ||
                 localDbUserAccess.read.v != fsUserAccess.read.v ||
@@ -211,9 +224,10 @@ class SembastFirestoreSyncHelper<TFsEntity extends fbfs.TkCmsFsEntity> {
 }
 
 Future<void> _dbCheckAndPutEntity<TFsEntity extends fbfs.TkCmsFsEntity>(
-    DatabaseClient db,
-    sembast.TkCmsDbEntity localDbEntity,
-    TFsEntity fsEntity) async {
+  DatabaseClient db,
+  sembast.TkCmsDbEntity localDbEntity,
+  TFsEntity fsEntity,
+) async {
   if (localDbEntity.name.v != fsEntity.name.v ||
       localDbEntity.active.v != fsEntity.active.v ||
       localDbEntity.created.v != fsEntity.created.v?.toDbTimestamp()) {
@@ -223,9 +237,10 @@ Future<void> _dbCheckAndPutEntity<TFsEntity extends fbfs.TkCmsFsEntity>(
 }
 
 Future<void> _dbCheckAndPutUserAccess(
-    DatabaseClient db,
-    sembast.TkCmsDbUserAccess localDbUserAccess,
-    fbfs.TkCmsFsUserAccess fsUserAccess) async {
+  DatabaseClient db,
+  sembast.TkCmsDbUserAccess localDbUserAccess,
+  fbfs.TkCmsFsUserAccess fsUserAccess,
+) async {
   if (localDbUserAccess.admin.v != fsUserAccess.admin.v ||
       localDbUserAccess.role.v != fsUserAccess.role.v ||
       localDbUserAccess.read.v != fsUserAccess.read.v ||
@@ -236,8 +251,10 @@ Future<void> _dbCheckAndPutUserAccess(
   }
 }
 
-Future<void> localDbAddEntity<TFsEntity extends fbfs.TkCmsFsEntity>(
-    {required sembast.Database db, required TFsEntity fsEntity}) async {
+Future<void> localDbAddEntity<TFsEntity extends fbfs.TkCmsFsEntity>({
+  required sembast.Database db,
+  required TFsEntity fsEntity,
+}) async {
   await db.transaction((txn) async {
     var recordRef = sembast.cvDbEntityStore.record(fsEntity.id);
 
@@ -249,17 +266,18 @@ Future<void> localDbAddEntity<TFsEntity extends fbfs.TkCmsFsEntity>(
 }
 
 Future<void>
-    generateLocalDbFromEntitiesUserAccess<TFsEntity extends fbfs.TkCmsFsEntity>(
-        {required sembast.Database db,
-        required fbfs.TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity>
-            entityAccess,
-        required LocalDbFromFsOptions options}) async {
+generateLocalDbFromEntitiesUserAccess<TFsEntity extends fbfs.TkCmsFsEntity>({
+  required sembast.Database db,
+  required fbfs.TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity>
+  entityAccess,
+  required LocalDbFromFsOptions options,
+}) async {
   var firestore = entityAccess.firestore;
   var userId = options.userId;
-  var fsUserEntityAccessMap = (await entityAccess
+  var fsUserEntityAccessMap =
+      (await entityAccess
           .fsUserEntityAccessCollectionRef(userId)
-          .get(firestore))
-      .toMap();
+          .get(firestore)).toMap();
   var localDbEntityMap =
       (await sembast.cvDbEntityStore.query().getRecords(db)).toMap();
   var localDbUserAccessMap =

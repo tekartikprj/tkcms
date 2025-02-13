@@ -3,19 +3,22 @@ import 'package:tkcms_common/tkcms_common.dart';
 import 'package:tkcms_common/tkcms_firestore.dart';
 
 class TkCmsFirestoreDatabaseServiceEntityAccess<
-    TFsEntity extends TkCmsFsEntity> {
+  TFsEntity extends TkCmsFsEntity
+> {
   late final CvDocumentReference? rootDocument;
   CvCollectionReference<T> _rootCollection<T extends CvFirestoreDocument>(
-          String id) =>
-      CvCollectionReference<T>(getRootPath(id));
+    String id,
+  ) => CvCollectionReference<T>(getRootPath(id));
   CvCollectionReference<TFsEntity> get _entityCollection =>
       _rootCollection<TFsEntity>(_info.id);
   CvCollectionReference<TkCmsFsEntityTypeAccess> get _accessCollection =>
       _rootCollection<TkCmsFsEntityTypeAccess>(
-          tkCmsFsEntityTypeAccessCollectionId);
+        tkCmsFsEntityTypeAccessCollectionId,
+      );
   CvCollectionReference<TkCmsFsEntityTypeInvite> get _inviteCollection =>
       _rootCollection<TkCmsFsEntityTypeInvite>(
-          tkCmsFsEntityTypeInviteCollectionId);
+        tkCmsFsEntityTypeInviteCollectionId,
+      );
   CvDocumentReference<TkCmsFsEntityTypeAccess> get _entityTypeAccessDoc =>
       _accessCollection.doc(_info.id);
   CvDocumentReference<TkCmsFsEntityTypeInvite> get _entityTypeInviteDoc =>
@@ -25,15 +28,16 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<
 
   late final Firestore firestore;
   //FirestoreDatabaseContext? firestoreDatabaseContext;
-  TkCmsFirestoreDatabaseServiceEntityAccess(
-      {required this.entityCollectionInfo,
+  TkCmsFirestoreDatabaseServiceEntityAccess({
+    required this.entityCollectionInfo,
 
-      /// to prefer
-      FirestoreDatabaseContext? firestoreDatabaseContext,
-      // prefer using firestoreDatabaseContext
-      Firestore? firestore,
-      // prefer using firestoreDatabaseContext
-      CvDocumentReference? rootDocument}) {
+    /// to prefer
+    FirestoreDatabaseContext? firestoreDatabaseContext,
+    // prefer using firestoreDatabaseContext
+    Firestore? firestore,
+    // prefer using firestoreDatabaseContext
+    CvDocumentReference? rootDocument,
+  }) {
     this.firestore =
         firestore ?? firestoreDatabaseContext?.firestore ?? Firestore.instance;
     this.rootDocument = rootDocument ?? firestoreDatabaseContext?.rootDocument;
@@ -48,43 +52,49 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<
   String getRootPath(String path) =>
       rootDocument == null ? path : url.join(rootDocument!.path, path);
   CvDocumentReference<T> rootDocRef<T extends CvFirestoreDocument>(
-          String path) =>
-      CvDocumentReference<T>(getRootPath(path));
+    String path,
+  ) => CvDocumentReference<T>(getRootPath(path));
   CvCollectionReference<T> rootCollRef<T extends CvFirestoreDocument>(
-          String path) =>
-      CvCollectionReference<T>(getRootPath(path));
+    String path,
+  ) => CvCollectionReference<T>(getRootPath(path));
 
   CvCollectionReference<TkCmsFsUserAccess> _entityUserAccessColl(
-          String entityId) =>
-      _entityTypeAccessDoc
-          .collection(tkCmsFsEntityIdCollectionId)
-          .doc(entityId)
-          .collection<TkCmsFsUserAccess>(tkCmsFsUserAccessCollectionId);
+    String entityId,
+  ) => _entityTypeAccessDoc
+      .collection(tkCmsFsEntityIdCollectionId)
+      .doc(entityId)
+      .collection<TkCmsFsUserAccess>(tkCmsFsUserAccessCollectionId);
   CvDocumentReference<TkCmsFsUserAccess> _entityUserAccessDoc(
-          String entityId, String userId) =>
-      _entityUserAccessColl(entityId).doc(userId);
+    String entityId,
+    String userId,
+  ) => _entityUserAccessColl(entityId).doc(userId);
 
   CvDocumentReference<CvFirestoreDocument> _userAccessTop(String userId) =>
       _entityTypeAccessDoc.collection(tkCmsFsUserIdCollectionId).doc(userId);
   CvDocumentReference<TkCmsFsUserAccess> _userEntityAccessDoc(
-          String userId, String entityId) =>
-      _userAccessTop(userId)
-          .collection<TkCmsFsUserAccess>(tkCmsFsEntityAccessCollectionId)
-          .doc(entityId);
+    String userId,
+    String entityId,
+  ) => _userAccessTop(userId)
+      .collection<TkCmsFsUserAccess>(tkCmsFsEntityAccessCollectionId)
+      .doc(entityId);
   CvDocumentReference<TkCmsFsUserAccess> _userInviteAccessDoc(
-          String userId, String inviteCode) =>
-      _userAccessTop(userId)
-          .collection<TkCmsFsUserAccess>(tkCmsFsInviteAccessCollectionId)
-          .doc(inviteCode);
+    String userId,
+    String inviteCode,
+  ) => _userAccessTop(userId)
+      .collection<TkCmsFsUserAccess>(tkCmsFsInviteAccessCollectionId)
+      .doc(inviteCode);
   CvCollectionReference<TkCmsFsInviteId> get _inviteIdCollection =>
-      _entityTypeInviteDoc
-          .collection<TkCmsFsInviteId>(tkCmsFsInviteIdCollectionId);
+      _entityTypeInviteDoc.collection<TkCmsFsInviteId>(
+        tkCmsFsInviteIdCollectionId,
+      );
   CvDocumentReference<TkCmsFsInviteEntity<TFsEntity>> _inviteEntityDoc(
-          String inviteId, String entityId) =>
-      fsInviteIdRef(inviteId)
-          .collection<TkCmsFsInviteEntity<TFsEntity>>(
-              tkCmsFsInviteEntityCollectionId)
-          .doc(entityId);
+    String inviteId,
+    String entityId,
+  ) => fsInviteIdRef(inviteId)
+      .collection<TkCmsFsInviteEntity<TFsEntity>>(
+        tkCmsFsInviteEntityCollectionId,
+      )
+      .doc(entityId);
   CvCollectionReference<TFsEntity> get fsEntityCollectionRef =>
       _entityCollection;
 
@@ -93,24 +103,27 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<
 
   /// Helper to get the collection reference
   CvCollectionReference<TkCmsFsUserAccess> fsEntityUserAccessCollectionRef(
-          String entityId) =>
-      _entityUserAccessColl(entityId);
+    String entityId,
+  ) => _entityUserAccessColl(entityId);
 
   /// Helper to get the entity reference
   CvDocumentReference<TkCmsFsUserAccess> fsEntityUserAccessRef(
-          String entityId, String userId) =>
-      _entityUserAccessDoc(entityId, userId);
+    String entityId,
+    String userId,
+  ) => _entityUserAccessDoc(entityId, userId);
 
   /// Helper to get the collection reference
   CvCollectionReference<TkCmsFsUserAccess> fsUserEntityAccessCollectionRef(
-          String userId) =>
-      _userAccessTop(userId)
-          .collection<TkCmsFsUserAccess>(tkCmsFsEntityAccessCollectionId);
+    String userId,
+  ) => _userAccessTop(
+    userId,
+  ).collection<TkCmsFsUserAccess>(tkCmsFsEntityAccessCollectionId);
 
   /// Helper to get the entity reference, user might have write access (to check)
   CvDocumentReference<TkCmsFsUserAccess> fsUserEntityAccessRef(
-          String userId, String entityId) =>
-      fsUserEntityAccessCollectionRef(userId).doc(entityId);
+    String userId,
+    String entityId,
+  ) => fsUserEntityAccessCollectionRef(userId).doc(entityId);
 
   /// Helper to get the entity reference
   CvDocumentReference<TkCmsFsInviteId> fsInviteIdRef(String inviteId) =>
@@ -118,27 +131,30 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<
 
   /// Helper to get the entity reference
   CvDocumentReference<TkCmsFsInviteEntity<TFsEntity>> fsInviteEntityRef(
-          String inviteId, String entityId) =>
-      _inviteEntityDoc(inviteId, entityId);
+    String inviteId,
+    String entityId,
+  ) => _inviteEntityDoc(inviteId, entityId);
 
   String get _entityName => _info.name;
 
-  Future<void> setUserAccessInviteCode(
-      {required String userId,
-      required String inviteCode,
-      required TkCmsFsUserAccess userAccess}) async {
+  Future<void> setUserAccessInviteCode({
+    required String userId,
+    required String inviteCode,
+    required TkCmsFsUserAccess userAccess,
+  }) async {
     var inviteAccessRef = _userInviteAccessDoc(userId, inviteCode);
     await inviteAccessRef.set(firestore, userAccess);
   }
 
   /// Create a project invite, return the id
-  Future<String> createInviteEntity(
-      {required String userId,
-      required String entityId,
-      required TkCmsCvUserAccess userAccess,
-      required TFsEntity entity,
-      String? inviteCode,
-      bool autoId = false}) async {
+  Future<String> createInviteEntity({
+    required String userId,
+    required String entityId,
+    required TkCmsCvUserAccess userAccess,
+    required TFsEntity entity,
+    String? inviteCode,
+    bool autoId = false,
+  }) async {
     return await firestore.cvRunTransaction((txn) async {
       String? inviteId;
 
@@ -149,8 +165,9 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<
         // Find a unique id
 
         if (!autoId) {
-          inviteId =
-              await _inviteIdCollection.raw(firestore).txnGenerateUniqueId(txn);
+          inviteId = await _inviteIdCollection
+              .raw(firestore)
+              .txnGenerateUniqueId(txn);
         }
 
         var entity = await txn.refGet(entityRef);
@@ -167,17 +184,20 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<
         if (userAccess.isRead) {
           if (!entityUserAccess.isRead) {
             throw ArgumentError(
-                'User $userId not allowed to create read invite');
+              'User $userId not allowed to create read invite',
+            );
           }
           if (userAccess.isWrite) {
             if (!entityUserAccess.isWrite) {
               throw ArgumentError(
-                  'User $userId not allowed to create write invite');
+                'User $userId not allowed to create write invite',
+              );
             }
             if (userAccess.isAdmin) {
               if (!entityUserAccess.isAdmin) {
                 throw ArgumentError(
-                    'User $userId not allowed to create admin invite');
+                  'User $userId not allowed to create admin invite',
+                );
               }
             }
           }
@@ -195,8 +215,8 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<
       inviteEntity.entity.v = entity;
       inviteEntity.entityId.v = entityId;
 
-      var inviteIdDoc = _inviteIdCollection.doc(inviteId).cv()
-        ..entityId.v = entityId;
+      var inviteIdDoc =
+          _inviteIdCollection.doc(inviteId).cv()..entityId.v = entityId;
       var inviteIdMap = inviteIdDoc.toMapWithServerTimestamp();
       if (inviteCode != null) {
         inviteIdMap[tkCmsFsInviteCodeKey] = inviteCode;
@@ -211,18 +231,23 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<
   }
 
   /// Set user access
-  Future<void> setEntityUserAccess(
-      {required String entityId,
-      required String userId,
-      required TkCmsFsUserAccess userAccess}) async {
+  Future<void> setEntityUserAccess({
+    required String entityId,
+    required String userId,
+    required TkCmsFsUserAccess userAccess,
+  }) async {
     await firestore.cvRunTransaction((txn) async {
       txnSetEntityUserAccess(txn, entityId, userId, userAccess);
     });
   }
 
   /// Set user access in a transaction.
-  void txnSetEntityUserAccess(CvFirestoreTransaction txn, String entityId,
-      String userId, TkCmsFsUserAccess userAccess) {
+  void txnSetEntityUserAccess(
+    CvFirestoreTransaction txn,
+    String entityId,
+    String userId,
+    TkCmsFsUserAccess userAccess,
+  ) {
     var entityUserAccessRef = _entityUserAccessDoc(entityId, userId);
     var userEntityAccessRef = _userEntityAccessDoc(userId, entityId);
     txn.refSet(entityUserAccessRef, userAccess);
@@ -230,10 +255,11 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<
   }
 
   /// Create a project invite, return the id
-  Future<void> acceptInviteEntity(
-      {required String userId,
-      required String inviteId,
-      required String entityId}) async {
+  Future<void> acceptInviteEntity({
+    required String userId,
+    required String inviteId,
+    required String entityId,
+  }) async {
     return await firestore.cvRunTransaction((txn) async {
       var inviteEntityRef = _inviteEntityDoc(inviteId, entityId);
 
@@ -245,7 +271,8 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<
       var inviteEntity = await txn.refGet(inviteEntityRef);
       if (!inviteEntity.exists) {
         throw ArgumentError(
-            '$_entityName $entityId invite $inviteId not found');
+          '$_entityName $entityId invite $inviteId not found',
+        );
       }
 
       var inviteUserAccess = inviteEntity.userAccess.v!;
@@ -264,8 +291,8 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<
         entityUserAccess.read.v =
             inviteUserAccess.isRead || entityUserAccess.isRead;
       } else {
-        entityUserAccess = TkCmsFsUserAccess()
-          ..copyAccessFrom(inviteUserAccess);
+        entityUserAccess =
+            TkCmsFsUserAccess()..copyAccessFrom(inviteUserAccess);
       }
 
       txn.refDelete(inviteIdRef);
@@ -276,8 +303,10 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<
   }
 
   /// Create a project invite, return the id
-  Future<void> deleteInviteEntity(
-      {required String inviteId, required String entityId}) async {
+  Future<void> deleteInviteEntity({
+    required String inviteId,
+    required String entityId,
+  }) async {
     return await firestore.cvRunTransaction((txn) async {
       var inviteEntityRef = _inviteEntityDoc(inviteId, entityId);
       var inviteIdRef = _inviteIdCollection.doc(inviteId);
@@ -291,26 +320,30 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<
   }
 
   /// Create a project, return the id
-  Future<String> createEntity(
-      {required String userId, required TFsEntity entity}) async {
+  Future<String> createEntity({
+    required String userId,
+    required TFsEntity entity,
+  }) async {
     entity.created.v ??= Timestamp.now();
     entity.active.v ??= true;
     return await firestore.cvRunTransaction((txn) async {
       // Find a unique id
-      var entityId =
-          await _entityCollection.raw(firestore).txnGenerateUniqueId(txn);
+      var entityId = await _entityCollection
+          .raw(firestore)
+          .txnGenerateUniqueId(txn);
 
       var entityRef = _entityCollection.doc(entityId);
       var entityUserAccessRef = _entityUserAccessDoc(entityId, userId);
       var userEntityAccessRef = _userEntityAccessDoc(userId, entityId);
       entity.ref = entityRef;
-      var entityUserAccess = TkCmsFsUserAccess()
-        ..read.v = true
-        ..write.v = true
-        ..admin.v = true
-        ..ref = entityUserAccessRef;
-      var userEntityAccess = entityUserAccess.clone()
-        ..ref = userEntityAccessRef;
+      var entityUserAccess =
+          TkCmsFsUserAccess()
+            ..read.v = true
+            ..write.v = true
+            ..admin.v = true
+            ..ref = entityUserAccessRef;
+      var userEntityAccess =
+          entityUserAccess.clone()..ref = userEntityAccessRef;
 
       txn.cvSet(entity);
       txn.cvSet(entityUserAccess);
@@ -341,7 +374,8 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<
     var entityAccessUser = await firestore.refGet(entityUserAccessRef);
     if (!entityAccessUser.isAdmin) {
       throw Exception(
-          'User $userId not allowed to delete $_entityName $entityId');
+        'User $userId not allowed to delete $_entityName $entityId',
+      );
     }
 
     await firestore.cvRunTransaction((txn) async {
@@ -353,9 +387,10 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<
       entity.deleted.v = true;
       entity.active.v = false;
       txn.set(
-          entityRef.raw(firestore),
-          entity.toMap()
-            ..withServerTimestamp(tkCmsFsEntityModel.deletedTimestamp));
+        entityRef.raw(firestore),
+        entity.toMap()
+          ..withServerTimestamp(tkCmsFsEntityModel.deletedTimestamp),
+      );
     });
   }
 
@@ -419,7 +454,9 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<
   }
 
   Stream<TkCmsFsInviteEntity<TFsEntity>> onInviteEntity(
-      String inviteId, String entityId) {
+    String inviteId,
+    String entityId,
+  ) {
     return _inviteEntityDoc(inviteId, entityId).onSnapshot(firestore);
   }
 
@@ -427,11 +464,13 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<
   Future<void> purgeDeletedEntities() async {
     // var now = Timestamp.now().millisecondsSinceEpoch - 30 * 24 * 3600 * 1000;
     var now = Timestamp.fromMillisecondsSinceEpoch(
-        Timestamp.now().millisecondsSinceEpoch - 1000 * 60 * 60 * 24);
+      Timestamp.now().millisecondsSinceEpoch - 1000 * 60 * 60 * 24,
+    );
     while (true) {
-      var query = _entityCollection
-          .query()
-          .where(tkCmsFsEntityModel.deletedTimestamp.name, isLessThan: now);
+      var query = _entityCollection.query().where(
+        tkCmsFsEntityModel.deletedTimestamp.name,
+        isLessThan: now,
+      );
       var entities = await query.get(firestore);
       if (entities.isEmpty) {
         break;
@@ -446,7 +485,8 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<
   Future<void> deleteOldInvites() async {
     /// 7 days old
     var pastTimestamp = Timestamp.fromMillisecondsSinceEpoch(
-        Timestamp.now().millisecondsSinceEpoch - 1000 * 60 * 60 * 24 * 7);
+      Timestamp.now().millisecondsSinceEpoch - 1000 * 60 * 60 * 24 * 7,
+    );
     var inviteIdCollection = _inviteIdCollection;
     var query = inviteIdCollection
         .query()
@@ -476,7 +516,8 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<
 }
 
 class TkCmsFirestoreDatabaseEntityCollectionInfo<
-    TEntity extends TkCmsFsEntity> {
+  TEntity extends TkCmsFsEntity
+> {
   /// Sub collections def
   TkCmsCollectionsTreeDef? treeDef;
 
@@ -488,6 +529,9 @@ class TkCmsFirestoreDatabaseEntityCollectionInfo<
 
   /// The entity type is the id!
   String get entityType => id;
-  TkCmsFirestoreDatabaseEntityCollectionInfo(
-      {required this.id, required this.name, this.treeDef});
+  TkCmsFirestoreDatabaseEntityCollectionInfo({
+    required this.id,
+    required this.name,
+    this.treeDef,
+  });
 }

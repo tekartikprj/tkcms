@@ -39,7 +39,7 @@ void initTkCmsApiBuilders() {
       ApiError.new,
       ApiEchoResult.new,
       ApiEchoQuery.new,
-      ApiSecuredQuery.new
+      ApiSecuredQuery.new,
     ]);
   }
 }
@@ -120,16 +120,20 @@ ApiResponse apiResponseFromException(Object e, [StackTrace? st]) {
     if (e.error != null) {
       response = ApiResponse()..error.v = e.error;
     } else {
-      response = ApiResponse()
-        ..error.v = (ApiError()
-          ..code.v = apiErrorCodeInternal
-          ..message.v = e.message ?? e.toString());
+      response =
+          ApiResponse()
+            ..error.v =
+                (ApiError()
+                  ..code.v = apiErrorCodeInternal
+                  ..message.v = e.message ?? e.toString());
     }
   } else {
-    response = ApiResponse()
-      ..error.v = (ApiError()
-        ..code.v = apiErrorCodeInternal
-        ..message.v = e.toString());
+    response =
+        ApiResponse()
+          ..error.v =
+              (ApiError()
+                ..code.v = apiErrorCodeInternal
+                ..message.v = e.toString());
   }
   if (isDebug) {
     var error = response.error.v!;

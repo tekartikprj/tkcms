@@ -35,7 +35,7 @@ FlavorContext? _hostDetectFlavorContext(String host) {
 /// For web in dev
 /// uri: http://localhost:39775/,
 FlavorContext uriDetectFlavorContext(Uri uri) {
-// Web!
+  // Web!
   if (uri.queryParameters.containsKey('prod')) {
     return FlavorContext.prod;
   } else if (uri.queryParameters.containsKey('dev')) {

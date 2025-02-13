@@ -10,16 +10,19 @@ void main() {
     test('SecuredApi v2', () async {
       var securedOptions = TkCmsApiSecuredOptions();
       var encOptions = ApiSecuredEncOptions(
-          encPaths: ['a', 'b'],
-          password: 'FSGY3TeAJPKYDErAjNVmAAhSmC8ejaVn',
-          version: apiSecuredEncOptionsVersion2);
+        encPaths: ['a', 'b'],
+        password: 'FSGY3TeAJPKYDErAjNVmAAhSmC8ejaVn',
+        version: apiSecuredEncOptionsVersion2,
+      );
       securedOptions.timestampServiceOrNull = TkCmsTimestampService.local();
       securedOptions.add('command', encOptions);
-      var apiRequest = ApiRequest()
-        ..command.v = 'command'
-        ..data.v = {'a': 1};
-      var securedRequest =
-          await securedOptions.wrapInSecuredRequestV2Async(apiRequest);
+      var apiRequest =
+          ApiRequest()
+            ..command.v = 'command'
+            ..data.v = {'a': 1};
+      var securedRequest = await securedOptions.wrapInSecuredRequestV2Async(
+        apiRequest,
+      );
       var enc = securedRequest.data.v!['enc'] as String;
       var decrypted = encOptions.decryptText(enc);
       var timestamp = securedRequest.data.v!['timestamp'] as String;
@@ -31,27 +34,31 @@ void main() {
         'data': {
           'data': {
             'command': 'command',
-            'data': {'a': 1}
+            'data': {'a': 1},
           },
           'timestamp': timestamp,
-          'enc': enc
-        }
+          'enc': enc,
+        },
       });
       // print(securedRequest.toJsonPretty());
-      var unwrappedRequest =
-          await securedOptions.unwrapSecuredRequestV2Async(securedRequest);
+      var unwrappedRequest = await securedOptions.unwrapSecuredRequestV2Async(
+        securedRequest,
+      );
       expect(unwrappedRequest, apiRequest);
       expect(securedRequest.securedExistingEncValue, isNotEmpty);
       //print(securedRequest.securedExistingEncValue);
       securedRequest.securedOverrideEncValue('dummy');
       expect(securedRequest.securedExistingEncValue, 'dummy');
       // print(securedRequest.securedExistingEncValue);
-      unwrappedRequest = await securedOptions
-          .unwrapSecuredRequestV2Async(securedRequest, check: false);
+      unwrappedRequest = await securedOptions.unwrapSecuredRequestV2Async(
+        securedRequest,
+        check: false,
+      );
       expect(unwrappedRequest, apiRequest);
       try {
-        unwrappedRequest =
-            await securedOptions.unwrapSecuredRequestV2Async(securedRequest);
+        unwrappedRequest = await securedOptions.unwrapSecuredRequestV2Async(
+          securedRequest,
+        );
         fail('should fail');
       } catch (e) {
         if (e is TestFailure) {
@@ -62,35 +69,41 @@ void main() {
     test('SecuredApi v1', () {
       var securedOptions = TkCmsApiSecuredOptions();
       securedOptions.add(
-          'command',
-          ApiSecuredEncOptions(
-              encPaths: ['a', 'b'],
-              password: 'FSGY3TeAJPKYDErAjNVmAAhSmC8ejaVn'));
-      var apiRequest = ApiRequest()
-        ..command.v = 'command'
-        ..data.v = {'a': 1};
+        'command',
+        ApiSecuredEncOptions(
+          encPaths: ['a', 'b'],
+          password: 'FSGY3TeAJPKYDErAjNVmAAhSmC8ejaVn',
+        ),
+      );
+      var apiRequest =
+          ApiRequest()
+            ..command.v = 'command'
+            ..data.v = {'a': 1};
       var securedRequest = securedOptions.wrapInSecuredRequest(apiRequest);
       expect(securedRequest.toMap(), {
         'command': 'secured',
         'data': {
           'data': {
             'command': 'command',
-            'data': {'a': 1}
+            'data': {'a': 1},
           },
-          'enc': securedRequest.data.v!['enc']
-        }
+          'enc': securedRequest.data.v!['enc'],
+        },
       });
       // print(securedRequest.toJsonPretty());
-      var unwrappedRequest =
-          securedOptions.unwrapSecuredRequest(securedRequest);
+      var unwrappedRequest = securedOptions.unwrapSecuredRequest(
+        securedRequest,
+      );
       expect(unwrappedRequest, apiRequest);
       expect(securedRequest.securedExistingEncValue, isNotEmpty);
       //print(securedRequest.securedExistingEncValue);
       securedRequest.securedOverrideEncValue('dummy');
       expect(securedRequest.securedExistingEncValue, 'dummy');
       // print(securedRequest.securedExistingEncValue);
-      unwrappedRequest =
-          securedOptions.unwrapSecuredRequest(securedRequest, check: false);
+      unwrappedRequest = securedOptions.unwrapSecuredRequest(
+        securedRequest,
+        check: false,
+      );
       expect(unwrappedRequest, apiRequest);
       try {
         unwrappedRequest = securedOptions.unwrapSecuredRequest(securedRequest);
@@ -123,14 +136,16 @@ void main() {
 
     test('ApiInfoResponse', () {
       expect(
-          (newModel().cv<ApiInfoResponse>()..fillModel(fillOptions)).toMap(), {
-        'app': 'text_1',
-        'uri': 'text_2',
-        'version': 'text_3',
-        'g': 4,
-        'i': 5,
-        'debug': true
-      });
+        (newModel().cv<ApiInfoResponse>()..fillModel(fillOptions)).toMap(),
+        {
+          'app': 'text_1',
+          'uri': 'text_2',
+          'version': 'text_3',
+          'g': 4,
+          'i': 5,
+          'debug': true,
+        },
+      );
     });
   });
 }

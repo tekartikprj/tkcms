@@ -92,12 +92,15 @@ class AppFlavorContext {
 
   String? _uniqueAppName;
 
-  AppFlavorContext(
-      {required this.flavorContext, bool? local, required this.app})
-      : local = local ?? false;
+  AppFlavorContext({
+    required this.flavorContext,
+    bool? local,
+    required this.app,
+  }) : local = local ?? false;
 
   /// Unique app name for local use
-  String get uniqueAppName => _uniqueAppName ??= () {
+  String get uniqueAppName =>
+      _uniqueAppName ??= () {
         var flavorSuffix1 = '_${flavorContext.flavor}';
         var flavorSuffix2 = '-${flavorContext.flavor}';
         var hasSuffix =
@@ -108,11 +111,16 @@ class AppFlavorContext {
 
   /// test local flavor
   static final testLocal = AppFlavorContext(
-      app: 'test', flavorContext: FlavorContext.test, local: true);
+    app: 'test',
+    flavorContext: FlavorContext.test,
+    local: true,
+  );
 
   /// test flavor
-  static final test =
-      AppFlavorContext(app: 'test', flavorContext: FlavorContext.test);
+  static final test = AppFlavorContext(
+    app: 'test',
+    flavorContext: FlavorContext.test,
+  );
 
   /// True if prod
   bool get isProd => flavorContext.isProd;

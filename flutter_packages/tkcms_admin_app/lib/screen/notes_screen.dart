@@ -24,73 +24,78 @@ class _NotesScreenState extends State<NotesScreen> {
     var bloc = BlocProvider.of<NotesScreenBloc>(context);
     var intl = appIntl(context);
     return ValueStreamBuilder(
-        stream: bloc.state,
-        builder: (context, snapshot) {
-          var state = snapshot.data;
-          var notes = state?.notes;
-          var project = state?.project;
-          var canAdd = project?.userAccess.isWrite ?? false;
-          // print('canAdd: $canAdd ($project)');
-          return Scaffold(
-            appBar: AppBar(
-              title: (state != null)
-                  ? Text(state.project?.entity.name.v ??
-                      appIntl(context).notesTitle)
-                  : null,
-              actions: [
-                IconButton(onPressed: () {}, icon: const Icon(Icons.settings)),
-              ],
-            ),
-            body: Builder(builder: (context) {
+      stream: bloc.state,
+      builder: (context, snapshot) {
+        var state = snapshot.data;
+        var notes = state?.notes;
+        var project = state?.project;
+        var canAdd = project?.userAccess.isWrite ?? false;
+        // print('canAdd: $canAdd ($project)');
+        return Scaffold(
+          appBar: AppBar(
+            title:
+                (state != null)
+                    ? Text(
+                      state.project?.entity.name.v ??
+                          appIntl(context).notesTitle,
+                    )
+                    : null,
+            actions: [
+              IconButton(onPressed: () {}, icon: const Icon(Icons.settings)),
+            ],
+          ),
+          body: Builder(
+            builder: (context) {
               if (state == null) {
                 return const CenteredProgress();
               }
 
               if (notes == null || project == null) {
-                return const Center(
-                  child: Icon(Icons.error),
-                ); //edError();
+                return const Center(child: Icon(Icons.error)); //edError();
               }
               return WithHeaderFooterListView.builder(
-                  itemCount: notes.length,
-                  itemBuilder: (context, index) {
-                    var note = notes[index];
-                    // devPrint('note: $note project: $project');
+                itemCount: notes.length,
+                itemBuilder: (context, index) {
+                  var note = notes[index];
+                  // devPrint('note: $note project: $project');
 
-                    return BodyContainer(
-                      child: Column(
-                        children: [
-                          if (note.id == state.firstPinnedNoteId)
-                            BodyHPadding(
-                              child: Row(
-                                children: [
-                                  Text(intl.notesPinned,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .labelSmall),
-                                ],
-                              ),
-                            )
-                          else if (note.id == state.firstUnpinnedNoteId)
-                            BodyHPadding(
-                              child: Row(
-                                children: [
-                                  Text(intl.notesOthers,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .labelSmall),
-                                ],
-                              ),
+                  return BodyContainer(
+                    child: Column(
+                      children: [
+                        if (note.id == state.firstPinnedNoteId)
+                          BodyHPadding(
+                            child: Row(
+                              children: [
+                                Text(
+                                  intl.notesPinned,
+                                  style: Theme.of(context).textTheme.labelSmall,
+                                ),
+                              ],
                             ),
-                          NoteItemTile(note: note, eua: project),
-                        ],
-                      ),
-                    );
-                  });
-            }),
-            floatingActionButton: !canAdd
-                ? null
-                : FloatingActionButton(
+                          )
+                        else if (note.id == state.firstUnpinnedNoteId)
+                          BodyHPadding(
+                            child: Row(
+                              children: [
+                                Text(
+                                  intl.notesOthers,
+                                  style: Theme.of(context).textTheme.labelSmall,
+                                ),
+                              ],
+                            ),
+                          ),
+                        NoteItemTile(note: note, eua: project),
+                      ],
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+          floatingActionButton:
+              !canAdd
+                  ? null
+                  : FloatingActionButton(
                     onPressed: () async {
                       //await goToNoteEditScreen(context,
                       //    project: project!, note: null);
@@ -98,17 +103,14 @@ class _NotesScreenState extends State<NotesScreen> {
                     },
                     child: const Icon(Icons.add),
                   ),
-          );
-        });
+        );
+      },
+    );
   }
 }
 
 class NoteItemTile extends StatelessWidget {
-  NoteItemTile({
-    super.key,
-    required this.note,
-    required this.eua,
-  }) {
+  NoteItemTile({super.key, required this.note, required this.eua}) {
     if (note.title.v?.trimmedNonEmpty() != null) {
       title = note.title.v!.trim();
     } else {
@@ -145,13 +147,21 @@ class NoteItemTile extends StatelessWidget {
   }
 }
 
-Future<void> goToNotesScreen(BuildContext context, String projectId,
-    {TransitionDelegate? transitionDelegate}) async {
-  await Navigator.of(context).push<void>(MaterialPageRoute(builder: (context) {
-    return BlocProvider(
-        blocBuilder: () => NotesScreenBloc(projectId: projectId),
-        child: const NotesScreen());
-  }));
+Future<void> goToNotesScreen(
+  BuildContext context,
+  String projectId, {
+  TransitionDelegate? transitionDelegate,
+}) async {
+  await Navigator.of(context).push<void>(
+    MaterialPageRoute(
+      builder: (context) {
+        return BlocProvider(
+          blocBuilder: () => NotesScreenBloc(projectId: projectId),
+          child: const NotesScreen(),
+        );
+      },
+    ),
+  );
   /*
   var cn = ContentNavigator.of(context);
   globalNotelioPrefs.setLatestProjectRef(projectRef);

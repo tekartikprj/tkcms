@@ -10,7 +10,7 @@ Future<void> handle() async {}
 
 class TkCmsTestServerApp extends TkCmsServerAppV2 {
   TkCmsTestServerApp({required super.context})
-      : super(apiVersion: apiVersion2) {
+    : super(apiVersion: apiVersion2) {
     initTestApiBuilders();
     securedOptions.addAll(serverTestServerSecuredOptions);
   }
@@ -18,7 +18,9 @@ class TkCmsTestServerApp extends TkCmsServerAppV2 {
   Future<ApiTestResult> onTestCommand(ApiTestQuery query) async {
     if (query.doThrowNoRetry.v == true) {
       throw ApiException(
-          message: 'ExceptionNoRetry', error: ApiError()..noRetry.v = true);
+        message: 'ExceptionNoRetry',
+        error: ApiError()..noRetry.v = true,
+      );
     } else if (query.doThrowBefore.v != null) {
       var timestamp = Timestamp.parse(query.doThrowBefore.v!);
       if (Timestamp.now().millisecondsSinceEpoch <

@@ -30,7 +30,10 @@ Future<void> main() async {
     var userId = 'user1';
     var options = LocalDbFromFsOptions(userId: userId);
     var helper = SembastFirestoreSyncHelper<TestFsEntity>(
-        db: localDb.db, entityAccess: fsDb, options: options);
+      db: localDb.db,
+      entityAccess: fsDb,
+      options: options,
+    );
     await helper.generateLocalDbFromEntitiesUserAccess();
     expect(await cvDbUserAccessStore.find(localDb.db), isEmpty);
 
@@ -63,9 +66,12 @@ Future<void> main() async {
   test('auto synced and generate', () async {
     var databaseFactory = newDatabaseFactoryMemory();
     var options = AutoSynchronizedFirestoreSyncedDbOptions(
-        firestore: firestore, databaseFactory: databaseFactory);
-    var syncedDb =
-        await AutoSynchronizedFirestoreSyncedDb.open(options: options);
+      firestore: firestore,
+      databaseFactory: databaseFactory,
+    );
+    var syncedDb = await AutoSynchronizedFirestoreSyncedDb.open(
+      options: options,
+    );
     var db = syncedDb.database;
 
     var userId = 'user1';
@@ -79,7 +85,10 @@ Future<void> main() async {
         .set(firestore, TkCmsFsUserAccess()..read.v = true);
 
     await generateLocalDbFromEntitiesUserAccess(
-        db: db, entityAccess: fsDb, options: localDbOptions);
+      db: db,
+      entityAccess: fsDb,
+      options: localDbOptions,
+    );
     expect(await cvDbUserAccessStore.find(db), isNotEmpty);
     await syncedDb.synchronize();
   });

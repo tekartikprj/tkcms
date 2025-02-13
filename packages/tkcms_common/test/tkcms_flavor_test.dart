@@ -10,16 +10,25 @@ void main() {
   });
   test('app', () {
     expect(
-        AppFlavorContext(app: 'myapp', flavorContext: FlavorContext.dev)
-            .uniqueAppName,
-        'myapp_dev');
+      AppFlavorContext(
+        app: 'myapp',
+        flavorContext: FlavorContext.dev,
+      ).uniqueAppName,
+      'myapp_dev',
+    );
     expect(
-        AppFlavorContext(app: 'myapp_dev', flavorContext: FlavorContext.dev)
-            .uniqueAppName,
-        'myapp_dev');
+      AppFlavorContext(
+        app: 'myapp_dev',
+        flavorContext: FlavorContext.dev,
+      ).uniqueAppName,
+      'myapp_dev',
+    );
     expect(
-        AppFlavorContext(app: 'myapp-dev', flavorContext: FlavorContext.dev)
-            .uniqueAppName,
-        'myapp-dev');
+      AppFlavorContext(
+        app: 'myapp-dev',
+        flavorContext: FlavorContext.dev,
+      ).uniqueAppName,
+      'myapp-dev',
+    );
   });
 }

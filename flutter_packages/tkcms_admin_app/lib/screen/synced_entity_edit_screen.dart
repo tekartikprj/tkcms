@@ -17,8 +17,10 @@ class SyncedEntityEditScreenBlocState<T extends TkCmsFsEntity> {
   final TkCmsDbEntity dbEntity;
   final TkCmsDbUserAccess dbUserAccess;
 
-  SyncedEntityEditScreenBlocState(
-      {required this.dbEntity, required this.dbUserAccess});
+  SyncedEntityEditScreenBlocState({
+    required this.dbEntity,
+    required this.dbUserAccess,
+  });
 }
 
 class SyncedEntityEditScreenBloc<T extends TkCmsFsEntity>
@@ -36,8 +38,10 @@ class SyncedEntityEditScreenBloc<T extends TkCmsFsEntity>
 
   Database get db => syncedEntityDb.db;
 
-  SyncedEntityEditScreenBloc(
-      {required this.syncedEntityDb, required this.entityId}) {
+  SyncedEntityEditScreenBloc({
+    required this.syncedEntityDb,
+    required this.entityId,
+  }) {
     _init();
   }
 
@@ -45,28 +49,39 @@ class SyncedEntityEditScreenBloc<T extends TkCmsFsEntity>
     await syncedEntityDb.ready;
     var entityId = this.entityId;
     if (entityId != null) {
-      audiAddStreamSubscription(streamJoin2(
-              cvDbEntityStore.record(entityId).onRecord(db),
-              cvDbUserAccessStore.record(entityId).onRecord(db))
-          .listen((event) {
-        var dbEntity = event.$1 ?? TkCmsDbEntity();
-        var dbUserAccess = event.$2 ?? TkCmsDbUserAccess();
+      audiAddStreamSubscription(
+        streamJoin2(
+          cvDbEntityStore.record(entityId).onRecord(db),
+          cvDbUserAccessStore.record(entityId).onRecord(db),
+        ).listen((event) {
+          var dbEntity = event.$1 ?? TkCmsDbEntity();
+          var dbUserAccess = event.$2 ?? TkCmsDbUserAccess();
 
-        add(SyncedEntityEditScreenBlocState<T>(
-            dbEntity: dbEntity, dbUserAccess: dbUserAccess));
-      }));
+          add(
+            SyncedEntityEditScreenBlocState<T>(
+              dbEntity: dbEntity,
+              dbUserAccess: dbUserAccess,
+            ),
+          );
+        }),
+      );
     } else {
-      add(SyncedEntityEditScreenBlocState<T>(
-          dbEntity: TkCmsDbEntity(), dbUserAccess: TkCmsDbUserAccess()));
+      add(
+        SyncedEntityEditScreenBlocState<T>(
+          dbEntity: TkCmsDbEntity(),
+          dbUserAccess: TkCmsDbUserAccess(),
+        ),
+      );
     }
   }
 
   Future<void> syncFromFirestore({String? entityId}) async {
     entityId ??= this.entityId!;
     var helper = SembastFirestoreSyncHelper<T>(
-        db: db,
-        entityAccess: entityAccess,
-        options: LocalDbFromFsOptions(userId: userId));
+      db: db,
+      entityAccess: entityAccess,
+      options: LocalDbFromFsOptions(userId: userId),
+    );
     await helper.localDbSyncOne(entityId: entityId);
   }
 
@@ -76,7 +91,9 @@ class SyncedEntityEditScreenBloc<T extends TkCmsFsEntity>
     String entityId;
     if (isCreate) {
       entityId = await entityAccess.createEntity(
-          userId: gAuthBloc.currentUserId, entity: fsEntity);
+        userId: gAuthBloc.currentUserId,
+        entity: fsEntity,
+      );
     } else {
       entityId = this.entityId!;
       fsEntity.path = entityAccess.fsEntityRef(entityId).path;
@@ -116,29 +133,24 @@ class _SyncedEntityEditScreenState<T extends TkCmsFsEntity>
     return Form(
       key: _formKey,
       child: ValueStreamBuilder(
-          stream: bloc.state,
-          builder: (context, snapshot) {
-            var state = snapshot.data;
-            var dbEntity = state?.dbEntity;
-            //var dbUserAccess = state?.dbUserAccess;
-            if (dbEntity != null) {
-              _nameController ??= TextEditingController(text: dbEntity.name.v);
-            }
-            return Scaffold(
-              appBar: AppBar(
-                title: Text(bloc.entityName),
-              ),
-              body: dbEntity == null
-                  ? const Center(
-                      child: CircularProgressIndicator(),
-                    )
-                  : Stack(
+        stream: bloc.state,
+        builder: (context, snapshot) {
+          var state = snapshot.data;
+          var dbEntity = state?.dbEntity;
+          //var dbUserAccess = state?.dbUserAccess;
+          if (dbEntity != null) {
+            _nameController ??= TextEditingController(text: dbEntity.name.v);
+          }
+          return Scaffold(
+            appBar: AppBar(title: Text(bloc.entityName)),
+            body:
+                dbEntity == null
+                    ? const Center(child: CircularProgressIndicator())
+                    : Stack(
                       children: [
                         ListView(
                           children: [
-                            const SizedBox(
-                              height: 16,
-                            ),
+                            const SizedBox(height: 16),
                             BodyContainer(
                               child: Column(
                                 children: [
@@ -146,7 +158,9 @@ class _SyncedEntityEditScreenState<T extends TkCmsFsEntity>
                                     child: TextFormField(
                                       controller: _nameController,
                                       decoration: const InputDecoration(
-                                          labelText: 'Name', hintText: 'Name'),
+                                        labelText: 'Name',
+                                        hintText: 'Name',
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -154,19 +168,21 @@ class _SyncedEntityEditScreenState<T extends TkCmsFsEntity>
                             ),
                           ],
                         ),
-                        BusyIndicator(busy: busyStream)
+                        BusyIndicator(busy: busyStream),
                       ],
                     ),
-              floatingActionButton: (dbEntity != null)
-                  ? FloatingActionButton(
+            floatingActionButton:
+                (dbEntity != null)
+                    ? FloatingActionButton(
                       onPressed: () {
                         _saveAndClose(dbEntity);
                       },
                       child: const Icon(Icons.save),
                     )
-                  : null,
-            );
-          }),
+                    : null,
+          );
+        },
+      ),
     );
   }
 
@@ -212,38 +228,46 @@ class _Property extends StatelessWidget {
 }
 
 class DbUserAccessWidget extends StatelessWidget {
-  const DbUserAccessWidget({
-    super.key,
-    required this.dbUserAccess,
-  });
+  const DbUserAccessWidget({super.key, required this.dbUserAccess});
 
   final TkCmsDbUserAccess dbUserAccess;
 
   @override
   Widget build(BuildContext context) {
-    var text = dbUserAccess.isAdmin
-        ? 'admin'
-        : (dbUserAccess.isWrite
-            ? 'write'
-            : (dbUserAccess.isRead ? 'read' : ''));
+    var text =
+        dbUserAccess.isAdmin
+            ? 'admin'
+            : (dbUserAccess.isWrite
+                ? 'write'
+                : (dbUserAccess.isRead ? 'read' : ''));
     if (text.isEmpty) {
       return const SizedBox();
     }
     var role = dbUserAccess.role.v;
     return ListTile(
-        title: _Property(name: text),
-        subtitle: role == null ? null : Text(role));
+      title: _Property(name: text),
+      subtitle: role == null ? null : Text(role),
+    );
   }
 }
 
 Future<void> goToSyncedEntityEditScreen<T extends TkCmsFsEntity>(
-    BuildContext context,
-    {required SyncedEntitiesDb<T> syncedEntitiesDb,
-    required String? entityId}) async {
-  await Navigator.of(context).push<void>(MaterialPageRoute(builder: (context) {
-    return BlocProvider(
-        blocBuilder: () => SyncedEntityEditScreenBloc<T>(
-            syncedEntityDb: syncedEntitiesDb, entityId: entityId),
-        child: SyncedEntityEditScreen<T>());
-  }));
+  BuildContext context, {
+  required SyncedEntitiesDb<T> syncedEntitiesDb,
+  required String? entityId,
+}) async {
+  await Navigator.of(context).push<void>(
+    MaterialPageRoute(
+      builder: (context) {
+        return BlocProvider(
+          blocBuilder:
+              () => SyncedEntityEditScreenBloc<T>(
+                syncedEntityDb: syncedEntitiesDb,
+                entityId: entityId,
+              ),
+          child: SyncedEntityEditScreen<T>(),
+        );
+      },
+    ),
+  );
 }

@@ -8,7 +8,9 @@ Future<void> main() async {
     var now = await timeService.now();
     await sleep(300);
     var now2 = await timeService.now();
-    expect(now2.millisecondsSinceEpoch - now.millisecondsSinceEpoch,
-        closeTo(300, 50));
+    expect(
+      now2.millisecondsSinceEpoch - now.millisecondsSinceEpoch,
+      closeTo(300, 50),
+    );
   });
 }

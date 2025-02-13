@@ -16,6 +16,6 @@ class ApiInfoResponse extends CvModelBase {
     version,
     globalInstanceCallCount,
     instanceCallCount,
-    debug
+    debug,
   ];
 }

@@ -20,27 +20,33 @@ Future<void> main() async {
     var httpClientFactory = httpClientFactoryMemory;
     var ff = ffServerContext.functions;
     var serverAppContext = TkCmsServerAppContext(
-        firebaseContext: ffServerContext, flavorContext: FlavorContext.test);
-    var ffServerApp =
-        TkCmsServerAppV2(context: serverAppContext, apiVersion: apiVersion2);
+      firebaseContext: ffServerContext,
+      flavorContext: FlavorContext.test,
+    );
+    var ffServerApp = TkCmsServerAppV2(
+      context: serverAppContext,
+      apiVersion: apiVersion2,
+    );
 
     ffServerApp.initFunctions();
     //var httpServer = await ff.serveHttp();
     //var ffServer = FfServerHttp(httpServer);
     var ffServer = await ff.serve();
     ffServerHttp = ffServer;
-    var ffContext = firebaseFunctionsContextSimOrNull =
-        await ffServicesContext.init(
-            firebaseApp: ffServerContext.firebaseApp,
-            ffServer: ffServer,
-            serverApp: ffServerApp);
+    var ffContext =
+        firebaseFunctionsContextSimOrNull = await ffServicesContext.init(
+          firebaseApp: ffServerContext.firebaseApp,
+          ffServer: ffServer,
+          serverApp: ffServerApp,
+        );
     var commandUri = ffServerHttp.uri.replace(path: ffServerApp.command);
     apiService = TkCmsApiServiceBaseV2(
-        apiVersion: apiVersion2,
-        callableApi: ffContext.functionsCall.callable(ffServerApp.callCommand),
-        httpClientFactory: httpClientFactory,
-        httpsApiUri: commandUri,
-        app: tkCmsAppDev);
+      apiVersion: apiVersion2,
+      callableApi: ffContext.functionsCall.callable(ffServerApp.callCommand),
+      httpClientFactory: httpClientFactory,
+      httpsApiUri: commandUri,
+      app: tkCmsAppDev,
+    );
 
     await apiService.initClient();
   });

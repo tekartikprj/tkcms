@@ -13,15 +13,21 @@ const apiCommandEcho = 'echo';
 const apiCommandEchoSecured = 'secured_echo';
 
 var _password = aesDecrypt(
-    r'9LlbJVe2/1c9PhSa3WTPKg==B9GuYNoXe9mFsRyS85rOha1hydC3H13nnt357CCKYgFX7kG/LRNiwO9wYgRmpCad',
-    'qQzA8fjuMuXsfrqAYdXCZFGzurzCBC9d');
+  r'9LlbJVe2/1c9PhSa3WTPKg==B9GuYNoXe9mFsRyS85rOha1hydC3H13nnt357CCKYgFX7kG/LRNiwO9wYgRmpCad',
+  'qQzA8fjuMuXsfrqAYdXCZFGzurzCBC9d',
+);
 
 ///
 final apiCommandEchoSecuredOptions = ApiSecuredEncOptions(
-    encPaths: ['timestamp'], password: 'GhxVdwaE3mNwEjjCzv9FreaGHJEu4vfQ');
-final apiCommandEchoSecuredOptionsV1 =
-    ApiSecuredEncOptions(encPaths: ['timestamp'], password: _password);
+  encPaths: ['timestamp'],
+  password: 'GhxVdwaE3mNwEjjCzv9FreaGHJEu4vfQ',
+);
+final apiCommandEchoSecuredOptionsV1 = ApiSecuredEncOptions(
+  encPaths: ['timestamp'],
+  password: _password,
+);
 final apiCommandEchoSecuredOptionsV2 = ApiSecuredEncOptions(
-    encPaths: ['timestamp'],
-    password: _password,
-    version: apiSecuredEncOptionsVersion2);
+  encPaths: ['timestamp'],
+  password: _password,
+  version: apiSecuredEncOptionsVersion2,
+);

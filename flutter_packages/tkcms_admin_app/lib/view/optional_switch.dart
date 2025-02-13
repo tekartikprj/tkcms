@@ -8,12 +8,13 @@ class OptionalSwitch<T> extends StatefulWidget {
   final T? defaultValue;
   final Widget? child;
   final bool row;
-  const OptionalSwitch(
-      {super.key,
-      required this.subject,
-      this.child,
-      this.defaultValue,
-      this.row = true});
+  const OptionalSwitch({
+    super.key,
+    required this.subject,
+    this.child,
+    this.defaultValue,
+    this.row = true,
+  });
 
   @override
   State<OptionalSwitch<T>> createState() => _OptionalSwitchState<T>();
@@ -43,30 +44,34 @@ class _OptionalSwitchState<T> extends State<OptionalSwitch<T>> {
   @override
   Widget build(BuildContext context) {
     return ValueStreamBuilder<bool>(
-        stream: _switch,
-        builder: (context, snapshot) {
-          var value = snapshot.data ?? false;
-          var switchTile = SwitchListTile(
-              value: value,
-              onChanged: (newValue) {
-                _switch.value = newValue;
-                if (!newValue) {
-                  widget.subject.add(null);
-                } else {
-                  if (widget.subject.valueOrNull == null) {
-                    widget.subject.add(widget.defaultValue);
-                  }
-                }
-              });
-          if (widget.row && widget.child != null) {
-            return Row(children: [
+      stream: _switch,
+      builder: (context, snapshot) {
+        var value = snapshot.data ?? false;
+        var switchTile = SwitchListTile(
+          value: value,
+          onChanged: (newValue) {
+            _switch.value = newValue;
+            if (!newValue) {
+              widget.subject.add(null);
+            } else {
+              if (widget.subject.valueOrNull == null) {
+                widget.subject.add(widget.defaultValue);
+              }
+            }
+          },
+        );
+        if (widget.row && widget.child != null) {
+          return Row(
+            children: [
               Expanded(child: widget.child!),
-              SizedBox(width: 128, child: switchTile)
-            ]);
-          }
-          return Column(
-            children: [switchTile, if (widget.child != null) widget.child!],
+              SizedBox(width: 128, child: switchTile),
+            ],
           );
-        });
+        }
+        return Column(
+          children: [switchTile, if (widget.child != null) widget.child!],
+        );
+      },
+    );
   }
 }

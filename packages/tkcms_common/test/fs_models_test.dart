@@ -14,7 +14,7 @@ void main() {
       'created': FsTimestamp(2, 0),
       'active': false,
       'deleted': true,
-      'deletedTimestamp': FsTimestamp(5, 0)
+      'deletedTimestamp': FsTimestamp(5, 0),
     });
   });
   test('FsUser', () {
@@ -23,11 +23,14 @@ void main() {
       'email': 'text_2',
       'photoUrl': 'text_3',
       'admin': true,
-      'role': 'text_5'
+      'role': 'text_5',
     });
   });
   test('FsUserAccess', () {
-    expect((newModel().cv<FsUserAccess>()..fillModel(fillOptions)).toMap(),
-        {'name': 'text_1', 'admin': true, 'role': 'text_3'});
+    expect((newModel().cv<FsUserAccess>()..fillModel(fillOptions)).toMap(), {
+      'name': 'text_1',
+      'admin': true,
+      'role': 'text_3',
+    });
   });
 }

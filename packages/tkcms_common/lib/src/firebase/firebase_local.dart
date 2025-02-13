@@ -16,53 +16,67 @@ import 'package:tkcms_common/tkcms_firebase.dart';
 export 'firebase.dart';
 
 /// Sembast based
-FirebaseServicesContext initFirebaseServicesLocalSembast(
-    {required String projectId, bool isWeb = false}) {
+FirebaseServicesContext initFirebaseServicesLocalSembast({
+  required String projectId,
+  bool isWeb = false,
+}) {
   // var path = join('.dart_tool', 'tekartik_notelio_local');
-  var path =
-      joinAll([if (!isWeb) userAppDataPath, 'tekartik', 'firebase', projectId]);
+  var path = joinAll([
+    if (!isWeb) userAppDataPath,
+    'tekartik',
+    'firebase',
+    projectId,
+  ]);
   // isFirebaseSim = true;
   //debugPrintAbsoluteOpenedDatabasePath = true;
   var firebase = FirebaseLocal(localPath: path);
-  var firestoreSembastDatabaseFactory =
-      getDatabaseFactory(rootPath: join(firebase.localPath!, 'firestore'));
-  var authSembastDatabaseFactory =
-      getDatabaseFactory(rootPath: join(firebase.localPath!, 'auth'));
+  var firestoreSembastDatabaseFactory = getDatabaseFactory(
+    rootPath: join(firebase.localPath!, 'firestore'),
+  );
+  var authSembastDatabaseFactory = getDatabaseFactory(
+    rootPath: join(firebase.localPath!, 'auth'),
+  );
   var storageService = newStorageServiceFs(
-      fileSystem: fileSystemDefault,
-      basePath: join(firebase.localPath!, 'storage'));
-  var firestoreService =
-      FirestoreServiceSembast(firestoreSembastDatabaseFactory);
-  var authService =
-      FirebaseAuthServiceSembast(databaseFactory: authSembastDatabaseFactory);
+    fileSystem: fileSystemDefault,
+    basePath: join(firebase.localPath!, 'storage'),
+  );
+  var firestoreService = FirestoreServiceSembast(
+    firestoreSembastDatabaseFactory,
+  );
+  var authService = FirebaseAuthServiceSembast(
+    databaseFactory: authSembastDatabaseFactory,
+  );
   var functionsCallService = firebaseFunctionsCallServiceMemory;
   var functionsService = firebaseFunctionsServiceMemory;
   return FirebaseServicesContext(
-      appOptions: FirebaseAppOptions(projectId: projectId),
-      storageService: storageService,
-      firebase: firebase,
-      functionsCallService: functionsCallService,
-      functionsCallRegion: regionBelgium,
-      authService: authService,
-      firestoreService: firestoreService,
-      functionsService: functionsService);
+    appOptions: FirebaseAppOptions(projectId: projectId),
+    storageService: storageService,
+    firebase: firebase,
+    functionsCallService: functionsCallService,
+    functionsCallRegion: regionBelgium,
+    authService: authService,
+    firestoreService: firestoreService,
+    functionsService: functionsService,
+  );
 }
 
 /// Memory based
-FirebaseServicesContext initFirebaseServicesLocalMemory(
-    {required String projectId}) {
+FirebaseServicesContext initFirebaseServicesLocalMemory({
+  required String projectId,
+}) {
   var firebase = FirebaseLocal();
   var firestoreService = newFirestoreServiceMemory();
   var functionsService = firebaseFunctionsServiceMemory;
   var authService = newAuthServiceLocal();
   var functionsCallService = firebaseFunctionsCallServiceMemory;
   var firebaseServicesContext = FirebaseServicesContext(
-      appOptions: FirebaseAppOptions(projectId: projectId),
-      firebase: firebase,
-      authService: authService,
-      firestoreService: firestoreService,
-      functionsService: functionsService,
-      functionsCallService: functionsCallService,
-      functionsCallRegion: regionBelgium);
+    appOptions: FirebaseAppOptions(projectId: projectId),
+    firebase: firebase,
+    authService: authService,
+    firestoreService: firestoreService,
+    functionsService: functionsService,
+    functionsCallService: functionsCallService,
+    functionsCallRegion: regionBelgium,
+  );
   return firebaseServicesContext;
 }

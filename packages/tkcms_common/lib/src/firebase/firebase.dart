@@ -32,24 +32,24 @@ class FirebaseServicesContext {
   String get functionsCallRegion => functionsCallRegionOrNull!;
 
   FirebaseAppOptions? appOptions;
-  FirebaseServicesContext(
-      {bool? local,
-      required this.firebase,
-      this.appOptions,
-      FirebaseApp? firebaseApp,
-      FirebaseFunctionsService? functionsService,
-      FirebaseFunctionsCallService? functionsCallService,
-      FirestoreService? firestoreService,
-      FirebaseAuthService? authService,
-      String? functionsCallRegion,
-      StorageService? storageService})
-      : firestoreServiceOrNull = firestoreService,
-        storageServiceOrNull = storageService,
-        authServiceOrNull = authService,
-        functionsCallServiceOrNull = functionsCallService,
-        functionsCallRegionOrNull = functionsCallRegion,
-        functionsServiceOrNull = functionsService,
-        firebaseAppOrNull = firebaseApp;
+  FirebaseServicesContext({
+    bool? local,
+    required this.firebase,
+    this.appOptions,
+    FirebaseApp? firebaseApp,
+    FirebaseFunctionsService? functionsService,
+    FirebaseFunctionsCallService? functionsCallService,
+    FirestoreService? firestoreService,
+    FirebaseAuthService? authService,
+    String? functionsCallRegion,
+    StorageService? storageService,
+  }) : firestoreServiceOrNull = firestoreService,
+       storageServiceOrNull = storageService,
+       authServiceOrNull = authService,
+       functionsCallServiceOrNull = functionsCallService,
+       functionsCallRegionOrNull = functionsCallRegion,
+       functionsServiceOrNull = functionsService,
+       firebaseAppOrNull = firebaseApp;
 
   /// Compat
   FirebaseContext initContext() => initSync();
@@ -67,29 +67,35 @@ class FirebaseServicesContext {
     FirebaseFunctionsCall? functionsCall;
     if (functionsCallServiceOrNull != null &&
         functionsCallRegionOrNull != null) {
-      functionsCall = functionsCallService.functionsCall(firebaseApp,
-          region: functionsCallRegion);
+      functionsCall = functionsCallService.functionsCall(
+        firebaseApp,
+        region: functionsCallRegion,
+      );
     }
 
     return FirebaseContext(
-        local: local,
-        firebase: firebase,
-        firebaseApp: firebaseApp,
-        firestore: firestore,
-        storage: storage,
-        functions: functions,
-        functionsCall: functionsCall,
-        auth: auth);
+      local: local,
+      firebase: firebase,
+      firebaseApp: firebaseApp,
+      firestore: firestore,
+      storage: storage,
+      functions: functions,
+      functionsCall: functionsCall,
+      auth: auth,
+    );
   }
 
   Future<FirebaseApp> initApp() async {
-    return firebaseAppOrNull ??=
-        await firebase.initializeAppAsync(options: appOptions);
+    return firebaseAppOrNull ??= await firebase.initializeAppAsync(
+      options: appOptions,
+    );
   }
 
   Future<FirebaseContext> initServer({FirebaseApp? firebaseApp}) async {
-    firebaseApp ??= firebaseAppOrNull ??=
-        await firebase.initializeAppAsync(options: appOptions);
+    firebaseApp ??=
+        firebaseAppOrNull ??= await firebase.initializeAppAsync(
+          options: appOptions,
+        );
     var firestore = firestoreServiceOrNull?.firestore(firebaseApp);
     if (gDebugLogFirestore) {
       // ignore: deprecated_member_use
@@ -110,14 +116,17 @@ class FirebaseServicesContext {
     );
   }
 
-  Future<FirebaseContext> init(
-      {FirebaseApp? firebaseApp,
-      Uri? baseUri,
-      FfServer? ffServer,
-      TkCmsCommonServerApp? serverApp,
-      bool debugFirestore = false}) async {
-    firebaseApp ??= firebaseAppOrNull ??=
-        await firebase.initializeAppAsync(options: appOptions);
+  Future<FirebaseContext> init({
+    FirebaseApp? firebaseApp,
+    Uri? baseUri,
+    FfServer? ffServer,
+    TkCmsCommonServerApp? serverApp,
+    bool debugFirestore = false,
+  }) async {
+    firebaseApp ??=
+        firebaseAppOrNull ??= await firebase.initializeAppAsync(
+          options: appOptions,
+        );
     var firestore = firestoreServiceOrNull?.firestore(firebaseApp);
     if (debugFirestore || gDebugLogFirestore) {
       // ignore: deprecated_member_use
@@ -130,21 +139,25 @@ class FirebaseServicesContext {
     baseUri ??= ffServer?.uri;
     if (functionsCallServiceOrNull != null &&
         functionsCallRegionOrNull != null) {
-      functionsCall = functionsCallService.functionsCall(firebaseApp,
-          region: functionsCallRegion, baseUri: baseUri);
+      functionsCall = functionsCallService.functionsCall(
+        firebaseApp,
+        region: functionsCallRegion,
+        baseUri: baseUri,
+      );
     }
 
     return FirebaseContext(
-        local: local,
-        firebase: firebase,
-        firebaseApp: firebaseApp,
-        firestore: firestore,
-        storage: storage,
-        functions: functions,
-        functionsCall: functionsCall,
-        auth: auth,
-        ffServer: ffServer,
-        serverApp: serverApp);
+      local: local,
+      firebase: firebase,
+      firebaseApp: firebaseApp,
+      firestore: firestore,
+      storage: storage,
+      functions: functions,
+      functionsCall: functionsCall,
+      auth: auth,
+      ffServer: ffServer,
+      serverApp: serverApp,
+    );
   }
 }
 
@@ -189,17 +202,17 @@ class FirebaseContext {
 
     /// Compat
     FirebaseContext? firebaseContext,
-  })  : authOrNull = auth ?? firebaseContext?.authOrNull,
-        firestoreOrNull = firestore ?? firebaseContext?.firestoreOrNull,
-        storageOrNull = storage ?? firebaseContext?.storageOrNull,
-        functionsOrNull = functions ?? firebaseContext?.functionsOrNull,
-        functionsCallOrNull =
-            functionsCall ?? firebaseContext?.functionsCallOrNull,
-        firebaseApp = firebaseApp ?? firebaseContext!.firebaseApp,
-        firebase =
-            firebase ?? firebaseApp?.firebase ?? firebaseContext!.firebase,
-        ffServerOrNull = ffServer ?? firebaseContext?.ffServerOrNull,
-        serverAppOrNull = serverApp ?? firebaseContext?.serverAppOrNull;
+  }) : authOrNull = auth ?? firebaseContext?.authOrNull,
+       firestoreOrNull = firestore ?? firebaseContext?.firestoreOrNull,
+       storageOrNull = storage ?? firebaseContext?.storageOrNull,
+       functionsOrNull = functions ?? firebaseContext?.functionsOrNull,
+       functionsCallOrNull =
+           functionsCall ?? firebaseContext?.functionsCallOrNull,
+       firebaseApp = firebaseApp ?? firebaseContext!.firebaseApp,
+       firebase =
+           firebase ?? firebaseApp?.firebase ?? firebaseContext!.firebase,
+       ffServerOrNull = ffServer ?? firebaseContext?.ffServerOrNull,
+       serverAppOrNull = serverApp ?? firebaseContext?.serverAppOrNull;
 
   FirebaseFunctionsHttp get functionsHttp => functions as FirebaseFunctionsHttp;
 }
@@ -207,12 +220,12 @@ class FirebaseContext {
 FirebaseContext? firebaseContextOrNull;
 @Deprecated('Use globalFirebaseContext')
 FirebaseContext get firebaseContext => () {
-      if (firebaseContextOrNull == null) {
-        throw StateError('firebaseContext not set');
-      } else {
-        return firebaseContextOrNull!;
-      }
-    }();
+  if (firebaseContextOrNull == null) {
+    throw StateError('firebaseContext not set');
+  } else {
+    return firebaseContextOrNull!;
+  }
+}();
 
 /// Compat
 typedef FirebaseFunctionsContext = FirebaseContext;
