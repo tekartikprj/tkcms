@@ -6,8 +6,9 @@ bool _handleException(Object e, StackTrace st) {
     return false;
   } else {
     throw ApiException(
-        statusCode: httpStatusCodeInternalServerError,
-        message: '$e${isDebug ? '\n$st\n' : ''}');
+      statusCode: httpStatusCodeInternalServerError,
+      message: '$e${isDebug ? '\n$st\n' : ''}',
+    );
   }
 }
 
@@ -36,9 +37,7 @@ T apiResultWrapResponseString<T extends ApiResult>(String text) {
   return apiExceptionWrapActionSync(() {
     var apiResponse = text.cv<ApiResponse>();
     if (apiResponse.error.isNotNull) {
-      throw ApiException(
-        error: apiResponse.error.v,
-      );
+      throw ApiException(error: apiResponse.error.v);
     } else {
       var result = apiResponse.result.v!;
       return result.cv<T>();

@@ -105,28 +105,35 @@ class SyncedEntitiesDb<T extends TkCmsFsEntity> {
     _started = true;
 
     var syncedDbOptions = AutoSynchronizedFirestoreSyncedDbOptions(
-        firestore: entityAccess.firestore,
-        databaseFactory: options.sembastDatabaseContext.factory,
-        sembastDbName: options.sembastDatabaseContext.path);
-    syncedDb =
-        await AutoSynchronizedFirestoreSyncedDb.open(options: syncedDbOptions);
+      firestore: entityAccess.firestore,
+      databaseFactory: options.sembastDatabaseContext.factory,
+      sembastDbName: options.sembastDatabaseContext.path,
+    );
+    syncedDb = await AutoSynchronizedFirestoreSyncedDb.open(
+      options: syncedDbOptions,
+    );
 
     db = syncedDb.database;
     await syncedDb.initialSynchronizationDone();
   }();
 
-  Future<void> syncOneFromFirestore(
-      {required String entityId, required String userId}) async {
+  Future<void> syncOneFromFirestore({
+    required String entityId,
+    required String userId,
+  }) async {
     var helper = SembastFirestoreSyncHelper<T>(
-        db: db,
-        entityAccess: entityAccess,
-        options: LocalDbFromFsOptions(userId: userId));
+      db: db,
+      entityAccess: entityAccess,
+      options: LocalDbFromFsOptions(userId: userId),
+    );
     await helper.localDbSyncOne(entityId: entityId);
   }
 
   /// Throw on failure
-  Future<TkCmsEntityAndUserAccess?> getOrSyncEntity(
-      {required String userId, required String entityId}) async {
+  Future<TkCmsEntityAndUserAccess?> getOrSyncEntity({
+    required String userId,
+    required String entityId,
+  }) async {
     var entity = await cvDbEntityStore.record(entityId).get(db);
     var userAccess = await cvDbUserAccessStore.record(entityId).get(db);
     if (entity != null && userAccess != null) {
@@ -137,7 +144,9 @@ class SyncedEntitiesDb<T extends TkCmsFsEntity> {
     if (entity != null) {
       var userAccess = await cvDbUserAccessStore.record(entityId).get(db);
       return TkCmsEntityAndUserAccess(
-          entity: entity, userAccess: userAccess ?? TkCmsDbUserAccess());
+        entity: entity,
+        userAccess: userAccess ?? TkCmsDbUserAccess(),
+      );
     }
     return null;
   }

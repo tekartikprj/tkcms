@@ -12,12 +12,14 @@ abstract class TkCmsTimestampService {
   /// Local timestamp service
   factory TkCmsTimestampService.local() {
     return TkCmsTimestampService.withProvider(
-        timestampProvider: _TkCmsTimestampProviderLocal());
+      timestampProvider: _TkCmsTimestampProviderLocal(),
+    );
   }
 
   /// Create a timestamp service with a provider
-  factory TkCmsTimestampService.withProvider(
-      {required TkCmsTimestampProvider timestampProvider}) {
+  factory TkCmsTimestampService.withProvider({
+    required TkCmsTimestampProvider timestampProvider,
+  }) {
     return _TkCmsTimestampService(timestampProvider: timestampProvider);
   }
 
@@ -42,8 +44,9 @@ class _TkCmsTimestampService implements TkCmsTimestampService {
       _stopwatch = null;
     }
     if (_stopwatch != null) {
-      return _fetchTimestamp!
-          .add(Duration(milliseconds: _stopwatch!.elapsedMilliseconds));
+      return _fetchTimestamp!.add(
+        Duration(milliseconds: _stopwatch!.elapsedMilliseconds),
+      );
     }
     var previousFetchTimestamp = _fetchTimestamp;
     await _fetchLock.synchronized(() async {

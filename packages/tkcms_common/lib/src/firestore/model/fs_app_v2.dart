@@ -5,6 +5,6 @@ class TkCmsFsApp extends TkCmsFsEntity {}
 
 final tkCmsFsAppCollectionInfo =
     TkCmsFirestoreDatabaseEntityCollectionInfo<TkCmsFsApp>(
-  id: 'app',
-  name: 'App',
-);
+      id: 'app',
+      name: 'App',
+    );

@@ -14,9 +14,10 @@ const callableFunctionCommandV2Prod = 'callcommandv2prod';
 var functionDailyCronV2Dev = 'daylycronv2dev';
 var functionDailyCronV2Prod = 'daylycronv2prod';
 
-final baseCmsServerSecuredOptions = TkCmsApiSecuredOptions()
-  ..add(apiCommandEcho, apiCommandEchoSecuredOptions)
-  ..add(apiCommandEchoSecured, apiCommandEchoSecuredOptionsV2);
+final baseCmsServerSecuredOptions =
+    TkCmsApiSecuredOptions()
+      ..add(apiCommandEcho, apiCommandEchoSecuredOptions)
+      ..add(apiCommandEchoSecured, apiCommandEchoSecuredOptionsV2);
 
 class TkCmsServerAppV2 implements TkCmsCommonServerApp {
   final securedOptions = TkCmsApiSecuredOptions();
@@ -54,7 +55,8 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
     try {
       // ignore: avoid_print
       print(
-          'dailyCron handler ${DateTime.now().toIso8601String()} ${event.jobName} ${event.scheduleTime}');
+        'dailyCron handler ${DateTime.now().toIso8601String()} ${event.jobName} ${event.scheduleTime}',
+      );
       try {
         await handleDailyCron();
       } catch (e) {
@@ -70,16 +72,20 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
   }
 
   HttpsFunction get commandV2 => functions.https.onRequestV2(
-      HttpsOptions(cors: true, region: regionBelgium), onHttpsCommand);
+    HttpsOptions(cors: true, region: regionBelgium),
+    onHttpsCommand,
+  );
 
   HttpsCallableFunction get callCommandV2 => functions.https.onCall(
-      onCallableCommand,
-      callableOptions: HttpsCallableOptions(region: regionBelgium, cors: true));
+    onCallableCommand,
+    callableOptions: HttpsCallableOptions(region: regionBelgium, cors: true),
+  );
 
   Future<ApiResult> handleSecuredCommandRequest(ApiRequest apiRequest) async {
     try {
-      var options =
-          securedOptions.getOrThrow(apiRequest.securedInnerRequestCommand);
+      var options = securedOptions.getOrThrow(
+        apiRequest.securedInnerRequestCommand,
+      );
       late ApiRequest innerRequest;
       if (options.version == apiSecuredEncOptionsVersion1) {
         innerRequest = securedOptions.unwrapSecuredRequest(apiRequest);
@@ -88,8 +94,9 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
         if (apiRequest.securedQueryTimestampOrNull == null) {
           innerRequest = securedOptions.unwrapSecuredRequest(apiRequest);
         } else {
-          innerRequest =
-              await securedOptions.unwrapSecuredRequestV2Async(apiRequest);
+          innerRequest = await securedOptions.unwrapSecuredRequestV2Async(
+            apiRequest,
+          );
         }
       } else {
         throw StateError('Invalid encoding options');
@@ -163,20 +170,26 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
       var result = await onCommand(apiRequest);
 
       await sendResponse(
-          request, ApiResponse()..result.v = (CvMapModel()..copyFrom(result)));
+        request,
+        ApiResponse()..result.v = (CvMapModel()..copyFrom(result)),
+      );
     } catch (e, st) {
       await sendResponse(request, apiResponseFromException(e, st));
     }
   }
 
   Future<void> sendCatchErrorResponse(
-      ExpressHttpRequest request, dynamic e, StackTrace st) async {
+    ExpressHttpRequest request,
+    dynamic e,
+    StackTrace st,
+  ) async {
     await sendErrorResponse(
-        request,
-        httpStatusCodeInternalServerError,
-        ApiErrorResponse()
-          ..message.v = e.toString()
-          ..stackTrace.v = st.toString());
+      request,
+      httpStatusCodeInternalServerError,
+      ApiErrorResponse()
+        ..message.v = e.toString()
+        ..stackTrace.v = st.toString(),
+    );
   }
 
   /// Send a response
@@ -187,7 +200,10 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
   }
 
   Future<void> sendErrorResponse(
-      ExpressHttpRequest request, int statusCode, CvModel model) async {
+    ExpressHttpRequest request,
+    int statusCode,
+    CvModel model,
+  ) async {
     var res = request.response;
     try {
       res.statusCode = statusCode;
@@ -244,11 +260,13 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
       try {
         // Every day at 11pm
         functions[cron] = functions.scheduler.onSchedule(
-            ScheduleOptions(
-                schedule: '0 23 * * *',
-                region: regionBelgium,
-                timeZone: timezoneEuropeParis),
-            dailyCronHandler);
+          ScheduleOptions(
+            schedule: '0 23 * * *',
+            region: regionBelgium,
+            timeZone: timezoneEuropeParis,
+          ),
+          dailyCronHandler,
+        );
       } catch (e, st) {
         if (isRunningAsJavascript) {
           // ignore: avoid_print

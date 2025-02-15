@@ -10,8 +10,10 @@ class FirestoreDatabaseContext {
   /// Document path
   final CvDocumentReference? rootDocument;
 
-  FirestoreDatabaseContext(
-      {required this.firestore, required this.rootDocument});
+  FirestoreDatabaseContext({
+    required this.firestore,
+    required this.rootDocument,
+  });
 
   @override
   String toString() {

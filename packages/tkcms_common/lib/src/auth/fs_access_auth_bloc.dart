@@ -11,12 +11,13 @@ var debugTkCmsAuthBloc = false; //devWarning(true);
 class TkCmsLoggedInUserAccess extends TkCmsLoggedInUser {
   final FsUserAccess? fsUserAccess;
 
-  TkCmsLoggedInUserAccess(
-      {required String super.uid, this.fsUserAccess, super.flutterFireUser});
+  TkCmsLoggedInUserAccess({
+    required String super.uid,
+    this.fsUserAccess,
+    super.flutterFireUser,
+  });
 
-  TkCmsLoggedInUserAccess.none()
-      : fsUserAccess = null,
-        super.none();
+  TkCmsLoggedInUserAccess.none() : fsUserAccess = null, super.none();
 
   @override
   String get name => flutterFireUser?.email ?? fsUserAccess?.name.v ?? uid;
@@ -26,9 +27,10 @@ class TkCmsLoggedInUserAccess extends TkCmsLoggedInUser {
   bool get isAdmin => fsUserAccess?.isAdmin ?? false;
 
   @override
-  String toString() => isLoggedIn
-      ? 'logged in $uid ($name, ${fsUserAccess?.role.v ?? 'none'})'
-      : 'Not logged in';
+  String toString() =>
+      isLoggedIn
+          ? 'logged in $uid ($name, ${fsUserAccess?.role.v ?? 'none'})'
+          : 'Not logged in';
 }
 
 /// Logged in user
@@ -42,11 +44,9 @@ class TkCmsLoggedInUser {
   bool get isLoggedIn => _uidOrNull != null;
 
   TkCmsLoggedInUser({required String? uid, this.flutterFireUser})
-      : _uidOrNull = uid;
+    : _uidOrNull = uid;
 
-  TkCmsLoggedInUser.none()
-      : _uidOrNull = null,
-        flutterFireUser = null;
+  TkCmsLoggedInUser.none() : _uidOrNull = null, flutterFireUser = null;
 
   String get name => flutterFireUser?.email ?? uid;
 
@@ -59,13 +59,14 @@ const tkCmsAuthLocalLoggedInUserIdKey = 'tkcmsLocalLoggedInUserId';
 
 /// Auth bloc
 abstract class TkCmsAuthBloc {
-  factory TkCmsAuthBloc.local(
-          {required TkCmsFirestoreDatabaseService db, required Prefs prefs}) =>
-      AuthBlocLocal(db: db, prefs: prefs);
-  factory TkCmsAuthBloc.firebase(
-          {required FirebaseAuth auth,
-          required TkCmsFirestoreDatabaseService db}) =>
-      AuthBlocFirebase(auth: auth, db: db);
+  factory TkCmsAuthBloc.local({
+    required TkCmsFirestoreDatabaseService db,
+    required Prefs prefs,
+  }) => AuthBlocLocal(db: db, prefs: prefs);
+  factory TkCmsAuthBloc.firebase({
+    required FirebaseAuth auth,
+    required TkCmsFirestoreDatabaseService db,
+  }) => AuthBlocFirebase(auth: auth, db: db);
 
   ValueStream<TkCmsLoggedInUser> get loggedInUser;
 
@@ -73,8 +74,10 @@ abstract class TkCmsAuthBloc {
 
   /// Crash if not logged in
   String get currentUserId;
-  Future<void> signInWithEmailAndPassword(
-      {required String email, required String password});
+  Future<void> signInWithEmailAndPassword({
+    required String email,
+    required String password,
+  });
 
   void signOut();
 
@@ -104,35 +107,46 @@ class AuthBlocLocal extends AuthBlocBase {
   }
 
   @override
-  Future<void> signInWithEmailAndPassword(
-      {required String email, required String password}) async {
+  Future<void> signInWithEmailAndPassword({
+    required String email,
+    required String password,
+  }) async {
     var fsUser = await fsAppUserAccessCollection(app).doc(email).get(firestore);
     if (email == 'super') {
       if (!fsUser.isSuperAdmin) {
-        await fsAppUserAccessCollection(app).doc(email).set(
-            firestore,
-            FsUserAccess()
-              ..name.v = email
-              ..role.v = roleSuperAdmin
-              ..admin.v = true);
+        await fsAppUserAccessCollection(app)
+            .doc(email)
+            .set(
+              firestore,
+              FsUserAccess()
+                ..name.v = email
+                ..role.v = roleSuperAdmin
+                ..admin.v = true,
+            );
       }
     } else if (email == 'admin') {
       if (!fsUser.isAdmin) {
-        await fsAppUserAccessCollection(app).doc(email).set(
-            firestore,
-            FsUserAccess()
-              ..name.v = email
-              ..role.v = roleAdmin
-              ..admin.v = true);
+        await fsAppUserAccessCollection(app)
+            .doc(email)
+            .set(
+              firestore,
+              FsUserAccess()
+                ..name.v = email
+                ..role.v = roleAdmin
+                ..admin.v = true,
+            );
       }
     } else if (email == 'user') {
       if (!fsUser.isUser) {
-        await fsAppUserAccessCollection(app).doc(email).set(
-            firestore,
-            FsUserAccess()
-              ..name.v = email
-              ..role.v = roleUser
-              ..admin.v = false);
+        await fsAppUserAccessCollection(app)
+            .doc(email)
+            .set(
+              firestore,
+              FsUserAccess()
+                ..name.v = email
+                ..role.v = roleUser
+                ..admin.v = false,
+            );
       }
     } else if (email == 'none') {
       if (fsUser.exists) {
@@ -168,7 +182,7 @@ abstract class AuthBlocBase implements TkCmsAuthBloc {
   StreamSubscription? _loggedInUserSubscription;
   StreamSubscription? _loggedInUserAccessSubscription;
   String?
-      _loggedInUserAccessSubscriptionUserId; // only if _loggedInUserAccessSubscription is not null
+  _loggedInUserAccessSubscriptionUserId; // only if _loggedInUserAccessSubscription is not null
   void dispose() {
     _loggedInUserSubscription?.cancel();
     _loggedInUserAccessSubscription?.cancel();
@@ -200,19 +214,25 @@ abstract class AuthBlocBase implements TkCmsAuthBloc {
       }
       _loggedInUserSubscription = fsAppUserAccessCollection(app)
           .doc(userId)
-          .onSnapshotSupport(firestore,
-              options: TrackChangesPullOptions(
-                  refreshDelay: const Duration(hours: 1)))
+          .onSnapshotSupport(
+            firestore,
+            options: TrackChangesPullOptions(
+              refreshDelay: const Duration(hours: 1),
+            ),
+          )
           .listen((user) {
-        if (debugTkCmsAuthBloc) {
-          // ignore: avoid_print
-          print('got fs user access $user');
-        }
-        _loggedInUserAccessSubject.add(TkCmsLoggedInUserAccess(
-            uid: userId,
-            flutterFireUser: loggedInUser.flutterFireUser,
-            fsUserAccess: user));
-      });
+            if (debugTkCmsAuthBloc) {
+              // ignore: avoid_print
+              print('got fs user access $user');
+            }
+            _loggedInUserAccessSubject.add(
+              TkCmsLoggedInUserAccess(
+                uid: userId,
+                flutterFireUser: loggedInUser.flutterFireUser,
+                fsUserAccess: user,
+              ),
+            );
+          });
     }
   }
 
@@ -260,8 +280,10 @@ class AuthBlocFirebase extends AuthBlocBase {
         _loggedInUserAccessSubject.add(TkCmsLoggedInUserAccess.none());
       } else {
         // print('User signed in $user');
-        var loggedInUser =
-            TkCmsLoggedInUser(uid: user.uid, flutterFireUser: user);
+        var loggedInUser = TkCmsLoggedInUser(
+          uid: user.uid,
+          flutterFireUser: user,
+        );
         _loggedInUserSubject.add(loggedInUser);
         listenToUserId(loggedInUser);
       }
@@ -269,8 +291,10 @@ class AuthBlocFirebase extends AuthBlocBase {
   }
 
   @override
-  Future<void> signInWithEmailAndPassword(
-      {required String email, required String password}) async {
+  Future<void> signInWithEmailAndPassword({
+    required String email,
+    required String password,
+  }) async {
     await auth.signInWithEmailAndPassword(email: email, password: password);
   }
 

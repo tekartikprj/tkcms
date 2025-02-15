@@ -12,17 +12,17 @@ FirebaseFunctionsContext initFirebaseFunctionsUniversal() {
   var firebase = universal.firebase;
   var firestoreService = universal.firestoreService;
   return FirebaseServicesContext(
-          firebase: firebase,
-          firestoreService: firestoreService,
-          functionsService: firebaseFunctionsServiceUniversal)
-      .initContext();
+    firebase: firebase,
+    firestoreService: firestoreService,
+    functionsService: firebaseFunctionsServiceUniversal,
+  ).initContext();
 }
 
 /// Work on node and io
-FirebaseApp initFirebaseUniversalApp(
-    {
-    /// Only required for io.
-    FirebaseAppOptions? ioAppOptions}) {
+FirebaseApp initFirebaseUniversalApp({
+  /// Only required for io.
+  FirebaseAppOptions? ioAppOptions,
+}) {
   var firebase = universal.firebase;
   // io only
   if (platformContextUniversal.node == null) {

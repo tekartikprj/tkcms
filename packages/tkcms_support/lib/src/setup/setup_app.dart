@@ -19,7 +19,8 @@ class TkCmsEntityAccessSetupAppMenu<T extends TkCmsFsEntity> {
       void showInfo() {
         stdout.writeln('projectId: ${setupApp.firebaseContext.projectId}');
         stdout.writeln(
-            '${setupApp.entityAccess.entityCollectionInfo.id}: ${setupApp.entityId}');
+          '${setupApp.entityAccess.entityCollectionInfo.id}: ${setupApp.entityId}',
+        );
       }
 
       enter(() {
@@ -59,11 +60,12 @@ class TkCmsEntityAccessSetupApp<T extends TkCmsFsEntity> {
   Firestore get firestore => firebaseContext.firestore;
 
   /// Constructor
-  TkCmsEntityAccessSetupApp(
-      {required this.firebaseContext,
-      required this.entityAccess,
-      required this.entityId,
-      this.adminCredentials});
+  TkCmsEntityAccessSetupApp({
+    required this.firebaseContext,
+    required this.entityAccess,
+    required this.entityId,
+    this.adminCredentials,
+  });
 
   /// List users
   Future<void> listUsers() async {
@@ -81,9 +83,10 @@ class TkCmsEntityAccessSetupApp<T extends TkCmsFsEntity> {
   Future<void> setupUsers() async {
     var users = adminCredentials;
     if (users != null) {
-      var access = TkCmsFsUserAccess()
-        ..admin.v = true
-        ..fixAccess();
+      var access =
+          TkCmsFsUserAccess()
+            ..admin.v = true
+            ..fixAccess();
       for (var user in users) {
         await entityAccess
             .fsEntityUserAccessCollectionRef(entityId)

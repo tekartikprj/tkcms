@@ -13,13 +13,16 @@ Future<void> main() async {
   late FfServer ffServerHttp;
   // debugWebServices = devWarning(true);
   setUpAll(() async {
-    var ffContext = firebaseFunctionsContextSimOrNull =
-        await initFirebaseFunctionsSimMemory();
+    var ffContext =
+        firebaseFunctionsContextSimOrNull =
+            await initFirebaseFunctionsSimMemory();
 
     var httpClientFactory = httpClientFactoryMemory;
     var ff = ffContext.functionsHttp;
     var serverAppContext = TkCmsServerAppContext(
-        firebaseFunctionsContext: ffContext, flavorContext: FlavorContext.test);
+      firebaseFunctionsContext: ffContext,
+      flavorContext: FlavorContext.test,
+    );
     var ffServerApp = TkCmsServerApp(context: serverAppContext);
 
     ffServerApp.initFunctions();
@@ -30,7 +33,9 @@ Future<void> main() async {
 
     var commandUri = ffServerHttp.uri.replace(path: ffServerApp.command);
     apiService = TkCmsApiServiceBase(
-        httpClientFactory: httpClientFactory, commandUri: commandUri);
+      httpClientFactory: httpClientFactory,
+      commandUri: commandUri,
+    );
 
     await apiService.initClient();
   });
@@ -45,7 +50,7 @@ Future<void> main() async {
     info = await apiService.getInfo();
     // ignore: avoid_print
     print(info);
-//    expect(info.version.v, appVersion.toString());
+    //    expect(info.version.v, appVersion.toString());
   });
   test('infofb', () async {
     var info = await apiService.getInfoFb();

@@ -66,14 +66,20 @@ class TkCmsFsInviteId extends CvFirestoreDocumentBase
 final tkCmsFsInviteIdModel = TkCmsFsInviteId();
 
 class TkCmsFsInviteEntity<TFsEntity extends TkCmsFsEntity>
-    extends CvFirestoreDocumentBase with WithServerTimestampMixin {
+    extends CvFirestoreDocumentBase
+    with WithServerTimestampMixin {
   final entityId = CvField<String>('entityId');
   final entity = CvModelField<TFsEntity>('entity');
   final userAccess = CvModelField<TkCmsCvUserAccess>('userAccess');
   final inviteCode = CvField<String>('inviteCode');
   @override
-  CvFields get fields =>
-      [entityId, entity, userAccess, inviteCode, ...timedMixinFields];
+  CvFields get fields => [
+    entityId,
+    entity,
+    userAccess,
+    inviteCode,
+    ...timedMixinFields,
+  ];
 }
 
 /// Empty or no document
@@ -132,8 +138,13 @@ mixin TkCmsFsEntityMixin implements CvModel {
   final active = CvField<bool>('active'); // Enforced in v1
   final deleted = CvField<bool>('deleted');
   final deletedTimestamp = CvField<Timestamp>('deletedTimestamp');
-  CvFields get entityFields =>
-      [name, created, active, deleted, deletedTimestamp];
+  CvFields get entityFields => [
+    name,
+    created,
+    active,
+    deleted,
+    deletedTimestamp,
+  ];
 }
 
 /// To extend

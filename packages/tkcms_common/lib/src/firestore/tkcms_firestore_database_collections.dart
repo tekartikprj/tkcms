@@ -4,8 +4,10 @@ extension TkCmsCollectionReferenceRecursiveDeleteExt on CollectionReference {
   /// Delete all item in a query, return the count deleted
   /// Batch size default to 10
   /// Keep doc with paths in keepPaths
-  Future<int> tkCmsRecursiveDelete(TkCmsCollectionsTreeDef def,
-      {int? batchSize}) async {
+  Future<int> tkCmsRecursiveDelete(
+    TkCmsCollectionsTreeDef def, {
+    int? batchSize,
+  }) async {
     var collection = this;
 
     var firestore = this.firestore;
@@ -55,14 +57,17 @@ extension TkCmsCollectionReferenceRecursiveDeleteExt on CollectionReference {
 
 extension DocumentReferenceRecursiveDeleteExt on DocumentReference {
   /// Delete recursively
-  Future<int> tkcmsRecursiveDelete(TkCmsCollectionsTreeDef def,
-      {int? batchSize}) async {
+  Future<int> tkcmsRecursiveDelete(
+    TkCmsCollectionsTreeDef def, {
+    int? batchSize,
+  }) async {
     var collectionIds = def.docPathGetCollectionsId(path);
 
     var count = 0;
     for (var collectionId in collectionIds) {
-      count += await collection(collectionId)
-          .tkCmsRecursiveDelete(def, batchSize: batchSize);
+      count += await collection(
+        collectionId,
+      ).tkCmsRecursiveDelete(def, batchSize: batchSize);
     }
 
     /// Assume exists
@@ -109,9 +114,9 @@ class TkCmsCollectionsTreeDef {
   }
 
   static
-
-      /// List of collections for a document path
-      List<String> _docPathParentCollectionIds(String path) {
+  /// List of collections for a document path
+  List<String>
+  _docPathParentCollectionIds(String path) {
     var parent = firestoreDocPathGetParent(path);
     var grandParent = firestoreCollPathGetParent(parent);
     if (grandParent == null) {
@@ -119,7 +124,7 @@ class TkCmsCollectionsTreeDef {
     } else {
       return [
         ..._docPathParentCollectionIds(grandParent),
-        firestorePathGetId(parent)
+        firestorePathGetId(parent),
       ];
     }
   }
@@ -148,7 +153,9 @@ class TkCmsCollectionsTreeDef {
   }
 
   void addCollections(
-      List<String>? parentCollections, List<String> collectionIds) {
+    List<String>? parentCollections,
+    List<String> collectionIds,
+  ) {
     if (parentCollections?.isNotEmpty ?? false) {
       var model = _addRootCollectionMap(parentCollections!.first);
       var sub = TkCmsCollectionsTreeDef._(model);

@@ -44,32 +44,36 @@ class TkCmsApiServiceBaseV1 implements ApiService {
 
   Future<void> initClient() async {
     innerClient = httpClientFactory.newClient();
-    retryClient = RetryClient(innerClient, when: (response) {
-      if (universal.isHttpStatusCodeSuccessful(response.statusCode)) {
-        return false;
-      }
-      switch (response.statusCode) {
-        case universal.httpStatusCodeForbidden:
-        case universal.httpStatusCodeUnauthorized:
+    retryClient = RetryClient(
+      innerClient,
+      when: (response) {
+        if (universal.isHttpStatusCodeSuccessful(response.statusCode)) {
           return false;
-      }
-      retryCount++;
-      if (debugWebServices) {
-        // ignore: avoid_print
-        print('retry: ${response.statusCode}');
-      }
-      return true;
-    }, whenError: (error, stackTrace) {
-      if (debugWebServices) {
-        // ignore: avoid_print
-        print('retry error?: error');
-        // ignore: avoid_print
-        print(error);
-        // ignore: avoid_print
-        print(stackTrace);
-      }
-      return true;
-    });
+        }
+        switch (response.statusCode) {
+          case universal.httpStatusCodeForbidden:
+          case universal.httpStatusCodeUnauthorized:
+            return false;
+        }
+        retryCount++;
+        if (debugWebServices) {
+          // ignore: avoid_print
+          print('retry: ${response.statusCode}');
+        }
+        return true;
+      },
+      whenError: (error, stackTrace) {
+        if (debugWebServices) {
+          // ignore: avoid_print
+          print('retry error?: error');
+          // ignore: avoid_print
+          print(error);
+          // ignore: avoid_print
+          print(stackTrace);
+        }
+        return true;
+      },
+    );
 
     secureClient =
         retryClient; //SecureAuthClient(secureApiService: this, inner: client);
@@ -80,18 +84,25 @@ class TkCmsApiServiceBaseV1 implements ApiService {
   }
 
   @override
-  Future<T> send<T extends CvModel>(String command, CvModel request,
-      {Client? client}) async {
+  Future<T> send<T extends CvModel>(
+    String command,
+    CvModel request, {
+    Client? client,
+  }) async {
     try {
-      var response =
-          await clientSend<T>(client ?? retryClient, command, request);
+      var response = await clientSend<T>(
+        client ?? retryClient,
+        command,
+        request,
+      );
       if (response.isSuccessful) {
         return response.data!;
       } else {
         throw ApiException(
-            message: '${response.error?.message}',
-            statusCode: response.statusCode,
-            cause: response.error);
+          message: '${response.error?.message}',
+          statusCode: response.statusCode,
+          cause: response.error,
+        );
       }
     } catch (e, st) {
       if (isDebug) {
@@ -109,8 +120,11 @@ class TkCmsApiServiceBaseV1 implements ApiService {
   }
 
   Future<ServiceResponse<T>> clientSend<T extends CvModel>(
-      Client client, String command, CvModel request,
-      {Map<String, String>? additionalHeaders}) async {
+    Client client,
+    String command,
+    CvModel request, {
+    Map<String, String>? additionalHeaders,
+  }) async {
     var uri = getUri(command);
     if (debugWebServices) {
       log('-> uri: $uri');
@@ -119,14 +133,19 @@ class TkCmsApiServiceBaseV1 implements ApiService {
     // devPrint('uri $uri');
     var headers = <String, String>{
       httpHeaderContentType: httpContentTypeJson,
-      httpHeaderAccept: httpContentTypeJson
+      httpHeaderAccept: httpContentTypeJson,
     };
     if (additionalHeaders != null) {
       headers.addAll(additionalHeaders);
     }
     // devPrint('query headers: $headers');
-    var response = await httpClientSend(client, httpMethodPost, uri,
-        headers: headers, body: utf8.encode(jsonEncode(request.toMap())));
+    var response = await httpClientSend(
+      client,
+      httpMethodPost,
+      uri,
+      headers: headers,
+      body: utf8.encode(jsonEncode(request.toMap())),
+    );
     //devPrint('response headers: ${response.headers}');
     response.body;
     var body = utf8.decode(response.bodyBytes);
@@ -184,8 +203,11 @@ class TkCmsApiServiceBaseV1 implements ApiService {
 
   //@override
   Future<ApiGetTimestampResponse> getTimestamp() async {
-    return await send<ApiGetTimestampResponse>(commandTimestamp, ApiEmpty(),
-        client: innerClient);
+    return await send<ApiGetTimestampResponse>(
+      commandTimestamp,
+      ApiEmpty(),
+      client: innerClient,
+    );
   }
 }
 
@@ -196,9 +218,5 @@ class ServiceResponse<T extends CvModel> {
 
   bool get isSuccessful => data != null;
 
-  ServiceResponse({
-    required this.statusCode,
-    this.data,
-    this.error,
-  });
+  ServiceResponse({required this.statusCode, this.data, this.error});
 }

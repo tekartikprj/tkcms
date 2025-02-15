@@ -13,5 +13,6 @@ var fsProjectCollectionInfo =
 */
 /// Global must have been initialized first
 final tkCmsFsProjectAccess = fsProjectAccessFromAppFlavorContext(
-    appFlavorContext: globalTkCmsAdminAppFlavorContext,
-    firestoreDatabaseContext: gFsDatabaseService.firestoreDatabaseContext);
+  appFlavorContext: globalTkCmsAdminAppFlavorContext,
+  firestoreDatabaseContext: gFsDatabaseService.firestoreDatabaseContext,
+);

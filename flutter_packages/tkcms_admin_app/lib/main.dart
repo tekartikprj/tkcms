@@ -33,23 +33,28 @@ Future<void> main() async {
   var prefs = await prefsFactory.openPreferences('tkcms_example_prefs.db');
   var context = initFirebaseSim(projectId: 'tkcms', packageName: packageName);
   gFsDatabaseService = TkCmsFirestoreDatabaseService(
-      firebaseContext: context, flavorContext: AppFlavorContext.testLocal);
+    firebaseContext: context,
+    flavorContext: AppFlavorContext.testLocal,
+  );
 
   globalTkCmsAdminAppFlavorContext = AppFlavorContext.testLocal;
   globalTkCmsAdminAppFirebaseContext = context;
   var sembastDatabaseFactory = await initLocalSembastFactory();
   var sembastDatabaseContext = SembastDatabasesContext(
-      factory: sembastDatabaseFactory,
-      path: '.local/tkcms_${globalTkCmsAdminAppFlavorContext.appKeySuffix}');
+    factory: sembastDatabaseFactory,
+    path: '.local/tkcms_${globalTkCmsAdminAppFlavorContext.appKeySuffix}',
+  );
   globalSembastDatabasesContext = sembastDatabaseContext;
   gAuthBloc = TkCmsAuthBloc.local(db: gFsDatabaseService, prefs: prefs);
   globalAuthFlutterUiService = FirebaseUiAuthServiceBasic();
   gDebugUsername = 'admin';
   gDebugPassword = '__admin__'; // irrelevant
   fsProjectSyncedDb = SyncedEntitiesDb<TkCmsFsProject>(
-      entityAccess: tkCmsFsProjectAccess,
-      options: SyncedEntitiesOptions(
-          sembastDatabaseContext: sembastDatabaseContext));
+    entityAccess: tkCmsFsProjectAccess,
+    options: SyncedEntitiesOptions(
+      sembastDatabaseContext: sembastDatabaseContext,
+    ),
+  );
   runApp(const MyApp());
 }
 
@@ -100,8 +105,10 @@ class MyAppOld extends StatelessWidget {
           }
         });
         muiItem('login screen or logged', () {
-          goToLoginScreen(muiBuildContext,
-              onLoggedIn: onLoggedInGoToLoggedInScreen);
+          goToLoginScreen(
+            muiBuildContext,
+            onLoggedIn: onLoggedInGoToLoggedInScreen,
+          );
         });
         muiItem('logged in screen', () {
           goToLoggedInScreen(muiBuildContext);

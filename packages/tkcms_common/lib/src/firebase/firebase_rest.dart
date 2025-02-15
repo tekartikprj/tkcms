@@ -3,8 +3,9 @@ import 'package:tekartik_firebase_firestore_rest/firestore_rest.dart';
 import 'package:tekartik_firebase_rest/firebase_rest.dart';
 import 'package:tkcms_common/tkcms_firebase.dart';
 
-Future<FirebaseServicesContext> initFirebaseServicesRest(
-    {FirebaseAppOptions? appOptions}) async {
+Future<FirebaseServicesContext> initFirebaseServicesRest({
+  FirebaseAppOptions? appOptions,
+}) async {
   var firebase = firebaseRest;
   var firestoreService = firestoreServiceRest;
   var authService = authServiceRest;

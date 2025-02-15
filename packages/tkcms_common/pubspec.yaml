@@ -6,7 +6,7 @@ publish_to: none
 # repository: https://github.com/my_org/my_repo
 
 environment:
-  sdk: ^3.6.0
+  sdk: ^3.7.0
 
 # Add regular dependencies here.
 dependencies:
@@ -102,7 +102,7 @@ dependencies:
       url: https://github.com/tekartik/app_common_utils.dart
       ref: dart3a
       path: app_crypto
-      version: '>=0.2.4'
+    version: '>=0.2.4'
   tekartik_app_http:
     git:
       url: https://github.com/tekartik/app_common_utils.dart

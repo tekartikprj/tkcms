@@ -15,10 +15,14 @@ Future main() async {
   var ffContext = initFirebaseFunctionsUniversal();
   firebaseContextOrNull = ffContext.firebaseContext;
   var devContext = TkCmsServerAppContext(
-      firebaseFunctionsContext: ffContext, flavorContext: FlavorContext.dev);
+    firebaseFunctionsContext: ffContext,
+    flavorContext: FlavorContext.dev,
+  );
   var appDev = FfApp(context: devContext);
   var prodContext = TkCmsServerAppContext(
-      firebaseFunctionsContext: ffContext, flavorContext: FlavorContext.prod);
+    firebaseFunctionsContext: ffContext,
+    flavorContext: FlavorContext.prod,
+  );
   appDev.initFunctions();
   var appProd = FfApp(context: prodContext);
   appProd.initFunctions();

@@ -16,17 +16,21 @@ Future<void> main() async {
   initTkCmsFsUserAccessBuilders();
   setUp(() async {
     var dbFactory = newDatabaseFactoryMemory();
-    var sembastDatabaseContext =
-        SembastDatabaseContext(factory: dbFactory, path: 'test.db');
+    var sembastDatabaseContext = SembastDatabaseContext(
+      factory: dbFactory,
+      path: 'test.db',
+    );
     firestore = newFirestoreMemory();
     fsDb = TkCmsFirestoreDatabaseServiceEntityAccess<TestFsEntity>(
       entityCollectionInfo: testFsEntityCollectionInfo,
       firestore: firestore,
     );
     var syncedDb = SyncedEntitiesDb(
-        entityAccess: fsDb,
-        options: SyncedEntitiesOptions(
-            sembastDatabaseContext: sembastDatabaseContext));
+      entityAccess: fsDb,
+      options: SyncedEntitiesOptions(
+        sembastDatabaseContext: sembastDatabaseContext,
+      ),
+    );
     await syncedDb.ready;
     db = syncedDb.db;
   });
@@ -38,7 +42,10 @@ Future<void> main() async {
     var options = LocalDbFromFsOptions(userId: userId);
 
     await generateLocalDbFromEntitiesUserAccess(
-        db: db, entityAccess: fsDb, options: options);
+      db: db,
+      entityAccess: fsDb,
+      options: options,
+    );
     expect(await cvDbUserAccessStore.find(db), isEmpty);
 
     // Simple access
@@ -50,7 +57,10 @@ Future<void> main() async {
     expect(await cvDbUserAccessStore.find(db), isEmpty);
     expect(await cvDbEntityStore.find(db), isEmpty);
     await generateLocalDbFromEntitiesUserAccess(
-        db: db, entityAccess: fsDb, options: options);
+      db: db,
+      entityAccess: fsDb,
+      options: options,
+    );
     expect(await cvDbUserAccessStore.find(db), isNotEmpty);
     expect(await cvDbEntityStore.find(db), isNotEmpty);
     //expect(await cvDbUserAccessStore.find(db), isEmpty);

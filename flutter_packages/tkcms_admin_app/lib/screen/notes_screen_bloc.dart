@@ -45,7 +45,9 @@ class NotesScreenBloc extends AutoDisposeStateBaseBloc<NotesScreenBlocState> {
   NotesScreenBloc({required this.projectId}) {
     _lock.synchronized(() async {
       var project = (await fsProjectSyncedDb.getOrSyncEntity(
-          entityId: projectId, userId: userId));
+        entityId: projectId,
+        userId: userId,
+      ));
       if (project == null) {
         add(NotesScreenBlocState(project: null, notes: null));
       } else {

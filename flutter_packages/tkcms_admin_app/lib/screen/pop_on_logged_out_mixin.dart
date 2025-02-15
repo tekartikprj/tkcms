@@ -7,10 +7,12 @@ mixin PopOnLoggedOutMixin<T extends StatefulWidget> on State<T>
     implements AutoDispose {
   void popOnLoggedOut([FirebaseAuth? auth]) {
     auth ??= FirebaseAuth.instance;
-    audiAddStreamSubscription(auth.onCurrentUser.listen((user) {
-      if (user == null && mounted) {
-        Navigator.of(context).pop();
-      }
-    }));
+    audiAddStreamSubscription(
+      auth.onCurrentUser.listen((user) {
+        if (user == null && mounted) {
+          Navigator.of(context).pop();
+        }
+      }),
+    );
   }
 }

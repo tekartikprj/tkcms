@@ -10,12 +10,13 @@ class TimeService {
   final _offsetSubject = BehaviorSubject<int>();
 
   TimeService({TkCmsApiServiceBase? apiService})
-      : _apiServiceOrNull = apiService;
+    : _apiServiceOrNull = apiService;
 
   Stream<int> get offsetStream => _offsetSubject.stream;
 
-  DateTime get timestamp => DateTime.timestamp()
-      .add(Duration(milliseconds: offsetFromServerTimestampMs));
+  DateTime get timestamp => DateTime.timestamp().add(
+    Duration(milliseconds: offsetFromServerTimestampMs),
+  );
 
   /// Good to have this at first
   Future<void> get fixedOnce async => await _offsetSubject.first;
@@ -39,8 +40,7 @@ class TimeService {
           await Future<void>.delayed(const Duration(minutes: 60));
         }
       }
-    }()
-        .unawait();
+    }().unawait();
 
     // Check time change every seconds
     while (true) {
@@ -81,7 +81,8 @@ class TimeService {
         if (isDebug) {
           // ignore: avoid_print
           print(
-              '[time_sync] server: $serverTime, local: $now, offset: $offsetMs, diff: $diff');
+            '[time_sync] server: $serverTime, local: $now, offset: $offsetMs, diff: $diff',
+          );
         }
         // less than 1 second, take it
         if (diff < 1000 || offsetMs > diff) {

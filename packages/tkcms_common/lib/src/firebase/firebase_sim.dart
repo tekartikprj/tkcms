@@ -23,11 +23,12 @@ Future<FirebaseServicesContext> initFirebaseServicesSimMemory() async {
   var functionsService = firebaseFunctionsServiceMemory;
   var functionsCallService = firebaseFunctionsCallServiceMemory;
   var firebaseServicesContext = FirebaseServicesContext(
-      firebase: firebase,
-      firestoreService: firestoreService,
-      functionsService: functionsService,
-      functionsCallService: functionsCallService,
-      functionsCallRegion: regionBelgium);
+    firebase: firebase,
+    firestoreService: firestoreService,
+    functionsService: functionsService,
+    functionsCallService: functionsCallService,
+    functionsCallRegion: regionBelgium,
+  );
   return firebaseServicesContext;
 }
 
@@ -37,26 +38,34 @@ Future<FirebaseContext> initFirebaseFunctionsSimMemory() async {
 }
 
 /// app used as package name
-FirebaseContext initFirebaseSim(
-    {required String projectId, String? packageName}) {
+FirebaseContext initFirebaseSim({
+  required String projectId,
+  String? packageName,
+}) {
   // isFirebaseSim = true;
   var firebase = FirebaseLocal();
   var sembastDatabaseFactory = getDatabaseFactory(packageName: packageName);
   var firestoreService = FirestoreServiceSembast(sembastDatabaseFactory);
-  var authService =
-      FirebaseAuthServiceSembast(databaseFactory: sembastDatabaseFactory);
-  var firebaseApp =
-      firebase.initializeApp(options: FirebaseAppOptions(projectId: projectId));
+  var authService = FirebaseAuthServiceSembast(
+    databaseFactory: sembastDatabaseFactory,
+  );
+  var firebaseApp = firebase.initializeApp(
+    options: FirebaseAppOptions(projectId: projectId),
+  );
   return FirebaseServicesContext(
-          firebase: firebase,
-          firebaseApp: firebaseApp,
-          authService: authService,
-          firestoreService: firestoreService)
-      .initContext();
+    firebase: firebase,
+    firebaseApp: firebaseApp,
+    authService: authService,
+    firestoreService: firestoreService,
+  ).initContext();
 }
 
-FirebaseContext initFirebaseSimMemory(
-    {required String projectId, String? packageName}) {
-  return firebaseContextSimOrNull ??=
-      initFirebaseSim(projectId: projectId, packageName: packageName);
+FirebaseContext initFirebaseSimMemory({
+  required String projectId,
+  String? packageName,
+}) {
+  return firebaseContextSimOrNull ??= initFirebaseSim(
+    projectId: projectId,
+    packageName: packageName,
+  );
 }

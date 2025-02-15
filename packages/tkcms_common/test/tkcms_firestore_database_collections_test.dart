@@ -13,21 +13,29 @@ void main() {
         'subType1': null,
         'subType2': null,
         'subType3': {
-          'subSubType4': {'subSubSubType5': null}
-        }
-      }
+          'subSubType4': {'subSubSubType5': null},
+        },
+      },
     });
     expect(def.getCollectionIds(null), ['type1', 'type2']);
-    expect(
-        def.getCollectionIds(['type2']), ['subType1', 'subType2', 'subType3']);
+    expect(def.getCollectionIds(['type2']), [
+      'subType1',
+      'subType2',
+      'subType3',
+    ]);
     expect(def.getCollectionIds(['type2', 'subType2']), <String>[]);
     expect(def.getCollectionIds(['type2', 'subType3']), ['subSubType4']);
-    expect(def.getCollectionIds(['type2', 'subType3', 'subSubType4']),
-        ['subSubSubType5']);
+    expect(def.getCollectionIds(['type2', 'subType3', 'subSubType4']), [
+      'subSubSubType5',
+    ]);
 
-    expect(def.docPathGetCollectionsId('type2/e1'),
-        ['subType1', 'subType2', 'subType3']);
-    expect(
-        def.docPathGetCollectionsId('type2/e1/subType3/e3'), ['subSubType4']);
+    expect(def.docPathGetCollectionsId('type2/e1'), [
+      'subType1',
+      'subType2',
+      'subType3',
+    ]);
+    expect(def.docPathGetCollectionsId('type2/e1/subType3/e3'), [
+      'subSubType4',
+    ]);
   });
 }

@@ -15,8 +15,14 @@ class DbNote extends DbStringRecordBase {
   final pinned = CvField<DbTimestamp>('pinned');
 
   @override
-  CvFields get fields =>
-      [title, description, content, created, updated, pinned];
+  CvFields get fields => [
+    title,
+    description,
+    content,
+    created,
+    updated,
+    pinned,
+  ];
 }
 
 final dbNoteModel = DbNote();
@@ -45,11 +51,13 @@ class ContentDb {
   late final Future<void> ready = () async {
     _initialized = true;
     _syncedDb = await AutoSynchronizedFirestoreSyncedDb.open(
-        options: AutoSynchronizedFirestoreSyncedDbOptions(
-            firestore: firestoreDatabaseContext.firestore,
-            databaseFactory: sembastDatabaseContext.factory,
-            rootDocumentPath: firestoreDatabaseContext.rootDocument!.path,
-            sembastDbName: sembastDatabaseContext.path));
+      options: AutoSynchronizedFirestoreSyncedDbOptions(
+        firestore: firestoreDatabaseContext.firestore,
+        databaseFactory: sembastDatabaseContext.factory,
+        rootDocumentPath: firestoreDatabaseContext.rootDocument!.path,
+        sembastDbName: sembastDatabaseContext.path,
+      ),
+    );
   }();
 
   Future<void> close() async {
@@ -62,8 +70,9 @@ class ContentDb {
   @override
   String toString() => 'ContextDb(app, $projectId, $hashCode)';
 
-  ContentDb(
-      {required this.projectId,
-      required this.sembastDatabaseContext,
-      required this.firestoreDatabaseContext});
+  ContentDb({
+    required this.projectId,
+    required this.sembastDatabaseContext,
+    required this.firestoreDatabaseContext,
+  });
 }

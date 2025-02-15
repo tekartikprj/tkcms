@@ -31,7 +31,7 @@ void initTkCmsFsBuilders() {
     TkCmsFsProject.new,
     TkCmsFsUserAccess.new,
     TkCmsFsEntityTypeInvite.new,
-    TkCmsFsEntityTypeAccess.new
+    TkCmsFsEntityTypeAccess.new,
   ]);
 }
 
@@ -39,8 +39,9 @@ void initTkCmsFsBuilders() {
 final fsRootCollection = CvCollectionReference<FsApp>('app');
 
 /// Root flavor collection
-final fsRootFlavorCollection =
-    CvCollectionReference<CvFirestoreDocument>('flavor');
+final fsRootFlavorCollection = CvCollectionReference<CvFirestoreDocument>(
+  'flavor',
+);
 
 /// Root app collection
 CvDocumentReference<FsApp> fsAppRoot(String app) => fsRootCollection.doc(app);
@@ -61,5 +62,6 @@ CvCollectionReference<CvFirestoreDocument> fsAppInfoCollection(String app) =>
 
 // In app/<app_root_no_dev_no_prod>/info/config_dev or config_prod
 CvDocumentReference<FsAppsConfig> fsAppConfigFlavor(
-        String appRoot, String flavor) =>
-    fsAppInfoCollection(appRoot).cast<FsAppsConfig>().doc('config_$flavor');
+  String appRoot,
+  String flavor,
+) => fsAppInfoCollection(appRoot).cast<FsAppsConfig>().doc('config_$flavor');
