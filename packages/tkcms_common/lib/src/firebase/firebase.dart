@@ -51,6 +51,28 @@ class FirebaseServicesContext {
        functionsServiceOrNull = functionsService,
        firebaseAppOrNull = firebaseApp;
 
+  FirebaseServicesContext copyWith({
+    FirebaseApp? firebaseApp,
+    FirebaseFunctionsService? functionsService,
+    FirebaseFunctionsCallService? functionsCallService,
+    FirestoreService? firestoreService,
+    FirebaseAuthService? authService,
+    String? functionsCallRegion,
+    StorageService? storageService,
+  }) {
+    return FirebaseServicesContext(
+      firebase: firebase,
+      appOptions: appOptions,
+      firebaseApp: firebaseApp ?? firebaseAppOrNull,
+      functionsService: functionsService ?? functionsServiceOrNull,
+      functionsCallService: functionsCallService ?? functionsCallServiceOrNull,
+      firestoreService: firestoreService ?? firestoreServiceOrNull,
+      authService: authService ?? authServiceOrNull,
+      functionsCallRegion: functionsCallRegion ?? functionsCallRegionOrNull,
+      storageService: storageService ?? storageServiceOrNull,
+    );
+  }
+
   /// Compat
   FirebaseContext initContext() => initSync();
   FirebaseContext initSync() {

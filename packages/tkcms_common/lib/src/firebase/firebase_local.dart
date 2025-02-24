@@ -2,12 +2,14 @@
 
 import 'package:fs_shim/fs_shim.dart';
 import 'package:process_run/shell.dart';
+import 'package:tekartik_app_http/app_http.dart';
 import 'package:tekartik_app_sembast/sembast.dart';
 import 'package:tekartik_firebase_auth_local/auth_local.dart';
 import 'package:tekartik_firebase_auth_sembast/auth_sembast.dart';
 import 'package:tekartik_firebase_firestore_sembast/firestore_sembast.dart';
 import 'package:tekartik_firebase_functions_call_http/functions_call_memory.dart';
 import 'package:tekartik_firebase_functions_http/firebase_functions_memory.dart';
+import 'package:tekartik_firebase_functions_io/firebase_functions_io.dart';
 import 'package:tekartik_firebase_local/firebase_local.dart';
 import 'package:tekartik_firebase_storage_fs/storage_fs.dart';
 import 'package:tkcms_common/tkcms_common.dart';
@@ -19,7 +21,9 @@ export 'firebase.dart';
 FirebaseServicesContext initFirebaseServicesLocalSembast({
   required String projectId,
   bool isWeb = false,
+  bool? useHttpFunctions,
 }) {
+  useHttpFunctions ??= false;
   // var path = join('.dart_tool', 'tekartik_notelio_local');
   var path = joinAll([
     if (!isWeb) userAppDataPath,
@@ -46,8 +50,18 @@ FirebaseServicesContext initFirebaseServicesLocalSembast({
   var authService = FirebaseAuthServiceSembast(
     databaseFactory: authSembastDatabaseFactory,
   );
-  var functionsCallService = firebaseFunctionsCallServiceMemory;
-  var functionsService = firebaseFunctionsServiceMemory;
+  FirebaseFunctionsService functionsService;
+  FirebaseFunctionsCallService functionsCallService;
+  if (useHttpFunctions) {
+    functionsService = firebaseFunctionsServiceIo;
+    functionsCallService = FirebaseFunctionsCallServiceHttp(
+      httpClientFactory: httpClientFactoryIo,
+    );
+  } else {
+    functionsCallService = firebaseFunctionsCallServiceMemory;
+    functionsService = firebaseFunctionsServiceMemory;
+  }
+
   return FirebaseServicesContext(
     appOptions: FirebaseAppOptions(projectId: projectId),
     storageService: storageService,
@@ -66,6 +80,7 @@ FirebaseServicesContext initFirebaseServicesLocalMemory({
 }) {
   var firebase = FirebaseLocal();
   var firestoreService = newFirestoreServiceMemory();
+
   var functionsService = firebaseFunctionsServiceMemory;
   var authService = newAuthServiceLocal();
   var functionsCallService = firebaseFunctionsCallServiceMemory;
