@@ -75,7 +75,7 @@ class FlavorContext {
   int get hashCode => flavor.hashCode;
 
   /// Suffix if not prod
-  String get ifNotProdSuffix => isProd ? '' : '_$flavor';
+  String get ifNotProdFlavor => isProd ? '' : flavor;
 
   @override
   bool operator ==(Object other) {
@@ -101,7 +101,7 @@ class AppFlavorContext {
     required this.app,
   }) : local = local ?? false;
 
-  String get ifNotProdSuffix => flavorContext.ifNotProdSuffix;
+  String get ifNotProdSuffix => flavorContext.ifNotProdFlavor;
 
   /// Unique app name for local use
   String get uniqueAppName =>
