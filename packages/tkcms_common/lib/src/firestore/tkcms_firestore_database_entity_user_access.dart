@@ -449,7 +449,6 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<
       if (userId != null) {
         txnDeleteUserAccess(txn, userId);
       }
-      txn.refDelete(entityRef);
     });
   }
 

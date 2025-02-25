@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tekartik_app_flutter_widget/mini_ui.dart';
+import 'package:tkcms_admin_app/screen/basic_entities_screen.dart';
 import 'package:tkcms_admin_app/screen/project_info.dart';
 import 'package:tkcms_admin_app/screen/synced_entities_screen.dart';
 
@@ -20,6 +21,12 @@ final adminDebugScreen = muiScreenWidget('Debug', () {
         'Selected project: ${selectedProject?.entityId}',
       );
     }
+  });
+  muiItem('Root items', () async {
+    await goToBasicEntitiesScreen(
+      muiBuildContext,
+      entityAccess: tkCmsFsRootItemAccess,
+    );
   });
 });
 Future<Object?> goToAdminDebugScreen(
