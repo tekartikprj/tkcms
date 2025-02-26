@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:tekartik_app_flutter_widget/mini_ui.dart';
 import 'package:tekartik_app_flutter_widget/view/busy_indicator.dart';
 import 'package:tekartik_app_flutter_widget/view/busy_screen_state_mixin.dart';
+import 'package:tekartik_app_flutter_widget/view/cv_ui.dart';
+import 'package:tekartik_app_flutter_widget/view/tile_padding.dart';
 import 'package:tkcms_admin_app/audi/tkcms_audi.dart';
 import 'package:tkcms_admin_app/auth/auth.dart';
 import 'package:tkcms_admin_app/src/import_common.dart';
@@ -112,8 +114,10 @@ class _BasicEntityScreenState<T extends TkCmsFsBasicEntity>
                               // TODO
                             },
                           ),
+                          TilePadding(child: CvUiModelValue(model: fsEntity)),
                         ],
                       ),
+
                       BusyIndicator(busy: busyStream),
                     ],
                   ),
