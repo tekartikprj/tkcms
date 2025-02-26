@@ -1,3 +1,4 @@
+import 'package:tekartik_common_utils/common_utils_import.dart';
 import 'package:tkcms_common/tkcms_firestore.dart';
 
 // <entity>/{entity_id} * content
@@ -166,6 +167,7 @@ final tkCmsFsEntityModel = _TkCmsFsEntity();
 /// To extend
 abstract class TkCmsFsBasicEntity extends CvFirestoreDocumentBase
     with TkCmsBasicEntityMixin {
+  @mustCallSuper
   @override
   CvFields get fields => [...basicNamedEntityFields];
 }
