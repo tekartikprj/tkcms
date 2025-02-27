@@ -23,7 +23,7 @@ class DocEntitiesSelectResult {
 }
 
 class DocEntitiesScreenBlocState<T extends TkCmsFsDocEntity> {
-  final List<TkCmsFsDocEntity> fsEntities;
+  final List<T> fsEntities;
 
   DocEntitiesScreenBlocState({required this.fsEntities});
 }
@@ -32,7 +32,7 @@ class DocEntitiesScreenBloc<T extends TkCmsFsDocEntity>
     extends AutoDisposeStateBaseBloc<DocEntitiesScreenBlocState<T>> {
   final bool selectMode;
   var userId = gAuthBloc.currentUserId;
-  final TkCmsFirestoreDatabaseServiceDocEntityAccess<T> entityAccess;
+  final TkCmsFirestoreDatabaseServiceDocEntityAccessor<T> entityAccess;
   String get entityName => entityAccess.entityCollectionInfo.name;
   DocEntitiesScreenBloc({required this.entityAccess, this.selectMode = false}) {
     _init();
@@ -164,7 +164,7 @@ class _DocEntitiesScreenState<T extends TkCmsFsDocEntity>
 
 Future<void> goToDocEntitiesScreen<T extends TkCmsFsDocEntity>(
   BuildContext context, {
-  required TkCmsFirestoreDatabaseServiceDocEntityAccess<T> entityAccess,
+  required TkCmsFirestoreDatabaseServiceDocEntityAccessor<T> entityAccess,
 }) async {
   await Navigator.of(context).push<void>(
     MaterialPageRoute(
@@ -182,7 +182,7 @@ Future<void> goToDocEntitiesScreen<T extends TkCmsFsDocEntity>(
 /// Select an entity
 Future<DocEntitiesSelectResult?> selectDocEntity<T extends TkCmsFsDocEntity>(
   BuildContext context, {
-  required TkCmsFirestoreDatabaseServiceDocEntityAccess<T> entityAccess,
+  required TkCmsFirestoreDatabaseServiceDocEntityAccessor<T> entityAccess,
 }) async {
   var result = await Navigator.of(context).push<Object>(
     MaterialPageRoute(

@@ -30,7 +30,7 @@ class BasicEntityScreenBloc<T extends TkCmsFsBasicEntity>
     extends AutoDisposeStateBaseBloc<BasicEntityScreenBlocState<T>> {
   final String entityId;
   var userId = gAuthBloc.currentUserId;
-  final TkCmsFirestoreDatabaseServiceBasicEntityAccess<T> entityAccess;
+  final TkCmsFirestoreDatabaseServiceBasicEntityAccessor<T> entityAccess;
   String get entityName => entityAccess.entityCollectionInfo.name;
 
   BasicEntityScreenBloc({required this.entityAccess, required this.entityId}) {
@@ -173,7 +173,7 @@ class DbUserAccessWidget extends StatelessWidget {
 
 Future<void> goToBasicEntityViewScreen<T extends TkCmsFsBasicEntity>(
   BuildContext context, {
-  required TkCmsFirestoreDatabaseServiceBasicEntityAccess<T> entityAccess,
+  required TkCmsFirestoreDatabaseServiceBasicEntityAccessor<T> entityAccess,
   required String entityId,
 }) async {
   await Navigator.of(context).push<void>(

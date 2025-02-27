@@ -42,7 +42,7 @@ abstract class TkCmsFirestoreDatabaseServiceUserEntityAccessor<
   Future<void> deleteEntity(String entityId);
 }
 
-class TkCmsFirestoreDatabaseServiceDocEntityAccess<
+class TkCmsFirestoreDatabaseServiceDocEntityAccessor<
   TFsEntity extends TkCmsFsDocEntity
 >
     implements TkCmsFirestoreDatabaseServiceEntityAccessor<TFsEntity> {
@@ -62,7 +62,7 @@ class TkCmsFirestoreDatabaseServiceDocEntityAccess<
   @override
   late final Firestore firestore;
   //FirestoreDatabaseContext? firestoreDatabaseContext;
-  TkCmsFirestoreDatabaseServiceDocEntityAccess({
+  TkCmsFirestoreDatabaseServiceDocEntityAccessor({
     required this.entityCollectionInfo,
 
     /// to prefer

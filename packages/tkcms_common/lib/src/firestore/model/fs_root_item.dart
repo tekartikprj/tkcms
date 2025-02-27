@@ -15,13 +15,13 @@ var fsRootItemCollectionInfo =
       treeDef: TkCmsCollectionsTreeDef(map: {'item': null}),
     );
 
-TkCmsFirestoreDatabaseServiceBasicEntityAccess<TkCmsFsRootItem>
+TkCmsFirestoreDatabaseServiceBasicEntityAccessor<TkCmsFsRootItem>
 fsRootItemAccessFromAppFlavorContext({
   required AppFlavorContext appFlavorContext,
   required FirestoreDatabaseContext? firestoreDatabaseContext,
 }) {
   var fsRootItemAccess =
-      TkCmsFirestoreDatabaseServiceBasicEntityAccess<TkCmsFsRootItem>(
+      TkCmsFirestoreDatabaseServiceBasicEntityAccessor<TkCmsFsRootItem>(
         entityCollectionInfo: fsRootItemCollectionInfo,
         firestoreDatabaseContext: firestoreDatabaseContext,
       );

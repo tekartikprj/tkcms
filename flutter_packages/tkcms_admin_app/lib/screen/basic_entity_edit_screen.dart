@@ -25,7 +25,7 @@ class BasicEntityEditScreenBloc<T extends TkCmsFsBasicEntity>
   var userId = gAuthBloc.currentUserId;
 
   bool get isCreate => entityId == null;
-  final TkCmsFirestoreDatabaseServiceBasicEntityAccess<T> entityAccess;
+  final TkCmsFirestoreDatabaseServiceBasicEntityAccessor<T> entityAccess;
 
   Firestore get firestore => entityAccess.firestore;
   String get entityName => entityAccess.entityCollectionInfo.name;
@@ -218,7 +218,7 @@ class DbUserAccessWidget extends StatelessWidget {
 
 Future<void> goToBasicEntityEditScreen<T extends TkCmsFsBasicEntity>(
   BuildContext context, {
-  required TkCmsFirestoreDatabaseServiceBasicEntityAccess<T> entityAccess,
+  required TkCmsFirestoreDatabaseServiceBasicEntityAccessor<T> entityAccess,
   required String? entityId,
 }) async {
   await Navigator.of(context).push<void>(

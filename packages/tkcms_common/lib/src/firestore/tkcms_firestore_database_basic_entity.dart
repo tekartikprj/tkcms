@@ -13,10 +13,11 @@ void _log(Object? message) {
   print(message);
 }
 
-class TkCmsFirestoreDatabaseServiceBasicEntityAccess<
+class TkCmsFirestoreDatabaseServiceBasicEntityAccessor<
   TFsEntity extends TkCmsFsBasicEntity
 >
-    implements TkCmsFirestoreDatabaseServiceEntityAccessor<TFsEntity> {
+    implements TkCmsFirestoreDatabaseServiceDocEntityAccessor<TFsEntity> {
+  @override
   late final CvDocumentReference? rootDocument;
   CvCollectionReference<T> _rootCollection<T extends CvFirestoreDocument>(
     String id,
@@ -33,7 +34,7 @@ class TkCmsFirestoreDatabaseServiceBasicEntityAccess<
   @override
   late final Firestore firestore;
   //FirestoreDatabaseContext? firestoreDatabaseContext;
-  TkCmsFirestoreDatabaseServiceBasicEntityAccess({
+  TkCmsFirestoreDatabaseServiceBasicEntityAccessor({
     required this.entityCollectionInfo,
 
     /// to prefer
@@ -55,11 +56,14 @@ class TkCmsFirestoreDatabaseServiceBasicEntityAccess<
     initTkCmsFsUserAccessBuilders();
   }
 
+  @override
   String getRootPath(String path) =>
       rootDocument == null ? path : url.join(rootDocument!.path, path);
+  @override
   CvDocumentReference<T> rootDocRef<T extends CvFirestoreDocument>(
     String path,
   ) => CvDocumentReference<T>(getRootPath(path));
+  @override
   CvCollectionReference<T> rootCollRef<T extends CvFirestoreDocument>(
     String path,
   ) => CvCollectionReference<T>(getRootPath(path));
@@ -80,6 +84,7 @@ class TkCmsFirestoreDatabaseServiceBasicEntityAccess<
   }
 
   /// Create a project, return the id
+  @override
   Future<String> createEntity({required TFsEntity entity}) async {
     return await firestore.cvRunTransaction((txn) async {
       // Find a unique id
@@ -95,6 +100,7 @@ class TkCmsFirestoreDatabaseServiceBasicEntityAccess<
   }
 
   /// Delete the entity
+  @override
   Future<void> deleteEntity(String entityId) async {
     var entityRef = _entityCollection.doc(entityId);
     var project = await firestore.refGet(entityRef);

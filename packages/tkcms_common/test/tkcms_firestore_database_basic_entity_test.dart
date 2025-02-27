@@ -27,14 +27,14 @@ final testFsBasicEntityCollectionInfo =
       ),
     );
 void main() {
-  late TkCmsFirestoreDatabaseServiceBasicEntityAccess<TestFsBasicEntity> db;
+  late TkCmsFirestoreDatabaseServiceBasicEntityAccessor<TestFsBasicEntity> db;
   late Firestore firestore;
   setUp(() async {
     cvAddConstructors([TestFsBasicEntity.new, _Content.new]);
     var firebaseContext = initFirebaseSimMemory(projectId: tkTestCmsProjectId);
     firestore = firebaseContext.firestore;
     // firestore = firestore.debugQuickLoggerWrapper();
-    db = TkCmsFirestoreDatabaseServiceBasicEntityAccess<TestFsBasicEntity>(
+    db = TkCmsFirestoreDatabaseServiceBasicEntityAccessor<TestFsBasicEntity>(
       entityCollectionInfo: testFsBasicEntityCollectionInfo,
       firestore: firestore,
     );

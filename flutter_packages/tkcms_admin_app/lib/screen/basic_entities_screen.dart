@@ -32,7 +32,7 @@ class BasicEntitiesScreenBloc<T extends TkCmsFsBasicEntity>
     extends AutoDisposeStateBaseBloc<BasicEntitiesScreenBlocState<T>> {
   final bool selectMode;
   var userId = gAuthBloc.currentUserId;
-  final TkCmsFirestoreDatabaseServiceBasicEntityAccess<T> entityAccess;
+  final TkCmsFirestoreDatabaseServiceBasicEntityAccessor<T> entityAccess;
   String get entityName => entityAccess.entityCollectionInfo.name;
   BasicEntitiesScreenBloc({
     required this.entityAccess,
@@ -167,7 +167,7 @@ class _BasicEntitiesScreenState<T extends TkCmsFsBasicEntity>
 
 Future<void> goToBasicEntitiesScreen<T extends TkCmsFsBasicEntity>(
   BuildContext context, {
-  required TkCmsFirestoreDatabaseServiceBasicEntityAccess<T> entityAccess,
+  required TkCmsFirestoreDatabaseServiceBasicEntityAccessor<T> entityAccess,
 }) async {
   await Navigator.of(context).push<void>(
     MaterialPageRoute(
@@ -186,7 +186,7 @@ Future<void> goToBasicEntitiesScreen<T extends TkCmsFsBasicEntity>(
 Future<BasicEntitiesSelectResult?>
 selectBasicEntity<T extends TkCmsFsBasicEntity>(
   BuildContext context, {
-  required TkCmsFirestoreDatabaseServiceBasicEntityAccess<T> entityAccess,
+  required TkCmsFirestoreDatabaseServiceBasicEntityAccessor<T> entityAccess,
 }) async {
   var result = await Navigator.of(context).push<Object>(
     MaterialPageRoute(

@@ -56,14 +56,15 @@ class DocEntityEditScreenBloc<T extends TkCmsFsDocEntity>
 
   Future<void> save(TkCmsFsDocEntity dbEntity) async {
     var fsEntity = cvNewModel<T>();
+    fsEntity.copyFrom(dbEntity);
     //fsEntity.name.v = dbEntity.name.v;
     String entityId;
     if (isCreate) {
       var entityAccess = this.entityAccess;
-      if (entityAccess is TkCmsFirestoreDatabaseServiceBasicEntityAccess) {
+      if (entityAccess is TkCmsFirestoreDatabaseServiceDocEntityAccessor) {
         entityId = await (entityAccess
-                as TkCmsFirestoreDatabaseServiceBasicEntityAccess)
-            .createEntity(entity: fsEntity as TkCmsFsBasicEntity);
+                as TkCmsFirestoreDatabaseServiceDocEntityAccessor)
+            .createEntity(entity: fsEntity);
       } else {
         throw UnsupportedError('create not supported yet for user access');
       }

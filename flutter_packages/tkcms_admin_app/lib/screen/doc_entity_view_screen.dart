@@ -30,7 +30,7 @@ class DocEntityScreenBloc<T extends TkCmsFsDocEntity>
     extends AutoDisposeStateBaseBloc<DocEntityScreenBlocState<T>> {
   final String entityId;
   var userId = gAuthBloc.currentUserId;
-  final TkCmsFirestoreDatabaseServiceDocEntityAccess<T> entityAccess;
+  final TkCmsFirestoreDatabaseServiceDocEntityAccessor<T> entityAccess;
   String get entityName => entityAccess.entityCollectionInfo.name;
 
   DocEntityScreenBloc({required this.entityAccess, required this.entityId}) {
@@ -173,7 +173,7 @@ class DbUserAccessWidget extends StatelessWidget {
 
 Future<void> goToDocEntityViewScreen<T extends TkCmsFsDocEntity>(
   BuildContext context, {
-  required TkCmsFirestoreDatabaseServiceDocEntityAccess<T> entityAccess,
+  required TkCmsFirestoreDatabaseServiceDocEntityAccessor<T> entityAccess,
   required String entityId,
 }) async {
   await Navigator.of(context).push<void>(
