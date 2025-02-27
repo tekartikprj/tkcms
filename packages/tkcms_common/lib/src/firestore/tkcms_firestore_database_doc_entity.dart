@@ -1,20 +1,49 @@
 import 'package:tekartik_firebase_firestore/utils/copy_utils.dart';
-import 'package:tkcms_common/src/firestore/tkcms_firestore_database_doc_entity.dart';
 import 'package:tkcms_common/tkcms_common.dart';
 import 'package:tkcms_common/tkcms_firestore.dart';
 
-final debugTkCmsFirestoreDatabaseBasicEntity =
+final debugTkCmsFirestoreDatabaseDocEntity =
     false; // devWarning(true); //false;
 // ignore: unused_element
-final _debug = debugTkCmsFirestoreDatabaseBasicEntity;
+final _debug = debugTkCmsFirestoreDatabaseDocEntity;
 // ignore: unused_element
 void _log(Object? message) {
   // ignore: avoid_print
   print(message);
 }
 
-class TkCmsFirestoreDatabaseServiceBasicEntityAccess<
-  TFsEntity extends TkCmsFsBasicEntity
+/// Common interface for all entities
+
+/// Common interface for all entities
+abstract class TkCmsFirestoreDatabaseServiceEntityAccessor<
+  TFsEntity extends TkCmsFsDocEntity
+> {
+  /// The firestore instance
+  Firestore get firestore;
+
+  TkCmsFirestoreDatabaseDocEntityCollectionInfo<TFsEntity>
+  get entityCollectionInfo;
+
+  CvCollectionReference<TFsEntity> get fsEntityCollectionRef;
+
+  CvDocumentReference<TFsEntity> fsEntityRef(String entityId);
+
+  Future<void> writeEntity({required TFsEntity entity});
+}
+
+/// Common interface for all entities
+abstract class TkCmsFirestoreDatabaseServiceUserEntityAccessor<
+  TFsEntity extends TkCmsFsDocEntity
+> {
+  /// Create a project, return the id
+  Future<String> createEntity({required TFsEntity entity});
+
+  /// Delete the entity
+  Future<void> deleteEntity(String entityId);
+}
+
+class TkCmsFirestoreDatabaseServiceDocEntityAccess<
+  TFsEntity extends TkCmsFsDocEntity
 >
     implements TkCmsFirestoreDatabaseServiceEntityAccessor<TFsEntity> {
   late final CvDocumentReference? rootDocument;
@@ -25,15 +54,15 @@ class TkCmsFirestoreDatabaseServiceBasicEntityAccess<
       _rootCollection<TFsEntity>(_info.id);
 
   @override
-  final TkCmsFirestoreDatabaseBasicEntityCollectionInfo<TFsEntity>
+  final TkCmsFirestoreDatabaseDocEntityCollectionInfo<TFsEntity>
   entityCollectionInfo;
-  TkCmsFirestoreDatabaseBasicEntityCollectionInfo<TFsEntity> get _info =>
+  TkCmsFirestoreDatabaseDocEntityCollectionInfo get _info =>
       entityCollectionInfo;
 
   @override
   late final Firestore firestore;
   //FirestoreDatabaseContext? firestoreDatabaseContext;
-  TkCmsFirestoreDatabaseServiceBasicEntityAccess({
+  TkCmsFirestoreDatabaseServiceDocEntityAccess({
     required this.entityCollectionInfo,
 
     /// to prefer
@@ -113,26 +142,21 @@ class TkCmsFirestoreDatabaseServiceBasicEntityAccess<
   }
 }
 
-class TkCmsFirestoreDatabaseBasicEntityCollectionInfo<
-  TEntity extends TkCmsFsBasicEntity
->
-    implements TkCmsFirestoreDatabaseDocEntityCollectionInfo<TEntity> {
+class TkCmsFirestoreDatabaseDocEntityCollectionInfo<
+  TEntity extends TkCmsFsDocEntity
+> {
   /// Sub collections def
-  @override
   TkCmsCollectionsTreeDef? treeDef;
 
   /// Display name
-  @override
   final String name;
 
   /// The id of the collection (i.e. project, app, project, site...)
-  @override
   final String id;
 
   /// The entity type is the id!
-  @override
   String get entityType => id;
-  TkCmsFirestoreDatabaseBasicEntityCollectionInfo({
+  TkCmsFirestoreDatabaseDocEntityCollectionInfo({
     required this.id,
     required this.name,
     this.treeDef,

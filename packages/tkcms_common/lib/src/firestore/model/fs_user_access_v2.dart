@@ -164,6 +164,9 @@ class _TkCmsFsEntity extends TkCmsFsEntity {}
 
 final tkCmsFsEntityModel = _TkCmsFsEntity();
 
+/// Raw doc
+typedef TkCmsFsDocEntity = CvFirestoreDocument;
+
 /// To extend
 abstract class TkCmsFsBasicEntity extends CvFirestoreDocumentBase
     with TkCmsBasicEntityMixin {
