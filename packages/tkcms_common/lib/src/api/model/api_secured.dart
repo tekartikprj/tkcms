@@ -30,7 +30,7 @@ class ApiSecuredEncOptions {
   final String password;
 
   ApiSecuredEncOptions({
-    required this.encPaths,
+    this.encPaths = const [_securedTimestampKey],
     required this.password,
     this.version = apiSecuredEncOptionsVersion1,
   });
@@ -67,9 +67,11 @@ extension ApiSecuredEncOptionsExt on ApiSecuredEncOptions {
   }
 }
 
+const _securedTimestampKey = 'timestamp';
+
 class ApiSecuredQuery extends ApiQuery {
   /// Generated client timestamp, always part of enc
-  final timestamp = CvField<String>('timestamp');
+  final timestamp = CvField<String>(_securedTimestampKey);
   final enc = CvField<String>('enc');
   final data = CvField<Map>('data');
 

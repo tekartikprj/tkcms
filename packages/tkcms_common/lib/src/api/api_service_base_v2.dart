@@ -11,6 +11,12 @@ class TkCmsApiSecuredOptions {
   TkCmsTimestampService? timestampServiceOrNull;
   final _map = <String, ApiSecuredEncOptions>{};
 
+  void addCommands(List<String> commands, ApiSecuredEncOptions options) {
+    for (var command in commands) {
+      add(command, options);
+    }
+  }
+
   /// Add a secured option
   void add(String command, ApiSecuredEncOptions options) {
     _map[command] = options;
@@ -95,7 +101,9 @@ class TkCmsApiSecuredOptions {
 }
 
 class TkCmsApiServiceBaseV2 implements TkCmsTimestampProvider {
-  final secureOptions = TkCmsApiSecuredOptions();
+  @Deprecated('use securedOptions')
+  TkCmsApiSecuredOptions get secureOptions => securedOptions;
+  final securedOptions = TkCmsApiSecuredOptions();
 
   final int apiVersion;
   // V2
@@ -127,8 +135,8 @@ class TkCmsApiServiceBaseV2 implements TkCmsTimestampProvider {
   }) {
     assert(apiVersion >= apiVersion2);
     initApiBuilders();
-    secureOptions.add(apiCommandEcho, apiCommandEchoSecuredOptions);
-    secureOptions.timestampServiceOrNull = TkCmsTimestampService.withProvider(
+    securedOptions.add(apiCommandEcho, apiCommandEchoSecuredOptions);
+    securedOptions.timestampServiceOrNull = TkCmsTimestampService.withProvider(
       timestampProvider: this,
     );
 
@@ -212,12 +220,12 @@ class TkCmsApiServiceBaseV2 implements TkCmsTimestampProvider {
     ApiRequest apiRequest, {
     bool? preferHttp,
   }) async {
-    var options = secureOptions.getOrThrow(apiRequest.apiCommand);
+    var options = securedOptions.getOrThrow(apiRequest.apiCommand);
     late ApiRequest securedApiRequest;
     if (options.version == apiSecuredEncOptionsVersion1) {
       securedApiRequest = apiRequest.wrapInSecuredRequest(options);
     } else if (options.version == apiSecuredEncOptionsVersion2) {
-      securedApiRequest = await secureOptions.wrapInSecuredRequestV2Async(
+      securedApiRequest = await securedOptions.wrapInSecuredRequestV2Async(
         apiRequest,
       );
     }
@@ -230,7 +238,9 @@ class TkCmsApiServiceBaseV2 implements TkCmsTimestampProvider {
       } on ApiException catch (e) {
         if (e.error?.code.v == apiErrorCodeSecuredTimestamp) {
           // restart timestamp services
-          secureOptions.timestampServiceOrNull!.now(forceFetch: true).unawait();
+          securedOptions.timestampServiceOrNull!
+              .now(forceFetch: true)
+              .unawait();
           return await _getApiResult<R>(
             securedApiRequest,
             preferHttp: preferHttp,

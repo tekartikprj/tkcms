@@ -46,7 +46,7 @@ class TestServerApiService extends TkCmsApiServiceBaseV2 {
     super.httpsApiUri,
   }) : super(apiVersion: apiVersion2) {
     initTestApiBuilders();
-    secureOptions.addAll(clientTestServerSecuredOptions);
+    securedOptions.addAll(clientTestServerSecuredOptions);
   }
 
   Future<ApiTestResult> test(ApiTestQuery query, {bool? preferHttp}) async {
