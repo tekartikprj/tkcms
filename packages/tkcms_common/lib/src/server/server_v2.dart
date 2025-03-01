@@ -19,6 +19,17 @@ final baseCmsServerSecuredOptions =
       ..add(apiCommandEcho, apiCommandEchoSecuredOptions)
       ..add(apiCommandEchoSecured, apiCommandEchoSecuredOptionsV2);
 
+/// With app reference
+class TkAppCmsServerAppBase extends TkCmsServerAppV2 {
+  final String app;
+
+  TkAppCmsServerAppBase(
+    this.app, {
+    required super.context,
+    super.apiVersion = apiVersion2,
+  });
+}
+
 class TkCmsServerAppV2 implements TkCmsCommonServerApp {
   final securedOptions = TkCmsApiSecuredOptions();
   @override
@@ -197,6 +208,28 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
     var res = request.response;
     res.headers.set(httpHeaderContentType, httpContentTypeJson);
     await res.send(model.toMap());
+  }
+
+  void _setHtmlContentType(ExpressHttpRequest request) {
+    request.response.headers.add(
+      'Cache-Control',
+      'public, s-maxage=600, max-age=300',
+    );
+    _setHtmlContentTypeNoCache(request);
+  }
+
+  void _setHtmlContentTypeNoCache(ExpressHttpRequest request) {
+    request.response.headers.add('Content-Type', 'text/html; charset=utf-8');
+  }
+
+  /// Send a response
+  Future<void> sendHtml(ExpressHttpRequest request, String html) async {
+    var res = request.response;
+    _setHtmlContentType(request);
+
+    const httpHeaderHtmlMimeTypeFixed = 'text/html; charset=utf-8';
+    res.headers.set(httpHeaderContentType, httpHeaderHtmlMimeTypeFixed);
+    await res.send(html);
   }
 
   Future<void> sendErrorResponse(

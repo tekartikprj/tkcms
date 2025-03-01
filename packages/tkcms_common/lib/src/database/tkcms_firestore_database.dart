@@ -2,6 +2,7 @@ import 'package:tkcms_common/src/firebase/firebase.dart';
 import 'package:tkcms_common/src/flavor/flavor.dart';
 import 'package:tkcms_common/tkcms_firestore.dart';
 
+/// App level root `app/<app_id>`
 class TkCmsFirestoreDatabaseService {
   final FirebaseContext firebaseContext;
   final AppFlavorContext flavorContext;

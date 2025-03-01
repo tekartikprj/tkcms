@@ -10,6 +10,8 @@ export 'package:tekartik_firebase_firestore/utils/query.dart';
 export 'src/database/tkcms_firestore_database.dart';
 export 'src/firestore/firestore.dart';
 export 'src/firestore/model/fs_models.dart';
+export 'src/firestore/tkcms_firestore_database_basic_entity.dart';
 export 'src/firestore/tkcms_firestore_database_collections.dart';
+export 'src/firestore/tkcms_firestore_database_doc_entity.dart';
 export 'src/firestore/tkcms_firestore_database_entity_user_access.dart';
 export 'src/model/user_access.dart';

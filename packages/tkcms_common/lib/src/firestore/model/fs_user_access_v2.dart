@@ -1,3 +1,4 @@
+import 'package:tekartik_common_utils/common_utils_import.dart';
 import 'package:tkcms_common/tkcms_firestore.dart';
 
 // <entity>/{entity_id} * content
@@ -132,6 +133,10 @@ const roleUser = 'user';
 const roleAdmin = 'admin';
 const roleSuperAdmin = 'super_admin';
 
+mixin TkCmsBasicEntityMixin implements CvModel {
+  final name = CvField<String>('name');
+  CvFields get basicNamedEntityFields => [name];
+}
 mixin TkCmsFsEntityMixin implements CvModel {
   final name = CvField<String>('name');
   final created = CvField<Timestamp>('created'); // Enforced in v1
@@ -154,6 +159,23 @@ abstract class TkCmsFsEntity extends CvFirestoreDocumentBase
   CvFields get fields => [...entityFields];
 }
 
+/// Testing non-abstract class
 class _TkCmsFsEntity extends TkCmsFsEntity {}
 
 final tkCmsFsEntityModel = _TkCmsFsEntity();
+
+/// Raw doc
+typedef TkCmsFsDocEntity = CvFirestoreDocument;
+
+/// To extend
+abstract class TkCmsFsBasicEntity extends CvFirestoreDocumentBase
+    with TkCmsBasicEntityMixin {
+  @mustCallSuper
+  @override
+  CvFields get fields => [...basicNamedEntityFields];
+}
+
+/// Testing non-abstract class
+class _TkCmsFsBasicEntity extends TkCmsFsBasicEntity {}
+
+final tkCmsFsBasicEntityModel = _TkCmsFsBasicEntity();

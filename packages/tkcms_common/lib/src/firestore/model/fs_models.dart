@@ -4,6 +4,7 @@ import 'package:tkcms_common/tkcms_firestore.dart';
 export 'fs_app.dart';
 export 'fs_app_v2.dart';
 export 'fs_project.dart';
+export 'fs_root_item.dart';
 export 'fs_user.dart';
 export 'fs_user_access.dart';
 export 'fs_user_access_v2.dart';
@@ -30,6 +31,7 @@ void initTkCmsFsBuilders() {
     TkCmsFsApp.new,
     TkCmsFsProject.new,
     TkCmsFsUserAccess.new,
+    TkCmsFsRootItem.new,
     TkCmsFsEntityTypeInvite.new,
     TkCmsFsEntityTypeAccess.new,
   ]);

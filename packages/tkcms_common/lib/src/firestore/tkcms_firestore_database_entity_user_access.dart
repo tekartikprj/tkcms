@@ -1,10 +1,9 @@
 import 'package:tekartik_firebase_firestore/utils/copy_utils.dart';
 import 'package:tkcms_common/tkcms_common.dart';
-import 'package:tkcms_common/tkcms_firestore.dart';
+import 'package:tkcms_common/tkcms_firestore_v2.dart';
 
-class TkCmsFirestoreDatabaseServiceEntityAccess<
-  TFsEntity extends TkCmsFsEntity
-> {
+class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
+    implements TkCmsFirestoreDatabaseServiceEntityAccessor<TFsEntity> {
   late final CvDocumentReference? rootDocument;
   CvCollectionReference<T> _rootCollection<T extends CvFirestoreDocument>(
     String id,
@@ -23,9 +22,12 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<
       _accessCollection.doc(_info.id);
   CvDocumentReference<TkCmsFsEntityTypeInvite> get _entityTypeInviteDoc =>
       _inviteCollection.doc(_info.id);
-  final TkCmsFirestoreDatabaseEntityCollectionInfo entityCollectionInfo;
+  @override
+  final TkCmsFirestoreDatabaseEntityCollectionInfo<TFsEntity>
+  entityCollectionInfo;
   TkCmsFirestoreDatabaseEntityCollectionInfo get _info => entityCollectionInfo;
 
+  @override
   late final Firestore firestore;
   //FirestoreDatabaseContext? firestoreDatabaseContext;
   TkCmsFirestoreDatabaseServiceEntityAccess({
@@ -95,9 +97,11 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<
         tkCmsFsInviteEntityCollectionId,
       )
       .doc(entityId);
+  @override
   CvCollectionReference<TFsEntity> get fsEntityCollectionRef =>
       _entityCollection;
 
+  @override
   CvDocumentReference<TFsEntity> fsEntityRef(String entityId) =>
       _entityCollection.doc(entityId);
 
@@ -315,6 +319,7 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<
     });
   }
 
+  @override
   Future<void> writeEntity({required TFsEntity entity}) async {
     await entity.ref.set(firestore, entity);
   }
@@ -449,7 +454,6 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<
       if (userId != null) {
         txnDeleteUserAccess(txn, userId);
       }
-      txn.refDelete(entityRef);
     });
   }
 
@@ -515,19 +519,22 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<
   }
 }
 
-class TkCmsFirestoreDatabaseEntityCollectionInfo<
-  TEntity extends TkCmsFsEntity
-> {
+class TkCmsFirestoreDatabaseEntityCollectionInfo<TEntity extends TkCmsFsEntity>
+    implements TkCmsFirestoreDatabaseDocEntityCollectionInfo<TEntity> {
   /// Sub collections def
+  @override
   TkCmsCollectionsTreeDef? treeDef;
 
   /// Display name
+  @override
   final String name;
 
   /// The id of the collection (i.e. project, app, project, site...)
+  @override
   final String id;
 
   /// The entity type is the id!
+  @override
   String get entityType => id;
   TkCmsFirestoreDatabaseEntityCollectionInfo({
     required this.id,

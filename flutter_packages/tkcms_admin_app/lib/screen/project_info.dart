@@ -16,3 +16,9 @@ final tkCmsFsProjectAccess = fsProjectAccessFromAppFlavorContext(
   appFlavorContext: globalTkCmsAdminAppFlavorContext,
   firestoreDatabaseContext: gFsDatabaseService.firestoreDatabaseContext,
 );
+
+/// Test mainly
+final tkCmsFsRootItemAccess = fsRootItemAccessFromAppFlavorContext(
+  appFlavorContext: globalTkCmsAdminAppFlavorContext,
+  firestoreDatabaseContext: gFsDatabaseService.firestoreDatabaseContext,
+);
