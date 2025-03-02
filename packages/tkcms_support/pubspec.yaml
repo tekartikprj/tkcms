@@ -76,3 +76,4 @@ _dependency_overrides:
   tekartik_firebase_build:
     path: /home/alex/tekartik/devx/git/github.com/tekartik/app_build.dart/packages/firebase_build
 resolution: workspace
+

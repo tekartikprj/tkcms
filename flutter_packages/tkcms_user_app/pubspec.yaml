@@ -100,9 +100,6 @@ dependencies:
       ref: dart3a
       path: app_rx_bloc
 
-dependency_overrides:
-  tkcms_common:
-    path: ../../packages/tkcms_common
 
 dev_dependencies:
   flutter_test:
@@ -117,6 +114,7 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+resolution: workspace
 
   # To add assets to your application, add an assets section, like this:
   # assets:
