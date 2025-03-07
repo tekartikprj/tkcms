@@ -9,7 +9,11 @@
 /flutter_packages/tkcms_admin_app/pubspec.lock
 /flutter_packages/tkcms_admin_app/.metadata
 /flutter_packages/tkcms_admin_app/linux/
-pubspec_overrides.yaml
-/pubspec.yaml
+
+# Dart
 pubspec.lock
-/.dart_tool/
+.dart_tool
+pubspec_overrides.yaml
+
+/.flutter-plugins
+/.flutter-plugins-dependencies

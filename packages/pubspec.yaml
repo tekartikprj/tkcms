@@ -1,9 +1,0 @@
-name: _
-publish_to: none
-environment:
-  sdk: ^3.7.0
-workspace:
-  - tkcms_common
-  - tkcms_ff
-  - tkcms_support
-  - tkcms_test

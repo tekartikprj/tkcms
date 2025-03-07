@@ -1,0 +1,11 @@
+name: _
+publish_to: none
+environment:
+  sdk: ^3.6.0
+workspace:
+  - flutter_packages/tkcms_admin_app
+  - flutter_packages/tkcms_user_app
+  - packages/tkcms_common
+  - packages/tkcms_ff
+  - packages/tkcms_support
+  - packages/tkcms_test
