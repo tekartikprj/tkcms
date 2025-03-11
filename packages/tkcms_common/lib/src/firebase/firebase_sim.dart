@@ -32,6 +32,21 @@ Future<FirebaseServicesContext> initFirebaseServicesSimMemory() async {
   return firebaseServicesContext;
 }
 
+FirebaseServicesContext initFirebaseServicesSimMemorySync() {
+  var firebase = FirebaseLocal();
+  var firestoreService = newFirestoreServiceMemory();
+  var functionsService = firebaseFunctionsServiceMemory;
+  var functionsCallService = firebaseFunctionsCallServiceMemory;
+  var firebaseServicesContext = FirebaseServicesContext(
+    firebase: firebase,
+    firestoreService: firestoreService,
+    functionsService: functionsService,
+    functionsCallService: functionsCallService,
+    functionsCallRegion: regionBelgium,
+  );
+  return firebaseServicesContext;
+}
+
 Future<FirebaseContext> initFirebaseFunctionsSimMemory() async {
   var firebaseContext = (await initFirebaseServicesSimMemory()).initContext();
   return firebaseContext;
@@ -62,9 +77,11 @@ FirebaseContext initFirebaseSim({
 
 FirebaseContext initFirebaseSimMemory({
   required String projectId,
+
+  /// Unused
   String? packageName,
 }) {
-  return firebaseContextSimOrNull ??= initFirebaseSim(
+  return firebaseContextSimOrNull ??= initNewFirebaseSimMemory(
     projectId: projectId,
     packageName: packageName,
   );
@@ -72,7 +89,10 @@ FirebaseContext initFirebaseSimMemory({
 
 FirebaseContext initNewFirebaseSimMemory({
   required String projectId,
+
+  /// Unused
   String? packageName,
 }) {
-  return initFirebaseSim(projectId: projectId, packageName: packageName);
+  return firebaseContextSimOrNull ??= initFirebaseServicesSimMemorySync()
+      .initSync(appOptions: FirebaseAppOptions(projectId: projectId));
 }

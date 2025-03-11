@@ -51,8 +51,12 @@ void main() {
     var userId = 'user1';
     var entityId = 'enforce_e1';
 
-    await db.deleteEntity(entityId, userId: userId);
-    await db.purgeEntity(entityId, userId: userId);
+    try {
+      await db.deleteEntity(entityId, userId: userId);
+    } catch (_) {}
+    try {
+      await db.purgeEntity(entityId, userId: userId);
+    } catch (_) {}
     var createEntityId = await db.createEntity(
       userId: userId,
       entity: entity,

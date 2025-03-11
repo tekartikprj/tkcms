@@ -75,8 +75,10 @@ class FirebaseServicesContext {
 
   /// Compat
   FirebaseContext initContext() => initSync();
-  FirebaseContext initSync() {
-    firebaseAppOrNull ??= firebase.initializeApp(options: appOptions);
+  FirebaseContext initSync({FirebaseAppOptions? appOptions}) {
+    firebaseAppOrNull ??= firebase.initializeApp(
+      options: appOptions ?? this.appOptions,
+    );
     var firestore = firestoreServiceOrNull?.firestore(firebaseApp);
     if (gDebugLogFirestore) {
       // ignore: deprecated_member_use
