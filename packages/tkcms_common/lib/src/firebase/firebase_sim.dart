@@ -69,3 +69,10 @@ FirebaseContext initFirebaseSimMemory({
     packageName: packageName,
   );
 }
+
+FirebaseContext initNewFirebaseSimMemory({
+  required String projectId,
+  String? packageName,
+}) {
+  return initFirebaseSim(projectId: projectId, packageName: packageName);
+}

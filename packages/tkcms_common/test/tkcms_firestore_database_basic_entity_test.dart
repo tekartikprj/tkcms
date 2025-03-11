@@ -1,4 +1,5 @@
 import 'package:test/test.dart';
+import 'package:tkcms_common/src/firebase/firebase.dart';
 import 'package:tkcms_common/src/firebase/firebase_sim.dart';
 import 'package:tkcms_common/tkcms_firestore_v2.dart';
 
@@ -29,15 +30,22 @@ final testFsBasicEntityCollectionInfo =
 void main() {
   late TkCmsFirestoreDatabaseServiceBasicEntityAccessor<TestFsBasicEntity> db;
   late Firestore firestore;
+  late FirebaseContext firebaseContext;
   setUp(() async {
     cvAddConstructors([TestFsBasicEntity.new, _Content.new]);
-    var firebaseContext = initFirebaseSimMemory(projectId: tkTestCmsProjectId);
+    firebaseContext = initNewFirebaseSimMemory(
+      projectId: tkTestCmsProjectId,
+      packageName: 'basic_entity_test',
+    );
     firestore = firebaseContext.firestore;
     // firestore = firestore.debugQuickLoggerWrapper();
     db = TkCmsFirestoreDatabaseServiceBasicEntityAccessor<TestFsBasicEntity>(
       entityCollectionInfo: testFsBasicEntityCollectionInfo,
       firestore: firestore,
     );
+  });
+  tearDown(() async {
+    await firebaseContext.firebaseApp.delete();
   });
   test('entity', () async {
     var entity =
@@ -60,5 +68,13 @@ void main() {
     readEntity = await entityRef.get(firestore);
     expect((await subContentRef.get(firestore)).exists, isFalse);
     expect(readEntity.exists, isFalse);
+
+    var forcedEntityId = 'test_force_id';
+    await db.deleteEntity(forcedEntityId);
+    entityId = await db.createEntity(entity: entity, entityId: forcedEntityId);
+    expect(entityId, forcedEntityId);
+    entityRef = db.fsEntityCollectionRef.doc(entityId);
+    readEntity = await entityRef.get(firestore);
+    expect(readEntity.name.v, 'e1');
   });
 }

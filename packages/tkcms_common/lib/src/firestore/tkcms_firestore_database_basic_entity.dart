@@ -85,17 +85,32 @@ class TkCmsFirestoreDatabaseServiceBasicEntityAccessor<
 
   /// Create a project, return the id
   @override
-  Future<String> createEntity({required TFsEntity entity}) async {
-    return await firestore.cvRunTransaction((txn) async {
-      // Find a unique id
-      var entityId = await _entityCollection
-          .raw(firestore)
-          .txnGenerateUniqueId(txn);
+  Future<String> createEntity({
+    required TFsEntity entity,
 
-      var entityRef = _entityCollection.doc(entityId);
+    /// Optional entity id
+    String? entityId,
+  }) async {
+    return await firestore.cvRunTransaction((txn) async {
+      late String newEntityId;
+      if (entityId != null) {
+        newEntityId = entityId;
+        var entityRef = _entityCollection.doc(newEntityId);
+        var entitySnapshot = await txn.refGet(entityRef);
+        if (entitySnapshot.exists) {
+          throw StateError('Entity $newEntityId already exists');
+        }
+      } else {
+        // Find a unique id
+        newEntityId = await _entityCollection
+            .raw(firestore)
+            .txnGenerateUniqueId(txn);
+      }
+
+      var entityRef = _entityCollection.doc(newEntityId);
       entity.ref = entityRef;
       txn.cvSet(entity);
-      return entityId;
+      return newEntityId;
     });
   }
 

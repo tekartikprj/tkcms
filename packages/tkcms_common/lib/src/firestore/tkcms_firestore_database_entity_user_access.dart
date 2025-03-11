@@ -328,18 +328,29 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
   Future<String> createEntity({
     required String userId,
     required TFsEntity entity,
+    String? entityId,
   }) async {
     entity.created.v ??= Timestamp.now();
     entity.active.v ??= true;
     return await firestore.cvRunTransaction((txn) async {
-      // Find a unique id
-      var entityId = await _entityCollection
-          .raw(firestore)
-          .txnGenerateUniqueId(txn);
+      late String newEntityId;
+      if (entityId != null) {
+        newEntityId = entityId;
+        var entityRef = _entityCollection.doc(newEntityId);
+        var entitySnapshot = await txn.refGet(entityRef);
+        if (entitySnapshot.exists) {
+          throw StateError('Entity $newEntityId already exists');
+        }
+      } else {
+        // Find a unique id
+        newEntityId = await _entityCollection
+            .raw(firestore)
+            .txnGenerateUniqueId(txn);
+      }
 
-      var entityRef = _entityCollection.doc(entityId);
-      var entityUserAccessRef = _entityUserAccessDoc(entityId, userId);
-      var userEntityAccessRef = _userEntityAccessDoc(userId, entityId);
+      var entityRef = _entityCollection.doc(newEntityId);
+      var entityUserAccessRef = _entityUserAccessDoc(newEntityId, userId);
+      var userEntityAccessRef = _userEntityAccessDoc(userId, newEntityId);
       entity.ref = entityRef;
       var entityUserAccess =
           TkCmsFsUserAccess()
@@ -353,7 +364,7 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
       txn.cvSet(entity);
       txn.cvSet(entityUserAccess);
       txn.cvSet(userEntityAccess);
-      return entityId;
+      return newEntityId;
     });
   }
 
