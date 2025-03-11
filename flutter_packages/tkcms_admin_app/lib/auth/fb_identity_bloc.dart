@@ -9,7 +9,7 @@ class TkCmsFbIdentityServiceAccount implements TkCmsFbIdentity {}
 
 /// Firebase identity user
 class TkCmsFbIdentityUser implements TkCmsFbIdentity {
-  final FirebaseUser? user;
+  final FirebaseUser user;
 
   TkCmsFbIdentityUser({required this.user});
 }
@@ -32,9 +32,15 @@ class TkCmsFbIdentityBloc
     } else {
       audiAddStreamSubscription(
         auth.onCurrentUser.listen((user) {
-          add(
-            TkCmsFbIdentityBlocState(identity: TkCmsFbIdentityUser(user: user)),
-          );
+          if (user != null) {
+            add(
+              TkCmsFbIdentityBlocState(
+                identity: TkCmsFbIdentityUser(user: user),
+              ),
+            );
+          } else {
+            add(TkCmsFbIdentityBlocState(identity: null));
+          }
         }),
       );
     }
