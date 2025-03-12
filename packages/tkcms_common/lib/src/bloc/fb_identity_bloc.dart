@@ -5,13 +5,26 @@ import 'package:tkcms_common/tkcms_auth.dart';
 class TkCmsFbIdentity {}
 
 /// Firebase identity service account
-class TkCmsFbIdentityServiceAccount implements TkCmsFbIdentity {}
+class TkCmsFbIdentityServiceAccount implements TkCmsFbIdentity {
+  const TkCmsFbIdentityServiceAccount();
+}
 
 /// Firebase identity user
 class TkCmsFbIdentityUser implements TkCmsFbIdentity {
   final FirebaseUser user;
 
-  TkCmsFbIdentityUser({required this.user});
+  const TkCmsFbIdentityUser({required this.user});
+
+  @override
+  int get hashCode => user.uid.hashCode;
+
+  @override
+  bool operator ==(Object other) {
+    if (other is TkCmsFbIdentityUser) {
+      return user.uid == other.user.uid;
+    }
+    return false;
+  }
 }
 
 /// Firebase identity bloc state
@@ -28,7 +41,11 @@ class TkCmsFbIdentityBloc
     auth ??= FirebaseAuth.instance;
     var app = auth.app;
     if (app.hasAdminCredentials) {
-      add(TkCmsFbIdentityBlocState(identity: TkCmsFbIdentityServiceAccount()));
+      add(
+        TkCmsFbIdentityBlocState(
+          identity: const TkCmsFbIdentityServiceAccount(),
+        ),
+      );
     } else {
       audiAddStreamSubscription(
         auth.onCurrentUser.listen((user) {
