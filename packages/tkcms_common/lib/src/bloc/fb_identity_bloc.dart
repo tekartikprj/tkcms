@@ -6,7 +6,8 @@ class TkCmsFbIdentity {}
 
 /// Firebase identity service account
 class TkCmsFbIdentityServiceAccount implements TkCmsFbIdentity {
-  const TkCmsFbIdentityServiceAccount();
+  final String? projectId;
+  const TkCmsFbIdentityServiceAccount({required this.projectId});
 }
 
 /// Firebase identity user
@@ -43,7 +44,9 @@ class TkCmsFbIdentityBloc
     if (app.hasAdminCredentials) {
       add(
         TkCmsFbIdentityBlocState(
-          identity: const TkCmsFbIdentityServiceAccount(),
+          identity: TkCmsFbIdentityServiceAccount(
+            projectId: app.options.projectId,
+          ),
         ),
       );
     } else {

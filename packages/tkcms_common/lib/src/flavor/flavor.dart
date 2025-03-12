@@ -138,4 +138,13 @@ class AppFlavorContext {
 
   @override
   String toString() => 'ctx$appKeySuffix';
+
+  /// Copy with another app id
+  AppFlavorContext copyWithAppId(String appId) {
+    return AppFlavorContext(
+      flavorContext: flavorContext,
+      local: local,
+      app: appId,
+    );
+  }
 }

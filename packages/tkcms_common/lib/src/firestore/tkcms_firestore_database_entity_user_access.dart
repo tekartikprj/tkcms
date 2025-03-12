@@ -326,7 +326,7 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
 
   /// Create a project, return the id
   Future<String> createEntity({
-    required String userId,
+    required String? userId,
     required TFsEntity entity,
     String? entityId,
   }) async {
@@ -349,21 +349,17 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
       }
 
       var entityRef = _entityCollection.doc(newEntityId);
-      var entityUserAccessRef = _entityUserAccessDoc(newEntityId, userId);
-      var userEntityAccessRef = _userEntityAccessDoc(userId, newEntityId);
-      entity.ref = entityRef;
-      var entityUserAccess =
-          TkCmsFsUserAccess()
-            ..read.v = true
-            ..write.v = true
-            ..admin.v = true
-            ..ref = entityUserAccessRef;
-      var userEntityAccess =
-          entityUserAccess.clone()..ref = userEntityAccessRef;
+      if (userId != null) {
+        var entityUserAccess =
+            TkCmsFsUserAccess()
+              ..admin.v = true
+              ..fixAccess();
 
-      txn.cvSet(entity);
-      txn.cvSet(entityUserAccess);
-      txn.cvSet(userEntityAccess);
+        txnSetEntityUserAccess(txn, newEntityId, userId, entityUserAccess);
+      }
+
+      txn.refSet(entityRef, entity);
+
       return newEntityId;
     });
   }
