@@ -90,6 +90,9 @@ class FlavorContext {
 class AppFlavorContext {
   /// This is typically the firestore app name
   final String app;
+
+  /// App id (firestore app name)
+  String get appId => app;
   final FlavorContext flavorContext;
   final bool local;
 
