@@ -7,7 +7,11 @@ class TkCmsFirestoreDatabaseService {
   final FirebaseContext firebaseContext;
   final AppFlavorContext flavorContext;
 
-  String get app => flavorContext.app;
+  /// Compat
+  String get app => appId;
+
+  /// To use
+  String get appId => flavorContext.app;
 
   FirestoreDatabaseContext get firestoreDatabaseContext =>
       FirestoreDatabaseContext(firestore: firestore, rootDocument: fsApp);

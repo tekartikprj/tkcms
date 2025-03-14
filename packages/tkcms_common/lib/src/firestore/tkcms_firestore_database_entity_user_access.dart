@@ -326,34 +326,41 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
 
   /// Create a project, return the id
   Future<String> createEntity({
-    required String userId,
+    required String? userId,
     required TFsEntity entity,
+    String? entityId,
   }) async {
     entity.created.v ??= Timestamp.now();
     entity.active.v ??= true;
     return await firestore.cvRunTransaction((txn) async {
-      // Find a unique id
-      var entityId = await _entityCollection
-          .raw(firestore)
-          .txnGenerateUniqueId(txn);
+      late String newEntityId;
+      if (entityId != null) {
+        newEntityId = entityId;
+        var entityRef = _entityCollection.doc(newEntityId);
+        var entitySnapshot = await txn.refGet(entityRef);
+        if (entitySnapshot.exists) {
+          throw StateError('Entity $newEntityId already exists');
+        }
+      } else {
+        // Find a unique id
+        newEntityId = await _entityCollection
+            .raw(firestore)
+            .txnGenerateUniqueId(txn);
+      }
 
-      var entityRef = _entityCollection.doc(entityId);
-      var entityUserAccessRef = _entityUserAccessDoc(entityId, userId);
-      var userEntityAccessRef = _userEntityAccessDoc(userId, entityId);
-      entity.ref = entityRef;
-      var entityUserAccess =
-          TkCmsFsUserAccess()
-            ..read.v = true
-            ..write.v = true
-            ..admin.v = true
-            ..ref = entityUserAccessRef;
-      var userEntityAccess =
-          entityUserAccess.clone()..ref = userEntityAccessRef;
+      var entityRef = _entityCollection.doc(newEntityId);
+      if (userId != null) {
+        var entityUserAccess =
+            TkCmsFsUserAccess()
+              ..admin.v = true
+              ..fixAccess();
 
-      txn.cvSet(entity);
-      txn.cvSet(entityUserAccess);
-      txn.cvSet(userEntityAccess);
-      return entityId;
+        txnSetEntityUserAccess(txn, newEntityId, userId, entityUserAccess);
+      }
+
+      txn.refSet(entityRef, entity);
+
+      return newEntityId;
     });
   }
 

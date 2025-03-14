@@ -9,3 +9,11 @@ export 'src/auth/fs_access_auth_bloc.dart'
         TkCmsLoggedInUser,
         TkCmsLoggedInUserAccess,
         debugTkCmsAuthBloc;
+export 'src/bloc/fb_identity_bloc.dart'
+    show
+        TkCmsFbIdentityServiceAccount,
+        TkCmsFbIdentity,
+        TkCmsFbIdentityBloc,
+        TkCmsFbIdentityBlocState,
+        TkCmsFbIdentityUser,
+        globalTkCmsFbIdentityBloc;

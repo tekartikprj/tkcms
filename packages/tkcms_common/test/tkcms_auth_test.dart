@@ -8,7 +8,7 @@ import 'package:tkcms_common/tkcms_auth.dart';
 void main() {
   test('tkcms_auth', () async {
     var prefs = await newPrefsFactoryMemory().openPreferences('tkcms_auth');
-    var firebaseContext = initFirebaseSimMemory(
+    var firebaseContext = initNewFirebaseSimMemory(
       projectId: 'tkcms_prj',
       packageName: 'tkcms_app',
     );
@@ -18,6 +18,7 @@ void main() {
     );
     var auth = TkCmsAuthBloc.local(db: db, prefs: prefs);
     expect((await auth.loggedInUserAccess.first).isLoggedIn, isFalse);
+    await firebaseContext.firebaseApp.delete();
     //auth.
   });
 }

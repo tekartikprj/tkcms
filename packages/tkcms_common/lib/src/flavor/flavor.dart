@@ -90,6 +90,9 @@ class FlavorContext {
 class AppFlavorContext {
   /// This is typically the firestore app name
   final String app;
+
+  /// App id (firestore app name)
+  String get appId => app;
   final FlavorContext flavorContext;
   final bool local;
 
@@ -135,4 +138,13 @@ class AppFlavorContext {
 
   @override
   String toString() => 'ctx$appKeySuffix';
+
+  /// Copy with another app id
+  AppFlavorContext copyWithAppId(String appId) {
+    return AppFlavorContext(
+      flavorContext: flavorContext,
+      local: local,
+      app: appId,
+    );
+  }
 }

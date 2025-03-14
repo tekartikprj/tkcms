@@ -43,6 +43,32 @@ void main() {
       firestore: firestore,
     );
   });
+  test('create entity with id', () async {
+    var entity =
+        TestFsEntity()
+          ..name.v = 'e1'
+          ..specific.v = 's1';
+    var userId = 'user1';
+    var entityId = 'enforce_e1';
+
+    try {
+      await db.deleteEntity(entityId, userId: userId);
+    } catch (_) {}
+    try {
+      await db.purgeEntity(entityId, userId: userId);
+    } catch (_) {}
+    var createEntityId = await db.createEntity(
+      userId: userId,
+      entity: entity,
+      entityId: entityId,
+    );
+    expect(createEntityId, entityId);
+    var entityRef = db.fsEntityCollectionRef.doc(createEntityId);
+    expect(entityRef.path, db.getRootPath('type1/$entityId'));
+    var readEntity = await entityRef.get(firestore);
+    expect(readEntity.name.v, 'e1');
+    expect(readEntity.specific.v, 's1');
+  });
   test('entity', () async {
     var entity =
         TestFsEntity()
