@@ -26,6 +26,10 @@ class TkCmsFbIdentityUser implements TkCmsFbIdentity {
     }
     return false;
   }
+
+  @override
+  String toString() =>
+      'IdentityUser(${user.uid}, ${user.email ?? user.displayName ?? user.uid})';
 }
 
 /// Firebase identity bloc state
