@@ -9,6 +9,13 @@ abstract class TkCmsCvUserAccessCommon {
   /// Informative for UI "user,admin,super_admin"
   CvField<String> get role;
   void copyUserAccessFrom(TkCmsCvUserAccessCommon other);
+
+  static bool equals(TkCmsCvUserAccessCommon a, TkCmsCvUserAccessCommon b) {
+    return a.admin.v == b.admin.v &&
+        a.write.v == b.write.v &&
+        a.read.v == b.read.v &&
+        a.role.v == b.role.v;
+  }
 }
 
 class TkCmsCvUserAccess extends CvModelBase with TkCmsCvUserAccessMixin {

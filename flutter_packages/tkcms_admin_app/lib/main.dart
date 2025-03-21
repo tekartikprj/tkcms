@@ -46,7 +46,7 @@ Future<void> main() async {
   );
   globalSembastDatabasesContext = sembastDatabaseContext;
   gAuthBloc = TkCmsAuthBloc.local(db: gFsDatabaseService, prefs: prefs);
-  globalAuthFlutterUiService = FirebaseUiAuthServiceBasic();
+  globalAuthFlutterUiService = firebaseUiAuthServiceBasic;
   gDebugUsername = 'admin';
   gDebugPassword = '__admin__'; // irrelevant
   fsProjectSyncedDb = SyncedEntitiesDb<TkCmsFsProject>(

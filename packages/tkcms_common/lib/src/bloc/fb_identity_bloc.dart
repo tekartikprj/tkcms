@@ -26,6 +26,10 @@ class TkCmsFbIdentityUser implements TkCmsFbIdentity {
     }
     return false;
   }
+
+  @override
+  String toString() =>
+      'IdentityUser(${user.uid}, ${user.email ?? user.displayName ?? user.uid})';
 }
 
 /// Firebase identity bloc state
@@ -38,8 +42,12 @@ class TkCmsFbIdentityBlocState {
 /// Firebase identity bloc
 class TkCmsFbIdentityBloc
     extends AutoDisposeStateBaseBloc<TkCmsFbIdentityBlocState> {
+  late final FirebaseAuth auth;
+
+  /// True for service account
+  bool get hasAdminCredentials => auth.app.hasAdminCredentials;
   TkCmsFbIdentityBloc({FirebaseAuth? auth}) {
-    auth ??= FirebaseAuth.instance;
+    this.auth = auth ??= FirebaseAuth.instance;
     var app = auth.app;
     if (app.hasAdminCredentials) {
       add(
