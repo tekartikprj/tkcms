@@ -4,6 +4,7 @@ const apiErrorCodeLoginFailed = 'login_failed';
 const apiErrorCodeAuthFailed = 'auth_failed';
 const apiErrorCodeInternal = 'internal_error';
 const apiErrorCodeSecured = 'secured_error';
+const apiErrorCodeUnimplemented = 'unimplemented';
 const apiErrorCodeSecuredTimestamp =
     'secured_timestamp'; // Need timestamp refresh
 
