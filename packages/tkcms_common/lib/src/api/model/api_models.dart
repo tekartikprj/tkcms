@@ -1,6 +1,5 @@
 import 'package:tkcms_common/src/api/api_exception.dart';
 import 'package:tkcms_common/src/api/model/api_secured.dart';
-import 'package:tkcms_common/tkcms_common.dart';
 import 'package:tkcms_common/tkcms_firestore.dart';
 
 import 'api_empty.dart';
@@ -83,6 +82,7 @@ extension ApiRequestExt on ApiRequest {
   T query<T extends ApiQuery>() => data.v!.cv<T>();
 }
 
+/// Understood error
 class ApiError extends CvModelBase {
   late final code = CvField<String>('code');
   // Never expires unless forced
@@ -94,10 +94,22 @@ class ApiError extends CvModelBase {
   late final CvFields fields = [code, message, details, noRetry];
 }
 
+/// Api error helper
+extension ApiErrorExt on ApiError {
+  /// Make it an exception
+  ApiException exception() => ApiException(error: this);
+}
+
 /// Base result
 abstract class ApiResult extends CvModelBase {
   @override
   CvFields get fields => [];
+}
+
+/// Common ApiResult extension
+extension ApiResultExt on ApiResult {
+  /// Create a response
+  ApiResponse response() => ApiResponse()..result.v = toMap();
 }
 
 /// Base query
@@ -111,37 +123,6 @@ extension ApiQueryExt on ApiQuery {
   /// Create a request
   ApiRequest request(String command) =>
       ApiRequest(command: command, data: toMap());
-}
-
-/// ApiResponse from any exception
-ApiResponse apiResponseFromException(Object e, [StackTrace? st]) {
-  ApiResponse response;
-  if (e is ApiException) {
-    if (e.error != null) {
-      response = ApiResponse()..error.v = e.error;
-    } else {
-      response =
-          ApiResponse()
-            ..error.v =
-                (ApiError()
-                  ..code.v = apiErrorCodeInternal
-                  ..message.v = e.message ?? e.toString());
-    }
-  } else {
-    response =
-        ApiResponse()
-          ..error.v =
-              (ApiError()
-                ..code.v = apiErrorCodeInternal
-                ..message.v = e.toString());
-  }
-  if (isDebug) {
-    var error = response.error.v!;
-    var detailsMap = error.details.v ?? CvMapModel();
-    detailsMap['exception'] ??= e.toString();
-    detailsMap['stackTrace'] ??= st?.toString();
-  }
-  return response;
 }
 
 class ApiResponse extends CvModelBase {
