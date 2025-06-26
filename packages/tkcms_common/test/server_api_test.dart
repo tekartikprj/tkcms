@@ -33,8 +33,8 @@ Future<void> main() async {
     //var ffServer = FfServerHttp(httpServer);
     var ffServer = await ff.serve();
     ffServerHttp = ffServer;
-    var ffContext =
-        firebaseFunctionsContextSimOrNull = await ffServicesContext.init(
+    var ffContext = firebaseFunctionsContextSimOrNull = await ffServicesContext
+        .init(
           firebaseApp: ffServerContext.firebaseApp,
           ffServer: ffServer,
           serverApp: ffServerApp,

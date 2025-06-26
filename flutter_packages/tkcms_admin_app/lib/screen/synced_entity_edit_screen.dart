@@ -143,43 +143,41 @@ class _SyncedEntityEditScreenState<T extends TkCmsFsEntity>
           }
           return Scaffold(
             appBar: AppBar(title: Text(bloc.entityName)),
-            body:
-                dbEntity == null
-                    ? const Center(child: CircularProgressIndicator())
-                    : Stack(
-                      children: [
-                        ListView(
-                          children: [
-                            const SizedBox(height: 16),
-                            BodyContainer(
-                              child: Column(
-                                children: [
-                                  BodyHPadding(
-                                    child: TextFormField(
-                                      controller: _nameController,
-                                      decoration: const InputDecoration(
-                                        labelText: 'Name',
-                                        hintText: 'Name',
-                                      ),
+            body: dbEntity == null
+                ? const Center(child: CircularProgressIndicator())
+                : Stack(
+                    children: [
+                      ListView(
+                        children: [
+                          const SizedBox(height: 16),
+                          BodyContainer(
+                            child: Column(
+                              children: [
+                                BodyHPadding(
+                                  child: TextFormField(
+                                    controller: _nameController,
+                                    decoration: const InputDecoration(
+                                      labelText: 'Name',
+                                      hintText: 'Name',
                                     ),
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        BusyIndicator(busy: busyStream),
-                      ],
-                    ),
-            floatingActionButton:
-                (dbEntity != null)
-                    ? FloatingActionButton(
-                      onPressed: () {
-                        _saveAndClose(dbEntity);
-                      },
-                      child: const Icon(Icons.save),
-                    )
-                    : null,
+                          ),
+                        ],
+                      ),
+                      BusyIndicator(busy: busyStream),
+                    ],
+                  ),
+            floatingActionButton: (dbEntity != null)
+                ? FloatingActionButton(
+                    onPressed: () {
+                      _saveAndClose(dbEntity);
+                    },
+                    child: const Icon(Icons.save),
+                  )
+                : null,
           );
         },
       ),
@@ -234,12 +232,11 @@ class DbUserAccessWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var text =
-        dbUserAccess.isAdmin
-            ? 'admin'
-            : (dbUserAccess.isWrite
-                ? 'write'
-                : (dbUserAccess.isRead ? 'read' : ''));
+    var text = dbUserAccess.isAdmin
+        ? 'admin'
+        : (dbUserAccess.isWrite
+              ? 'write'
+              : (dbUserAccess.isRead ? 'read' : ''));
     if (text.isEmpty) {
       return const SizedBox();
     }
@@ -260,11 +257,10 @@ Future<void> goToSyncedEntityEditScreen<T extends TkCmsFsEntity>(
     MaterialPageRoute(
       builder: (context) {
         return BlocProvider(
-          blocBuilder:
-              () => SyncedEntityEditScreenBloc<T>(
-                syncedEntityDb: syncedEntitiesDb,
-                entityId: entityId,
-              ),
+          blocBuilder: () => SyncedEntityEditScreenBloc<T>(
+            syncedEntityDb: syncedEntitiesDb,
+            entityId: entityId,
+          ),
           child: SyncedEntityEditScreen<T>(),
         );
       },

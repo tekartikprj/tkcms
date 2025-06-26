@@ -49,8 +49,9 @@ class DocEntitiesScreenBloc<T extends TkCmsFsDocEntity>
   }
 
   Future<T> createTestEntity() async {
-    var fsDocEntity =
-        entityAccess.fsEntityRef('test').cv(); //..name.v = 'New Entity';
+    var fsDocEntity = entityAccess
+        .fsEntityRef('test')
+        .cv(); //..name.v = 'New Entity';
     await entityAccess.createEntity(entity: fsDocEntity);
     return fsDocEntity;
   }
@@ -97,55 +98,53 @@ class _DocEntitiesScreenState<T extends TkCmsFsDocEntity>
               ),
             ],
           ),
-          body:
-              dbEntities == null
-                  ? const Center(child: CircularProgressIndicator())
-                  : Stack(
-                    children: [
-                      ListView.builder(
-                        itemCount: dbEntities.length,
-                        itemBuilder: (context, index) {
-                          var dbEntity = dbEntities[index];
+          body: dbEntities == null
+              ? const Center(child: CircularProgressIndicator())
+              : Stack(
+                  children: [
+                    ListView.builder(
+                      itemCount: dbEntities.length,
+                      itemBuilder: (context, index) {
+                        var dbEntity = dbEntities[index];
 
-                          Future<void> view() async {
-                            await goToDocEntityViewScreen(
-                              context,
-                              entityAccess: bloc.entityAccess,
-                              entityId: dbEntity.id,
-                            );
-                          }
-
-                          return BodyContainer(
-                            child: ListTile(
-                              //title: Text(dbEntity.name.v ?? ''),
-                              title: Text(dbEntity.id),
-                              trailing:
-                                  selectMode
-                                      ? IconButton(
-                                        onPressed: () {
-                                          view();
-                                        },
-                                        icon: const Icon(Icons.more_horiz),
-                                      )
-                                      : null,
-                              onTap: () async {
-                                if (selectMode) {
-                                  Navigator.of(context).pop(
-                                    DocEntitiesSelectResult(
-                                      entityId: dbEntity.id,
-                                    ),
-                                  );
-                                } else {
-                                  await view();
-                                }
-                              },
-                            ),
+                        Future<void> view() async {
+                          await goToDocEntityViewScreen(
+                            context,
+                            entityAccess: bloc.entityAccess,
+                            entityId: dbEntity.id,
                           );
-                        },
-                      ),
-                      BusyIndicator(busy: busyStream),
-                    ],
-                  ),
+                        }
+
+                        return BodyContainer(
+                          child: ListTile(
+                            //title: Text(dbEntity.name.v ?? ''),
+                            title: Text(dbEntity.id),
+                            trailing: selectMode
+                                ? IconButton(
+                                    onPressed: () {
+                                      view();
+                                    },
+                                    icon: const Icon(Icons.more_horiz),
+                                  )
+                                : null,
+                            onTap: () async {
+                              if (selectMode) {
+                                Navigator.of(context).pop(
+                                  DocEntitiesSelectResult(
+                                    entityId: dbEntity.id,
+                                  ),
+                                );
+                              } else {
+                                await view();
+                              }
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                    BusyIndicator(busy: busyStream),
+                  ],
+                ),
           floatingActionButton: FloatingActionButton(
             onPressed: () async {
               await goToDocEntityEditScreen(
@@ -170,8 +169,8 @@ Future<void> goToDocEntitiesScreen<T extends TkCmsFsDocEntity>(
     MaterialPageRoute(
       builder: (context) {
         return BlocProvider(
-          blocBuilder:
-              () => DocEntitiesScreenBloc<T>(entityAccess: entityAccess),
+          blocBuilder: () =>
+              DocEntitiesScreenBloc<T>(entityAccess: entityAccess),
           child: DocEntitiesScreen<T>(),
         );
       },
@@ -188,11 +187,10 @@ Future<DocEntitiesSelectResult?> selectDocEntity<T extends TkCmsFsDocEntity>(
     MaterialPageRoute(
       builder: (context) {
         return BlocProvider(
-          blocBuilder:
-              () => DocEntitiesScreenBloc<T>(
-                entityAccess: entityAccess,
-                selectMode: true,
-              ),
+          blocBuilder: () => DocEntitiesScreenBloc<T>(
+            entityAccess: entityAccess,
+            selectMode: true,
+          ),
           child: DocEntitiesScreen<T>(),
         );
       },

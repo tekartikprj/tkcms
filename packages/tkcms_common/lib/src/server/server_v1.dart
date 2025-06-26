@@ -87,11 +87,10 @@ class InfoCommandHandler extends CommandHandler {
   Future<void> handle() async {
     var instanceCallCount = ++serverApp.instanceCallCount;
     var globalInstanceCallCount = ++TkCmsServerApp.globalInstanceCallCount;
-    var info =
-        ApiInfoResponse()
-          ..uri.v = request.uri.toString()
-          ..instanceCallCount.v = instanceCallCount
-          ..globalInstanceCallCount.v = globalInstanceCallCount;
+    var info = ApiInfoResponse()
+      ..uri.v = request.uri.toString()
+      ..instanceCallCount.v = instanceCallCount
+      ..globalInstanceCallCount.v = globalInstanceCallCount;
     //..version.v = appVersion.toString()
     //..debug.setValue(isDebug ? true : null)
     //..projectId.v = serverApp.projectId;

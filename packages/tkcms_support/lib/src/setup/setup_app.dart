@@ -83,10 +83,9 @@ class TkCmsEntityAccessSetupApp<T extends TkCmsFsEntity> {
   Future<void> setupUsers() async {
     var users = adminCredentials;
     if (users != null) {
-      var access =
-          TkCmsFsUserAccess()
-            ..admin.v = true
-            ..fixAccess();
+      var access = TkCmsFsUserAccess()
+        ..admin.v = true
+        ..fixAccess();
       for (var user in users) {
         await entityAccess
             .fsEntityUserAccessCollectionRef(entityId)

@@ -116,10 +116,9 @@ class FirebaseServicesContext {
   }
 
   Future<FirebaseContext> initServer({FirebaseApp? firebaseApp}) async {
-    firebaseApp ??=
-        firebaseAppOrNull ??= await firebase.initializeAppAsync(
-          options: appOptions,
-        );
+    firebaseApp ??= firebaseAppOrNull ??= await firebase.initializeAppAsync(
+      options: appOptions,
+    );
     var firestore = firestoreServiceOrNull?.firestore(firebaseApp);
     if (gDebugLogFirestore) {
       // ignore: deprecated_member_use
@@ -147,10 +146,9 @@ class FirebaseServicesContext {
     TkCmsCommonServerApp? serverApp,
     bool debugFirestore = false,
   }) async {
-    firebaseApp ??=
-        firebaseAppOrNull ??= await firebase.initializeAppAsync(
-          options: appOptions,
-        );
+    firebaseApp ??= firebaseAppOrNull ??= await firebase.initializeAppAsync(
+      options: appOptions,
+    );
     var firestore = firestoreServiceOrNull?.firestore(firebaseApp);
     if (debugFirestore || gDebugLogFirestore) {
       // ignore: deprecated_member_use

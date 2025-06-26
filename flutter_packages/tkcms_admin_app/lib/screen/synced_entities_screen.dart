@@ -63,8 +63,8 @@ class SyncedEntitiesScreenBloc<T extends TkCmsFsEntity>
   }
 
   Future<T> createTestEntity() async {
-    var fsEntity =
-        entityAccess.fsEntityRef('test').cv()..name.v = 'New project';
+    var fsEntity = entityAccess.fsEntityRef('test').cv()
+      ..name.v = 'New project';
     await entityAccess.createEntity(
       userId: gAuthBloc.currentUserId,
       entity: fsEntity,
@@ -120,55 +120,53 @@ class _SyncedEntitiesScreenState<T extends TkCmsFsEntity>
               ),
             ],
           ),
-          body:
-              dbEntities == null
-                  ? const Center(child: CircularProgressIndicator())
-                  : Stack(
-                    children: [
-                      ListView.builder(
-                        itemCount: dbEntities.length,
-                        itemBuilder: (context, index) {
-                          var dbEntity = dbEntities[index];
+          body: dbEntities == null
+              ? const Center(child: CircularProgressIndicator())
+              : Stack(
+                  children: [
+                    ListView.builder(
+                      itemCount: dbEntities.length,
+                      itemBuilder: (context, index) {
+                        var dbEntity = dbEntities[index];
 
-                          Future<void> view() async {
-                            await goToSyncedEntityViewScreen(
-                              context,
-                              syncedEntityDb: bloc.syncedEntitiesDb,
-                              entityId: dbEntity.id,
-                            );
-                          }
-
-                          return BodyContainer(
-                            child: ListTile(
-                              title: Text(dbEntity.name.v ?? ''),
-                              subtitle: Text(dbEntity.id),
-                              trailing:
-                                  selectMode
-                                      ? IconButton(
-                                        onPressed: () {
-                                          view();
-                                        },
-                                        icon: const Icon(Icons.more_horiz),
-                                      )
-                                      : null,
-                              onTap: () async {
-                                if (selectMode) {
-                                  Navigator.of(context).pop(
-                                    SyncedEntitiesSelectResult(
-                                      entityId: dbEntity.id,
-                                    ),
-                                  );
-                                } else {
-                                  await view();
-                                }
-                              },
-                            ),
+                        Future<void> view() async {
+                          await goToSyncedEntityViewScreen(
+                            context,
+                            syncedEntityDb: bloc.syncedEntitiesDb,
+                            entityId: dbEntity.id,
                           );
-                        },
-                      ),
-                      BusyIndicator(busy: busyStream),
-                    ],
-                  ),
+                        }
+
+                        return BodyContainer(
+                          child: ListTile(
+                            title: Text(dbEntity.name.v ?? ''),
+                            subtitle: Text(dbEntity.id),
+                            trailing: selectMode
+                                ? IconButton(
+                                    onPressed: () {
+                                      view();
+                                    },
+                                    icon: const Icon(Icons.more_horiz),
+                                  )
+                                : null,
+                            onTap: () async {
+                              if (selectMode) {
+                                Navigator.of(context).pop(
+                                  SyncedEntitiesSelectResult(
+                                    entityId: dbEntity.id,
+                                  ),
+                                );
+                              } else {
+                                await view();
+                              }
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                    BusyIndicator(busy: busyStream),
+                  ],
+                ),
           floatingActionButton: FloatingActionButton(
             onPressed: () async {
               await goToSyncedEntityEditScreen(
@@ -193,10 +191,8 @@ Future<void> goToSyncedEntitiesScreen<T extends TkCmsFsEntity>(
     MaterialPageRoute(
       builder: (context) {
         return BlocProvider(
-          blocBuilder:
-              () => SyncedEntitiesScreenBloc<T>(
-                syncedEntitiesDb: syncedEntitiesDb,
-              ),
+          blocBuilder: () =>
+              SyncedEntitiesScreenBloc<T>(syncedEntitiesDb: syncedEntitiesDb),
           child: SyncedEntitiesScreen<T>(),
         );
       },
@@ -213,11 +209,10 @@ Future<SyncedEntitiesSelectResult?> selectSyncedEntity<T extends TkCmsFsEntity>(
     MaterialPageRoute(
       builder: (context) {
         return BlocProvider(
-          blocBuilder:
-              () => SyncedEntitiesScreenBloc<T>(
-                syncedEntitiesDb: syncedEntitiesDb,
-                selectMode: true,
-              ),
+          blocBuilder: () => SyncedEntitiesScreenBloc<T>(
+            syncedEntitiesDb: syncedEntitiesDb,
+            selectMode: true,
+          ),
           child: SyncedEntitiesScreen<T>(),
         );
       },

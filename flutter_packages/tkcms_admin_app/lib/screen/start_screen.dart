@@ -41,8 +41,8 @@ class _TkCmsAdminStartScreenState extends State<TkCmsAdminStartScreen> {
                     onTap: () {
                       Navigator.of(context).push<void>(
                         MaterialPageRoute(
-                          builder:
-                              (_) => globalAuthFlutterUiService.authScreen(),
+                          builder: (_) =>
+                              globalAuthFlutterUiService.authScreen(),
                         ),
                       );
                     },

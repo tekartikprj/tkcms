@@ -124,15 +124,13 @@ extension TekartikApiQuerySecuredRequestExt on ApiRequest {
   }) {
     assert(options.version == apiSecuredEncOptionsVersion1);
     var map = toMap();
-    var securedQuery =
-        ApiSecuredQuery()
-          ..data.v = map
-          /// Generate from enclosed query
-          ..enc.v = data.v!.encGenerate(options);
-    var securedRequest =
-        ApiRequest()
-          ..command.v = apiCommandSecured
-          ..data.v = securedQuery.toMap();
+    var securedQuery = ApiSecuredQuery()
+      ..data.v = map
+      /// Generate from enclosed query
+      ..enc.v = data.v!.encGenerate(options);
+    var securedRequest = ApiRequest()
+      ..command.v = apiCommandSecured
+      ..data.v = securedQuery.toMap();
     return securedRequest;
   }
 
@@ -157,15 +155,13 @@ extension TekartikApiQuerySecuredRequestExt on ApiRequest {
       _log('cli_valuesToHash: $valuesToHash in $options');
       _log('cli_hashValueDigest: $hashValueDigest');
     }
-    var securedQuery =
-        ApiSecuredQuery()
-          ..data.v = map
-          ..timestamp.v = timestamp
-          ..enc.v = enc;
-    var securedRequest =
-        ApiRequest()
-          ..command.v = apiCommandSecured
-          ..data.v = securedQuery.toMap();
+    var securedQuery = ApiSecuredQuery()
+      ..data.v = map
+      ..timestamp.v = timestamp
+      ..enc.v = enc;
+    var securedRequest = ApiRequest()
+      ..command.v = apiCommandSecured
+      ..data.v = securedQuery.toMap();
     return securedRequest;
   }
 
@@ -187,15 +183,13 @@ extension TekartikApiQuerySecuredRequestExt on ApiRequest {
               .abs() >
           300) {
         throw ApiException(
-          error:
-              ApiError()
-                ..code.v = apiErrorCodeSecuredTimestamp
-                ..message.v = 'Invalid request'
-                ..noRetry.v = true
-                ..details.v =
-                    isDebug
-                        ? (CvMapModel()..fromMap(securedQuery.toMap()))
-                        : null,
+          error: ApiError()
+            ..code.v = apiErrorCodeSecuredTimestamp
+            ..message.v = 'Invalid request'
+            ..noRetry.v = true
+            ..details.v = isDebug
+                ? (CvMapModel()..fromMap(securedQuery.toMap()))
+                : null,
         );
       }
 
@@ -218,16 +212,13 @@ extension TekartikApiQuerySecuredRequestExt on ApiRequest {
 
       if (hashValueDigestComputed != hashValueDigestRead) {
         throw ApiException(
-          error:
-              ApiError()
-                ..code.v = apiErrorCodeSecured
-                ..message.v = 'Invalid request'
-                ..noRetry.v = true
-                ..details.v =
-                    isDebug
-                        ? (CvMapModel()
-                          ..fromMap(innerRequestData.encDebugMap(options)))
-                        : null,
+          error: ApiError()
+            ..code.v = apiErrorCodeSecured
+            ..message.v = 'Invalid request'
+            ..noRetry.v = true
+            ..details.v = isDebug
+                ? (CvMapModel()..fromMap(innerRequestData.encDebugMap(options)))
+                : null,
         );
       }
     }
@@ -261,16 +252,13 @@ extension TekartikApiQuerySecuredRequestExt on ApiRequest {
       var readHashText = securedQuery.encReadHashText(options);
       if (encHashText != readHashText) {
         throw ApiException(
-          error:
-              ApiError()
-                ..code.v = apiErrorCodeSecured
-                ..message.v = 'Invalid request'
-                ..noRetry.v = true
-                ..details.v =
-                    isDebug
-                        ? (CvMapModel()
-                          ..fromMap(innerRequestData.encDebugMap(options)))
-                        : null,
+          error: ApiError()
+            ..code.v = apiErrorCodeSecured
+            ..message.v = 'Invalid request'
+            ..noRetry.v = true
+            ..details.v = isDebug
+                ? (CvMapModel()..fromMap(innerRequestData.encDebugMap(options)))
+                : null,
         );
       }
     }
@@ -336,8 +324,9 @@ extension TekartikModelSecuredPrvExt on Map {
 
   /// Cannot be all null
   List<Object?> valuesToHash(List<String> encPaths) {
-    var values =
-        _rawValuesToHash(encPaths).where(_isBasicUnambiguateType).toList();
+    var values = _rawValuesToHash(
+      encPaths,
+    ).where(_isBasicUnambiguateType).toList();
     if (values.every((value) => value == null)) {
       // ignore: avoid_print
       print(UnsupportedError('All values are null for $encPaths on $this'));
@@ -345,10 +334,9 @@ extension TekartikModelSecuredPrvExt on Map {
     return values;
   }
 
-  List<Object?> _rawValuesToHash(List<String> encPaths) =>
-      encPaths
-          .map((path) => getKeyPathValue(keyPartsFromString(path)))
-          .toList();
+  List<Object?> _rawValuesToHash(List<String> encPaths) => encPaths
+      .map((path) => getKeyPathValue(keyPartsFromString(path)))
+      .toList();
 }
 
 bool _isBasicUnambiguateType(Object? value) {

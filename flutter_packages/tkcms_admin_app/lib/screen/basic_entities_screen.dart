@@ -52,8 +52,8 @@ class BasicEntitiesScreenBloc<T extends TkCmsFsBasicEntity>
   }
 
   Future<T> createTestEntity() async {
-    var fsBasicEntity =
-        entityAccess.fsEntityRef('test').cv()..name.v = 'New Entity';
+    var fsBasicEntity = entityAccess.fsEntityRef('test').cv()
+      ..name.v = 'New Entity';
     await entityAccess.createEntity(entity: fsBasicEntity);
     return fsBasicEntity;
   }
@@ -100,55 +100,53 @@ class _BasicEntitiesScreenState<T extends TkCmsFsBasicEntity>
               ),
             ],
           ),
-          body:
-              dbEntities == null
-                  ? const Center(child: CircularProgressIndicator())
-                  : Stack(
-                    children: [
-                      ListView.builder(
-                        itemCount: dbEntities.length,
-                        itemBuilder: (context, index) {
-                          var dbEntity = dbEntities[index];
+          body: dbEntities == null
+              ? const Center(child: CircularProgressIndicator())
+              : Stack(
+                  children: [
+                    ListView.builder(
+                      itemCount: dbEntities.length,
+                      itemBuilder: (context, index) {
+                        var dbEntity = dbEntities[index];
 
-                          Future<void> view() async {
-                            await goToBasicEntityViewScreen(
-                              context,
-                              entityAccess: bloc.entityAccess,
-                              entityId: dbEntity.id,
-                            );
-                          }
-
-                          return BodyContainer(
-                            child: ListTile(
-                              title: Text(dbEntity.name.v ?? ''),
-                              subtitle: Text(dbEntity.id),
-                              trailing:
-                                  selectMode
-                                      ? IconButton(
-                                        onPressed: () {
-                                          view();
-                                        },
-                                        icon: const Icon(Icons.more_horiz),
-                                      )
-                                      : null,
-                              onTap: () async {
-                                if (selectMode) {
-                                  Navigator.of(context).pop(
-                                    BasicEntitiesSelectResult(
-                                      entityId: dbEntity.id,
-                                    ),
-                                  );
-                                } else {
-                                  await view();
-                                }
-                              },
-                            ),
+                        Future<void> view() async {
+                          await goToBasicEntityViewScreen(
+                            context,
+                            entityAccess: bloc.entityAccess,
+                            entityId: dbEntity.id,
                           );
-                        },
-                      ),
-                      BusyIndicator(busy: busyStream),
-                    ],
-                  ),
+                        }
+
+                        return BodyContainer(
+                          child: ListTile(
+                            title: Text(dbEntity.name.v ?? ''),
+                            subtitle: Text(dbEntity.id),
+                            trailing: selectMode
+                                ? IconButton(
+                                    onPressed: () {
+                                      view();
+                                    },
+                                    icon: const Icon(Icons.more_horiz),
+                                  )
+                                : null,
+                            onTap: () async {
+                              if (selectMode) {
+                                Navigator.of(context).pop(
+                                  BasicEntitiesSelectResult(
+                                    entityId: dbEntity.id,
+                                  ),
+                                );
+                              } else {
+                                await view();
+                              }
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                    BusyIndicator(busy: busyStream),
+                  ],
+                ),
           floatingActionButton: FloatingActionButton(
             onPressed: () async {
               await goToBasicEntityEditScreen(
@@ -173,8 +171,8 @@ Future<void> goToBasicEntitiesScreen<T extends TkCmsFsBasicEntity>(
     MaterialPageRoute(
       builder: (context) {
         return BlocProvider(
-          blocBuilder:
-              () => BasicEntitiesScreenBloc<T>(entityAccess: entityAccess),
+          blocBuilder: () =>
+              BasicEntitiesScreenBloc<T>(entityAccess: entityAccess),
           child: BasicEntitiesScreen<T>(),
         );
       },
@@ -192,11 +190,10 @@ selectBasicEntity<T extends TkCmsFsBasicEntity>(
     MaterialPageRoute(
       builder: (context) {
         return BlocProvider(
-          blocBuilder:
-              () => BasicEntitiesScreenBloc<T>(
-                entityAccess: entityAccess,
-                selectMode: true,
-              ),
+          blocBuilder: () => BasicEntitiesScreenBloc<T>(
+            entityAccess: entityAccess,
+            selectMode: true,
+          ),
           child: BasicEntitiesScreen<T>(),
         );
       },

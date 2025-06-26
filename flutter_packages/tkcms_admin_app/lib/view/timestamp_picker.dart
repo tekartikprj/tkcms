@@ -74,13 +74,12 @@ class _TimestampPickerState extends State<TimestampPicker> {
               width: 154,
               child: ListTile(
                 onTap: () async {
-                  var tod =
-                      time != null
-                          ? TimeOfDay(
-                            hour: time.fullHours,
-                            minute: time.hourMinutes,
-                          )
-                          : TimeOfDay.now();
+                  var tod = time != null
+                      ? TimeOfDay(
+                          hour: time.fullHours,
+                          minute: time.hourMinutes,
+                        )
+                      : TimeOfDay.now();
                   var newTime = await showTimePicker(
                     context: context,
                     initialTime: tod,

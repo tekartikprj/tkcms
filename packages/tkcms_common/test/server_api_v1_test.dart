@@ -13,9 +13,8 @@ Future<void> main() async {
   late FfServer ffServerHttp;
   // debugWebServices = devWarning(true);
   setUpAll(() async {
-    var ffContext =
-        firebaseFunctionsContextSimOrNull =
-            await initFirebaseFunctionsSimMemory();
+    var ffContext = firebaseFunctionsContextSimOrNull =
+        await initFirebaseFunctionsSimMemory();
 
     var httpClientFactory = httpClientFactoryMemory;
     var ff = ffContext.functionsHttp;

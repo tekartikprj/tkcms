@@ -44,10 +44,9 @@ void main() {
     );
   });
   test('create entity with id', () async {
-    var entity =
-        TestFsEntity()
-          ..name.v = 'e1'
-          ..specific.v = 's1';
+    var entity = TestFsEntity()
+      ..name.v = 'e1'
+      ..specific.v = 's1';
     var userId = 'user1';
     var entityId = 'enforce_e1';
 
@@ -70,10 +69,9 @@ void main() {
     expect(readEntity.specific.v, 's1');
   });
   test('entity', () async {
-    var entity =
-        TestFsEntity()
-          ..name.v = 'e1'
-          ..specific.v = 's1';
+    var entity = TestFsEntity()
+      ..name.v = 'e1'
+      ..specific.v = 's1';
     var userId = 'user1';
     var userId2 = 'user2';
     var entityId = await db.createEntity(userId: userId, entity: entity);
