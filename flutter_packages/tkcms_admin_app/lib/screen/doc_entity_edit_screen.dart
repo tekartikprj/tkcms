@@ -62,9 +62,10 @@ class DocEntityEditScreenBloc<T extends TkCmsFsDocEntity>
     if (isCreate) {
       var entityAccess = this.entityAccess;
       if (entityAccess is TkCmsFirestoreDatabaseServiceDocEntityAccessor) {
-        entityId = await (entityAccess
-                as TkCmsFirestoreDatabaseServiceDocEntityAccessor)
-            .createEntity(entity: fsEntity);
+        entityId =
+            await (entityAccess
+                    as TkCmsFirestoreDatabaseServiceDocEntityAccessor)
+                .createEntity(entity: fsEntity);
       } else {
         throw UnsupportedError('create not supported yet for user access');
       }
@@ -116,43 +117,41 @@ class _DocEntityEditScreenState<T extends TkCmsFsDocEntity>
           }
           return Scaffold(
             appBar: AppBar(title: Text(bloc.entityName)),
-            body:
-                dbEntity == null
-                    ? const Center(child: CircularProgressIndicator())
-                    : Stack(
-                      children: [
-                        ListView(
-                          children: [
-                            const SizedBox(height: 16),
-                            BodyContainer(
-                              child: Column(
-                                children: [
-                                  BodyHPadding(
-                                    child: TextFormField(
-                                      controller: _nameController,
-                                      decoration: const InputDecoration(
-                                        labelText: 'Name',
-                                        hintText: 'Name',
-                                      ),
+            body: dbEntity == null
+                ? const Center(child: CircularProgressIndicator())
+                : Stack(
+                    children: [
+                      ListView(
+                        children: [
+                          const SizedBox(height: 16),
+                          BodyContainer(
+                            child: Column(
+                              children: [
+                                BodyHPadding(
+                                  child: TextFormField(
+                                    controller: _nameController,
+                                    decoration: const InputDecoration(
+                                      labelText: 'Name',
+                                      hintText: 'Name',
                                     ),
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        BusyIndicator(busy: busyStream),
-                      ],
-                    ),
-            floatingActionButton:
-                (dbEntity != null)
-                    ? FloatingActionButton(
-                      onPressed: () {
-                        _saveAndClose(dbEntity);
-                      },
-                      child: const Icon(Icons.save),
-                    )
-                    : null,
+                          ),
+                        ],
+                      ),
+                      BusyIndicator(busy: busyStream),
+                    ],
+                  ),
+            floatingActionButton: (dbEntity != null)
+                ? FloatingActionButton(
+                    onPressed: () {
+                      _saveAndClose(dbEntity);
+                    },
+                    child: const Icon(Icons.save),
+                  )
+                : null,
           );
         },
       ),
@@ -207,12 +206,11 @@ class DbUserAccessWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var text =
-        dbUserAccess.isAdmin
-            ? 'admin'
-            : (dbUserAccess.isWrite
-                ? 'write'
-                : (dbUserAccess.isRead ? 'read' : ''));
+    var text = dbUserAccess.isAdmin
+        ? 'admin'
+        : (dbUserAccess.isWrite
+              ? 'write'
+              : (dbUserAccess.isRead ? 'read' : ''));
     if (text.isEmpty) {
       return const SizedBox();
     }
@@ -233,11 +231,10 @@ Future<void> goToDocEntityEditScreen<T extends TkCmsFsDocEntity>(
     MaterialPageRoute(
       builder: (context) {
         return BlocProvider(
-          blocBuilder:
-              () => DocEntityEditScreenBloc<T>(
-                entityAccess: entityAccess,
-                entityId: entityId,
-              ),
+          blocBuilder: () => DocEntityEditScreenBloc<T>(
+            entityAccess: entityAccess,
+            entityId: entityId,
+          ),
           child: DocEntityEditScreen<T>(),
         );
       },

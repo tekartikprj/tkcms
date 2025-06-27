@@ -64,10 +64,9 @@ class TkCmsApiSecuredOptions {
     var options = get(command);
     if (options == null) {
       throw ApiException(
-        error:
-            ApiError()
-              ..message.v = 'secured options not found for $command'
-              ..noRetry.v = true,
+        error: ApiError()
+          ..message.v = 'secured options not found for $command'
+          ..noRetry.v = true,
       );
     }
     return apiRequest.unwrapSecuredRequest(options, check: check);
@@ -82,10 +81,9 @@ class TkCmsApiSecuredOptions {
     var options = get(command);
     if (options == null) {
       throw ApiException(
-        error:
-            ApiError()
-              ..message.v = 'secured options not found for $command'
-              ..noRetry.v = true,
+        error: ApiError()
+          ..message.v = 'secured options not found for $command'
+          ..noRetry.v = true,
       );
     }
     return await apiRequest.unwrapSecuredRequestV2Async(

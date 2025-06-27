@@ -14,10 +14,9 @@ const callableFunctionCommandV2Prod = 'callcommandv2prod';
 var functionDailyCronV2Dev = 'daylycronv2dev';
 var functionDailyCronV2Prod = 'daylycronv2prod';
 
-final baseCmsServerSecuredOptions =
-    TkCmsApiSecuredOptions()
-      ..add(apiCommandEcho, apiCommandEchoSecuredOptions)
-      ..add(apiCommandEchoSecured, apiCommandEchoSecuredOptionsV2);
+final baseCmsServerSecuredOptions = TkCmsApiSecuredOptions()
+  ..add(apiCommandEcho, apiCommandEchoSecuredOptions)
+  ..add(apiCommandEchoSecured, apiCommandEchoSecuredOptionsV2);
 
 /// With app reference
 class TkAppCmsServerAppBase extends TkCmsServerAppV2 {

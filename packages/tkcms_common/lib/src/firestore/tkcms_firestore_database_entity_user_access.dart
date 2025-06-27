@@ -219,8 +219,8 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
       inviteEntity.entity.v = entity;
       inviteEntity.entityId.v = entityId;
 
-      var inviteIdDoc =
-          _inviteIdCollection.doc(inviteId).cv()..entityId.v = entityId;
+      var inviteIdDoc = _inviteIdCollection.doc(inviteId).cv()
+        ..entityId.v = entityId;
       var inviteIdMap = inviteIdDoc.toMapWithServerTimestamp();
       if (inviteCode != null) {
         inviteIdMap[tkCmsFsInviteCodeKey] = inviteCode;
@@ -295,8 +295,8 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
         entityUserAccess.read.v =
             inviteUserAccess.isRead || entityUserAccess.isRead;
       } else {
-        entityUserAccess =
-            TkCmsFsUserAccess()..copyAccessFrom(inviteUserAccess);
+        entityUserAccess = TkCmsFsUserAccess()
+          ..copyAccessFrom(inviteUserAccess);
       }
 
       txn.refDelete(inviteIdRef);
@@ -350,10 +350,9 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
 
       var entityRef = _entityCollection.doc(newEntityId);
       if (userId != null) {
-        var entityUserAccess =
-            TkCmsFsUserAccess()
-              ..admin.v = true
-              ..fixAccess();
+        var entityUserAccess = TkCmsFsUserAccess()
+          ..admin.v = true
+          ..fixAccess();
 
         txnSetEntityUserAccess(txn, newEntityId, userId, entityUserAccess);
       }

@@ -16,10 +16,9 @@ void main() {
       );
       securedOptions.timestampServiceOrNull = TkCmsTimestampService.local();
       securedOptions.add('command', encOptions);
-      var apiRequest =
-          ApiRequest()
-            ..command.v = 'command'
-            ..data.v = {'a': 1};
+      var apiRequest = ApiRequest()
+        ..command.v = 'command'
+        ..data.v = {'a': 1};
       var securedRequest = await securedOptions.wrapInSecuredRequestV2Async(
         apiRequest,
       );
@@ -75,10 +74,9 @@ void main() {
           password: 'FSGY3TeAJPKYDErAjNVmAAhSmC8ejaVn',
         ),
       );
-      var apiRequest =
-          ApiRequest()
-            ..command.v = 'command'
-            ..data.v = {'a': 1};
+      var apiRequest = ApiRequest()
+        ..command.v = 'command'
+        ..data.v = {'a': 1};
       var securedRequest = securedOptions.wrapInSecuredRequest(apiRequest);
       expect(securedRequest.toMap(), {
         'command': 'secured',

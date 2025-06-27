@@ -48,10 +48,9 @@ void main() {
     await firebaseContext.firebaseApp.delete();
   });
   test('entity', () async {
-    var entity =
-        TestFsBasicEntity()
-          ..name.v = 'e1'
-          ..specific.v = 's1';
+    var entity = TestFsBasicEntity()
+      ..name.v = 'e1'
+      ..specific.v = 's1';
 
     var entityId = await db.createEntity(entity: entity);
     var entityRef = db.fsEntityCollectionRef.doc(entityId);

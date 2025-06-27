@@ -4,7 +4,7 @@ version: 0.1.0+1
 publish_to: none
 
 environment:
-  sdk: ^3.7.0
+  sdk: ^3.8.0
 
 # Add regular dependencies here.
 dependencies:
@@ -71,6 +71,6 @@ dev_dependencies:
       url: https://github.com/tekartik/build_node.dart
       path: packages/build_node
       ref: dart3a
-  dev_build: ">=1.1.0+2"
+  dev_build: ">=1.1.2"
 resolution: workspace
 

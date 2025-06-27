@@ -33,13 +33,11 @@ class _NotesScreenState extends State<NotesScreen> {
         // print('canAdd: $canAdd ($project)');
         return Scaffold(
           appBar: AppBar(
-            title:
-                (state != null)
-                    ? Text(
-                      state.project?.entity.name.v ??
-                          appIntl(context).notesTitle,
-                    )
-                    : null,
+            title: (state != null)
+                ? Text(
+                    state.project?.entity.name.v ?? appIntl(context).notesTitle,
+                  )
+                : null,
             actions: [
               IconButton(onPressed: () {}, icon: const Icon(Icons.settings)),
             ],
@@ -92,17 +90,16 @@ class _NotesScreenState extends State<NotesScreen> {
               );
             },
           ),
-          floatingActionButton:
-              !canAdd
-                  ? null
-                  : FloatingActionButton(
-                    onPressed: () async {
-                      //await goToNoteEditScreen(context,
-                      //    project: project!, note: null);
-                      //await goToCreateNoteScreen(context);
-                    },
-                    child: const Icon(Icons.add),
-                  ),
+          floatingActionButton: !canAdd
+              ? null
+              : FloatingActionButton(
+                  onPressed: () async {
+                    //await goToNoteEditScreen(context,
+                    //    project: project!, note: null);
+                    //await goToCreateNoteScreen(context);
+                  },
+                  child: const Icon(Icons.add),
+                ),
         );
       },
     );

@@ -161,18 +161,17 @@ class _LoginScreenState extends RouteAwareState<LoginScreen> {
                                         builder: (context, enabled, _) {
                                           return BodyHPadding(
                                             child: ElevatedButton(
-                                              onPressed:
-                                                  enabled
-                                                      ? () async {
-                                                        await _login();
-                                                        /*
+                                              onPressed: enabled
+                                                  ? () async {
+                                                      await _login();
+                                                      /*
                                                           auth.signInWithEmailAndPassword(
                                                               usernameController.text
                                                                   .trim(),
                                                               passwordController.text
                                                                   .trim());*/
-                                                      }
-                                                      : null,
+                                                    }
+                                                  : null,
                                               child: const Text('Login'),
                                             ),
                                           );
@@ -233,11 +232,8 @@ Future<Object?> goToLoginScreen(
 }) async {
   return await Navigator.of(context).push<Object?>(
     MaterialPageRoute(
-      builder:
-          (_) => LoginScreen(
-            onLoggedIn: onLoggedIn,
-            contentPath: LoginContentPath(),
-          ),
+      builder: (_) =>
+          LoginScreen(onLoggedIn: onLoggedIn, contentPath: LoginContentPath()),
     ),
   );
 }

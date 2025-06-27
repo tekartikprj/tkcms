@@ -22,21 +22,18 @@ const apiCommandTestEchoV1 = 'echo_v1';
 const apiCommandTestEchoV2 = 'echo_v2';
 const apiCommandTestEchoV3 = 'echo_v1_client_v2_server';
 
-final baseTestServerSecuredOptions =
-    TkCmsApiSecuredOptions()
-      ..add(apiCommandEcho, apiCommandEchoSecuredOptions)
-      ..add(apiCommandTestEchoV1, apiCommandEchoSecuredOptionsV1)
-      ..add(apiCommandTestEchoV2, apiCommandEchoSecuredOptionsV2);
+final baseTestServerSecuredOptions = TkCmsApiSecuredOptions()
+  ..add(apiCommandEcho, apiCommandEchoSecuredOptions)
+  ..add(apiCommandTestEchoV1, apiCommandEchoSecuredOptionsV1)
+  ..add(apiCommandTestEchoV2, apiCommandEchoSecuredOptionsV2);
 
-final clientTestServerSecuredOptions =
-    TkCmsApiSecuredOptions()
-      ..addAll(baseTestServerSecuredOptions)
-      ..add(apiCommandTestEchoV3, apiCommandEchoSecuredOptionsV1);
+final clientTestServerSecuredOptions = TkCmsApiSecuredOptions()
+  ..addAll(baseTestServerSecuredOptions)
+  ..add(apiCommandTestEchoV3, apiCommandEchoSecuredOptionsV1);
 
-final serverTestServerSecuredOptions =
-    TkCmsApiSecuredOptions()
-      ..addAll(baseTestServerSecuredOptions)
-      ..add(apiCommandTestEchoV3, apiCommandEchoSecuredOptionsV2);
+final serverTestServerSecuredOptions = TkCmsApiSecuredOptions()
+  ..addAll(baseTestServerSecuredOptions)
+  ..add(apiCommandTestEchoV3, apiCommandEchoSecuredOptionsV2);
 
 class TestServerApiService extends TkCmsApiServiceBaseV2 {
   TestServerApiService({
@@ -50,10 +47,9 @@ class TestServerApiService extends TkCmsApiServiceBaseV2 {
   }
 
   Future<ApiTestResult> test(ApiTestQuery query, {bool? preferHttp}) async {
-    var apiRequest =
-        ApiRequest(command: commandTest)
-          ..app.v = app
-          ..data.v = query.toMap();
+    var apiRequest = ApiRequest(command: commandTest)
+      ..app.v = app
+      ..data.v = query.toMap();
     return await getApiResult<ApiTestResult>(
       apiRequest,
       preferHttp: preferHttp,

@@ -27,10 +27,9 @@ class TkCmsLoggedInUserAccess extends TkCmsLoggedInUser {
   bool get isAdmin => fsUserAccess?.isAdmin ?? false;
 
   @override
-  String toString() =>
-      isLoggedIn
-          ? 'logged in $uid ($name, ${fsUserAccess?.role.v ?? 'none'})'
-          : 'Not logged in';
+  String toString() => isLoggedIn
+      ? 'logged in $uid ($name, ${fsUserAccess?.role.v ?? 'none'})'
+      : 'Not logged in';
 }
 
 /// Logged in user

@@ -141,10 +141,12 @@ class SembastFirestoreSyncHelper<TFsEntity extends fbfs.TkCmsFsEntity> {
     var userId = options.userId;
     var fsUserEntityAccessMap =
         (await entityAccess
-            .fsUserEntityAccessCollectionRef(userId)
-            .get(firestore)).toMap();
-    var localDbEntityMap =
-        (await sembast.cvDbEntityStore.query().getRecords(db)).toMap();
+                .fsUserEntityAccessCollectionRef(userId)
+                .get(firestore))
+            .toMap();
+    var localDbEntityMap = (await sembast.cvDbEntityStore.query().getRecords(
+      db,
+    )).toMap();
     var localDbUserAccessMap =
         (await sembast.cvDbUserAccessStore.query().getRecords(db)).toMap();
     var fsEntityMap = <String, TFsEntity>{};
@@ -276,10 +278,12 @@ generateLocalDbFromEntitiesUserAccess<TFsEntity extends fbfs.TkCmsFsEntity>({
   var userId = options.userId;
   var fsUserEntityAccessMap =
       (await entityAccess
-          .fsUserEntityAccessCollectionRef(userId)
-          .get(firestore)).toMap();
-  var localDbEntityMap =
-      (await sembast.cvDbEntityStore.query().getRecords(db)).toMap();
+              .fsUserEntityAccessCollectionRef(userId)
+              .get(firestore))
+          .toMap();
+  var localDbEntityMap = (await sembast.cvDbEntityStore.query().getRecords(
+    db,
+  )).toMap();
   var localDbUserAccessMap =
       (await sembast.cvDbUserAccessStore.query().getRecords(db)).toMap();
   var fsEntityMap = <String, TFsEntity>{};

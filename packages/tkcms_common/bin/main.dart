@@ -6,11 +6,10 @@ import 'package:tkcms_common/tkcms_flavor.dart';
 import 'package:tkcms_common/tkcms_server.dart';
 
 Future main() async {
-  var ffContext =
-      await initFirebaseServicesLocalSembast(
-        projectId: 'tkcms',
-        useHttpFunctions: true,
-      ).initServer();
+  var ffContext = await initFirebaseServicesLocalSembast(
+    projectId: 'tkcms',
+    useHttpFunctions: true,
+  ).initServer();
   var appDev = TkCmsServerAppV2(
     context: TkCmsServerAppContext(
       firebaseContext: ffContext,

@@ -107,41 +107,39 @@ class _SyncedEntityScreenState<T extends TkCmsFsEntity>
               ),
             ],
           ),
-          body:
-              dbEntity == null
-                  ? const Center(child: CircularProgressIndicator())
-                  : Stack(
-                    children: [
-                      ListView(
-                        children: [
-                          ListTile(
-                            title: Text(dbEntity.name.v ?? ''),
-                            subtitle: Text(dbEntity.id),
-                            onTap: () {
-                              // TODO
-                            },
-                          ),
-                          if (dbUserAccess != null) ...[
-                            DbUserAccessWidget(dbUserAccess: dbUserAccess),
-                          ],
+          body: dbEntity == null
+              ? const Center(child: CircularProgressIndicator())
+              : Stack(
+                  children: [
+                    ListView(
+                      children: [
+                        ListTile(
+                          title: Text(dbEntity.name.v ?? ''),
+                          subtitle: Text(dbEntity.id),
+                          onTap: () {
+                            // TODO
+                          },
+                        ),
+                        if (dbUserAccess != null) ...[
+                          DbUserAccessWidget(dbUserAccess: dbUserAccess),
                         ],
-                      ),
-                      BusyIndicator(busy: busyStream),
-                    ],
-                  ),
-          floatingActionButton:
-              (dbUserAccess?.isWrite ?? false)
-                  ? FloatingActionButton(
-                    onPressed: () async {
-                      await goToSyncedEntityEditScreen(
-                        context,
-                        syncedEntitiesDb: bloc.syncedEntityDb,
-                        entityId: bloc.entityId,
-                      );
-                    },
-                    child: const Icon(Icons.edit),
-                  )
-                  : null,
+                      ],
+                    ),
+                    BusyIndicator(busy: busyStream),
+                  ],
+                ),
+          floatingActionButton: (dbUserAccess?.isWrite ?? false)
+              ? FloatingActionButton(
+                  onPressed: () async {
+                    await goToSyncedEntityEditScreen(
+                      context,
+                      syncedEntitiesDb: bloc.syncedEntityDb,
+                      entityId: bloc.entityId,
+                    );
+                  },
+                  child: const Icon(Icons.edit),
+                )
+              : null,
         );
       },
     );
@@ -165,12 +163,11 @@ class DbUserAccessWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var text =
-        dbUserAccess.isAdmin
-            ? 'admin'
-            : (dbUserAccess.isWrite
-                ? 'write'
-                : (dbUserAccess.isRead ? 'read' : ''));
+    var text = dbUserAccess.isAdmin
+        ? 'admin'
+        : (dbUserAccess.isWrite
+              ? 'write'
+              : (dbUserAccess.isRead ? 'read' : ''));
     if (text.isEmpty) {
       return const SizedBox();
     }
@@ -191,11 +188,10 @@ Future<void> goToSyncedEntityViewScreen<T extends TkCmsFsEntity>(
     MaterialPageRoute(
       builder: (context) {
         return BlocProvider(
-          blocBuilder:
-              () => SyncedEntityScreenBloc<T>(
-                syncedEntityDb: syncedEntityDb,
-                entityId: entityId,
-              ),
+          blocBuilder: () => SyncedEntityScreenBloc<T>(
+            syncedEntityDb: syncedEntityDb,
+            entityId: entityId,
+          ),
           child: SyncedEntityScreen<T>(),
         );
       },

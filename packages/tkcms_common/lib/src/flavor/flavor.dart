@@ -107,14 +107,12 @@ class AppFlavorContext {
   String get ifNotProdSuffix => flavorContext.ifNotProdFlavor;
 
   /// Unique app name for local use
-  String get uniqueAppName =>
-      _uniqueAppName ??= () {
-        var flavorSuffix1 = '_${flavorContext.flavor}';
-        var flavorSuffix2 = '-${flavorContext.flavor}';
-        var hasSuffix =
-            app.endsWith(flavorSuffix1) || app.endsWith(flavorSuffix2);
-        return '$app${hasSuffix ? '' : flavorSuffix1}${local ? '_local' : ''}';
-      }();
+  String get uniqueAppName => _uniqueAppName ??= () {
+    var flavorSuffix1 = '_${flavorContext.flavor}';
+    var flavorSuffix2 = '-${flavorContext.flavor}';
+    var hasSuffix = app.endsWith(flavorSuffix1) || app.endsWith(flavorSuffix2);
+    return '$app${hasSuffix ? '' : flavorSuffix1}${local ? '_local' : ''}';
+  }();
   late final appKeySuffix = '_$uniqueAppName';
 
   /// test local flavor

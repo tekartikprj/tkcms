@@ -100,27 +100,26 @@ class _DocEntityScreenState<T extends TkCmsFsDocEntity>
                 ),
             ],
           ),
-          body:
-              fsEntity == null
-                  ? const Center(child: CircularProgressIndicator())
-                  : Stack(
-                    children: [
-                      ListView(
-                        children: [
-                          ListTile(
-                            //title: Text(fsEntity.name.v ?? ''),
-                            title: Text(fsEntity.id),
-                            onTap: () {
-                              // TODO
-                            },
-                          ),
-                          TilePadding(child: CvUiModelValue(model: fsEntity)),
-                        ],
-                      ),
+          body: fsEntity == null
+              ? const Center(child: CircularProgressIndicator())
+              : Stack(
+                  children: [
+                    ListView(
+                      children: [
+                        ListTile(
+                          //title: Text(fsEntity.name.v ?? ''),
+                          title: Text(fsEntity.id),
+                          onTap: () {
+                            // TODO
+                          },
+                        ),
+                        TilePadding(child: CvUiModelValue(model: fsEntity)),
+                      ],
+                    ),
 
-                      BusyIndicator(busy: busyStream),
-                    ],
-                  ),
+                    BusyIndicator(busy: busyStream),
+                  ],
+                ),
           floatingActionButton: FloatingActionButton(
             onPressed: () async {
               await goToDocEntityEditScreen(
@@ -154,12 +153,11 @@ class DbUserAccessWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var text =
-        dbUserAccess.isAdmin
-            ? 'admin'
-            : (dbUserAccess.isWrite
-                ? 'write'
-                : (dbUserAccess.isRead ? 'read' : ''));
+    var text = dbUserAccess.isAdmin
+        ? 'admin'
+        : (dbUserAccess.isWrite
+              ? 'write'
+              : (dbUserAccess.isRead ? 'read' : ''));
     if (text.isEmpty) {
       return const SizedBox();
     }
@@ -180,11 +178,10 @@ Future<void> goToDocEntityViewScreen<T extends TkCmsFsDocEntity>(
     MaterialPageRoute(
       builder: (context) {
         return BlocProvider(
-          blocBuilder:
-              () => DocEntityScreenBloc<T>(
-                entityAccess: entityAccess,
-                entityId: entityId,
-              ),
+          blocBuilder: () => DocEntityScreenBloc<T>(
+            entityAccess: entityAccess,
+            entityId: entityId,
+          ),
           child: DocEntityScreen<T>(),
         );
       },
