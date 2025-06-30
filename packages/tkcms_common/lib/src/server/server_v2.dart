@@ -24,6 +24,7 @@ class TkAppCmsServerAppBase extends TkCmsServerAppV2 {
 
   TkAppCmsServerAppBase(
     this.app, {
+    super.version,
     required super.context,
     super.apiVersion = apiVersion2,
   });
@@ -31,6 +32,7 @@ class TkAppCmsServerAppBase extends TkCmsServerAppV2 {
 
 class TkCmsServerAppV2 implements TkCmsCommonServerApp {
   final securedOptions = TkCmsApiSecuredOptions();
+  final Version? version;
   @override
   final int apiVersion;
   final TkCmsServerAppContext context;
@@ -49,7 +51,11 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
 
   late Uri commandUri;
 
-  TkCmsServerAppV2({required this.context, required this.apiVersion}) {
+  TkCmsServerAppV2({
+    required this.context,
+    required this.apiVersion,
+    this.version,
+  }) {
     assert(apiVersion >= apiVersion2);
     initApiBuilders();
     securedOptions.add(apiCommandEcho, apiCommandEchoSecuredOptions);
@@ -134,10 +140,29 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
   }
 
   Future<ApiResult> onEchoCommand(ApiRequest apiRequest) async {
-    var echoQuery = apiRequest.data.v!.cv<ApiEchoQuery>();
+    var echoQuery = apiRequest.query<ApiEchoQuery>();
     return ApiEchoResult()
       ..data.v = echoQuery.data.v
       ..timestamp.v = echoQuery.timestamp.v;
+  }
+
+  Future<ApiResult> onGetInfoCommand(ApiRequest apiRequest) async {
+    var getInfoQuery = apiRequest.queryOrNull<ApiGetInfoQuery>();
+    var debug = getInfoQuery?.debug.v ?? false;
+    var app = apiRequest.app.v;
+
+    var result = ApiGetInfoResult()
+      ..app.setValue(app)
+      ..version.setValue(version?.toString())
+      ..projectId.setValue(firebaseContext.projectId);
+    var instanceCallCount = ++this.instanceCallCount;
+    var globalInstanceCallCount = ++TkCmsServerAppV2.globalInstanceCallCount;
+    if (debug) {
+      result
+        ..instanceCallCount.setValue(instanceCallCount)
+        ..globalInstanceCallCount.setValue(globalInstanceCallCount);
+    }
+    return result;
   }
 
   Future<ApiResult> onCommand(ApiRequest apiRequest) async {
@@ -150,6 +175,8 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
       case commandTimestamp:
         return ApiGetTimestampResponse()
           ..timestamp.v = DateTime.timestamp().toIso8601String();
+      case commandInfo:
+        return await onGetInfoCommand(apiRequest);
       case commandCron:
         await handleDailyCron();
         return ApiEmpty();
