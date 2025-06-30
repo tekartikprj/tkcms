@@ -139,9 +139,10 @@ void main() {
           'app': 'text_1',
           'uri': 'text_2',
           'version': 'text_3',
-          'g': 4,
-          'i': 5,
-          'debug': true,
+          'projectId': 'text_4',
+          'g': 5,
+          'i': 6,
+          'debug': false,
         },
       );
     });
