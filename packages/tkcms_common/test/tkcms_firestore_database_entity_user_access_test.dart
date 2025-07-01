@@ -92,7 +92,7 @@ void main() {
       'access/type1/user_id/$userId/entity_access/$entityId',
     );
     var entityUserAccess = await entityUserAccessRef.get(firestore);
-    var useEntityAccess = await userEntityAccessRef.get(firestore);
+    var userEntityAccess = await userEntityAccessRef.get(firestore);
     expect(
       entityUserAccess,
       TkCmsFsUserAccess()
@@ -100,7 +100,7 @@ void main() {
         ..read.v = true
         ..write.v = true,
     );
-    expect(entityUserAccess, useEntityAccess);
+    expect(entityUserAccess, userEntityAccess);
 
     var inviteId = await db.createInviteEntity(
       userId: userId,
@@ -141,7 +141,7 @@ void main() {
       'access/type1/user_id/$userId2/entity_access/$entityId',
     );
     entityUserAccess = await entityUserAccessRef2.get(firestore);
-    useEntityAccess = await userEntityAccessRef2.get(firestore);
+    userEntityAccess = await userEntityAccessRef2.get(firestore);
     expect((await inviteIdRef.get(firestore)).exists, isFalse);
     expect((await inviteEntityRef.get(firestore)).exists, isFalse);
     expect(
@@ -152,13 +152,22 @@ void main() {
         ..write.v = false
         ..read.v = true,
     );
-    expect(entityUserAccess, useEntityAccess);
+    expect(entityUserAccess, userEntityAccess);
 
     await db.leaveEntity(entityId, userId: userId2);
     entityUserAccess = await entityUserAccessRef2.get(firestore);
-    useEntityAccess = await userEntityAccessRef2.get(firestore);
+    userEntityAccess = await userEntityAccessRef2.get(firestore);
     expect(entityUserAccess.exists, isFalse);
-    expect(useEntityAccess.exists, isFalse);
+    expect(userEntityAccess.exists, isFalse);
+
+    await db.joinEntity(
+      entityId: entityId,
+      userId: userId2,
+      userAccess: TkCmsFsUserAccess()..grantAdminAccess(),
+    );
+    userEntityAccess = await userEntityAccessRef2.get(firestore);
+    expect(userEntityAccess, TkCmsFsUserAccess()..grantAdminAccess());
+    expect(userEntityAccess.exists, isTrue);
 
     await db.deleteEntity(entityId, userId: userId);
     readEntity = await entityRef.get(firestore);
@@ -167,11 +176,18 @@ void main() {
     expect((await entityUserAccessRef.get(firestore)).exists, isTrue);
     expect((await userEntityAccessRef.get(firestore)).exists, isTrue);
 
+    userEntityAccess = await userEntityAccessRef2.get(firestore);
+    expect(userEntityAccess, TkCmsFsUserAccess()..grantAdminAccess());
+    expect(userEntityAccess.exists, isTrue);
+
     expect((await subContentRef.get(firestore)).exists, isTrue);
     await db.purgeEntity(entityId);
     expect((await subContentRef.get(firestore)).exists, isFalse);
     expect((await entityRef.get(firestore)).exists, isFalse);
     expect((await entityUserAccessRef.get(firestore)).exists, isFalse);
     expect((await userEntityAccessRef.get(firestore)).exists, isFalse);
+
+    userEntityAccess = await userEntityAccessRef2.get(firestore);
+    expect(userEntityAccess.exists, isFalse);
   });
 }

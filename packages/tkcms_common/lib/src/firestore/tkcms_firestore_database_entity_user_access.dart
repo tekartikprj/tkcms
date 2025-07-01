@@ -309,6 +309,18 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
     });
   }
 
+  /// Make the user join the entity
+  Future<void> joinEntity({
+    required String userId,
+    required String entityId,
+    required TkCmsFsUserAccess userAccess,
+  }) async {
+    return await firestore.cvRunTransaction((txn) async {
+      var entityUserAccess = TkCmsFsUserAccess()..copyAccessFrom(userAccess);
+      txnSetEntityUserAccess(txn, entityId, userId, entityUserAccess);
+    });
+  }
+
   /// Create a project invite, return the id
   Future<void> deleteInviteEntity({
     required String inviteId,

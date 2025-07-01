@@ -144,8 +144,13 @@ extension ApiErrorExt on ApiError {
   ApiException exception() => ApiException(error: this);
 }
 
-/// Base result
-abstract class ApiResult extends CvModelBase {
+/// Api common both result and query
+abstract class ApiCommon implements CvModelBase {}
+
+/// Base for Api result and query
+abstract class ApiCommonBase extends CvModelBase implements ApiCommon {}
+
+abstract class ApiResult extends ApiCommonBase {
   @override
   CvFields get fields => [];
 }
@@ -157,7 +162,7 @@ extension ApiResultExt on ApiResult {
 }
 
 /// Base query
-abstract class ApiQuery extends CvModelBase {
+abstract class ApiQuery extends ApiCommonBase {
   @override
   CvFields get fields => [];
 }
