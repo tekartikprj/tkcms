@@ -506,6 +506,10 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
     }
   }
 
+  /// Get the entity
+  Future<TFsEntity> getEntity(String entityId) =>
+      fsEntityRef(entityId).get(firestore);
+
   // Admin only
   Future<void> deleteOldInvites() async {
     /// 7 days old
