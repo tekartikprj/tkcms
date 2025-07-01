@@ -151,6 +151,18 @@ class AuthBlocLocal extends AuthBlocBase {
       if (fsUser.exists) {
         await fsAppUserAccessCollection(app).doc(email).delete(firestore);
       }
+    } else if (email == 'anonymous') {
+      if (!fsUser.isUser) {
+        await fsAppUserAccessCollection(app)
+            .doc(email)
+            .set(
+              firestore,
+              FsUserAccess()
+                ..name.v = email
+                ..role.v = roleUser
+                ..admin.v = false,
+            );
+      }
     } else {
       throw UnsupportedError('Mauvais utilisateur ou mauvais mot de passe');
     }
