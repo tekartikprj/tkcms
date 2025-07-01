@@ -1,3 +1,4 @@
+import 'package:sembast/sembast_memory.dart';
 import 'package:tekartik_app_sembast/sembast.dart';
 import 'package:tekartik_firebase_auth_sembast/auth_sembast.dart';
 import 'package:tekartik_firebase_firestore_sembast/firestore_sembast.dart';
@@ -22,12 +23,16 @@ Future<FirebaseServicesContext> initFirebaseServicesSimMemory() async {
   var firestoreService = newFirestoreServiceMemory();
   var functionsService = firebaseFunctionsServiceMemory;
   var functionsCallService = firebaseFunctionsCallServiceMemory;
+  final authService = FirebaseAuthServiceSembast(
+    databaseFactory: newDatabaseFactoryMemory(),
+  );
   var firebaseServicesContext = FirebaseServicesContext(
     firebase: firebase,
     firestoreService: firestoreService,
     functionsService: functionsService,
     functionsCallService: functionsCallService,
     functionsCallRegion: regionBelgium,
+    authService: authService,
   );
   return firebaseServicesContext;
 }

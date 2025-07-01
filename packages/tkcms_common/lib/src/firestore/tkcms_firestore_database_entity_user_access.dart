@@ -27,6 +27,9 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
   entityCollectionInfo;
   TkCmsFirestoreDatabaseEntityCollectionInfo get _info => entityCollectionInfo;
 
+  /// Collection info
+  TkCmsFirestoreDatabaseEntityCollectionInfo get info => _info;
+
   @override
   late final Firestore firestore;
   //FirestoreDatabaseContext? firestoreDatabaseContext;
@@ -523,6 +526,9 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
       query = query.startAfter(values: [last.timestamp.v, list.last.id]);
     }
   }
+
+  /// The collection id (booklet, game, project...)
+  String get collectionId => _info.id;
 }
 
 class TkCmsFirestoreDatabaseEntityCollectionInfo<TEntity extends TkCmsFsEntity>

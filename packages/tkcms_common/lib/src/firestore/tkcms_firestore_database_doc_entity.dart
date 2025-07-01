@@ -177,3 +177,12 @@ class TkCmsFirestoreDatabaseDocEntityCollectionInfo<
     this.treeDef,
   });
 }
+
+extension TkCmsFirestoreDatabaseServiceEntityAccessorExt<
+  TEntity extends TkCmsFsEntity
+>
+    on TkCmsFirestoreDatabaseServiceEntityAccessor<TEntity> {
+  TEntity newEntity(Map<String, dynamic> jsonMap) {
+    return cvNewModel<TEntity>()..fsDataFromJsonMap(firestore, jsonMap);
+  }
+}

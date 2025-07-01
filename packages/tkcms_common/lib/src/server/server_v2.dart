@@ -22,6 +22,12 @@ final baseCmsServerSecuredOptions = TkCmsApiSecuredOptions()
 class TkAppCmsServerAppBase extends TkCmsServerAppV2 {
   final String app;
 
+  /// App flavor context
+  late final appFlavorContext = AppFlavorContext(
+    flavorContext: flavorContext,
+    app: app,
+    local: this.firebaseContext.local,
+  );
   TkAppCmsServerAppBase(
     this.app, {
     super.version,
