@@ -28,6 +28,7 @@ void initTkCmsApiBuilders() {
     // common
     cvAddConstructors([
       ApiGetTimestampResponse.new,
+      ApiGetInfoQuery.new,
       ApiInfoResponse.new,
       ApiInfoFbResponse.new,
       ApiEmpty.new,
@@ -50,6 +51,44 @@ class ApiGetTimestampResult extends ApiResult {
 
   @override
   late final CvFields fields = [timestamp];
+}
+
+class ApiGetInfoQuery extends ApiQuery {
+  late final debug = CvField<bool>('debug');
+
+  @override
+  late final CvFields fields = [debug];
+}
+
+class ApiGetInfoResult extends ApiResult {
+  late final instanceCallCount = CvField<int>('i');
+  late final globalInstanceCallCount = CvField<int>('g');
+
+  late final app = CvField<String>('app');
+  //late final headers = CvField<Model>('headers');
+  late final uri = CvField<String>('uri');
+  late final version = CvField<String>('version');
+  late final projectId = CvField<String>('projectId');
+  late final debug = CvField<bool>('debug');
+
+  @override
+  late final CvFields fields = [
+    app,
+    uri,
+    version,
+    // Debug only
+    projectId,
+    globalInstanceCallCount,
+    instanceCallCount,
+    debug,
+  ];
+}
+
+class ApiGetInfoFbResult extends ApiResult {
+  late final projectId = CvField<String>('projectId');
+
+  @override
+  late final CvFields fields = [projectId];
 }
 
 mixin CvApiMixin implements CvModel {
@@ -80,6 +119,11 @@ extension ApiRequestExt on ApiRequest {
 
   /// Get inner query
   T query<T extends ApiQuery>() => data.v!.cv<T>();
+
+  /// Get inner query
+  T? queryOrNull<T extends ApiQuery>() => data.v?.cv<T>();
+
+  void setQuery<T extends ApiQuery>(T? query) => data.setValue(query?.toMap());
 }
 
 /// Understood error
@@ -100,8 +144,13 @@ extension ApiErrorExt on ApiError {
   ApiException exception() => ApiException(error: this);
 }
 
-/// Base result
-abstract class ApiResult extends CvModelBase {
+/// Api common both result and query
+abstract class ApiCommon implements CvModelBase {}
+
+/// Base for Api result and query
+abstract class ApiCommonBase extends CvModelBase implements ApiCommon {}
+
+abstract class ApiResult extends ApiCommonBase {
   @override
   CvFields get fields => [];
 }
@@ -113,7 +162,7 @@ extension ApiResultExt on ApiResult {
 }
 
 /// Base query
-abstract class ApiQuery extends CvModelBase {
+abstract class ApiQuery extends ApiCommonBase {
   @override
   CvFields get fields => [];
 }

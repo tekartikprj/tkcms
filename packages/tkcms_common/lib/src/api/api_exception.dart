@@ -117,7 +117,7 @@ ApiResponse apiResponseFromException(Object e, [StackTrace? st]) {
   }
   if (isDebug) {
     var error = response.error.v!;
-    var detailsMap = error.details.v ?? CvMapModel();
+    var detailsMap = error.details.v ??= CvMapModel();
     detailsMap['exception'] ??= e.toString();
     detailsMap['stackTrace'] ??= st?.toString();
   }

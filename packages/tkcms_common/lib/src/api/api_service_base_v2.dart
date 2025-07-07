@@ -152,7 +152,7 @@ class TkCmsApiServiceBaseV2 implements TkCmsTimestampProvider {
     _client = httpClientFactory.newClient();
   }
 
-  Future<ApiGetTimestampResponse> callGetTimestamp() async {
+  Future<ApiGetTimestampResult> callGetTimestamp() async {
     return await callGetApiResult<ApiGetTimestampResult>(
       ApiRequest()..command.v = commandTimestamp,
     );
@@ -163,6 +163,21 @@ class TkCmsApiServiceBaseV2 implements TkCmsTimestampProvider {
       ApiRequest()..command.v = commandTimestamp,
     );
   }
+
+  Future<ApiGetInfoResult> getInfo({ApiGetInfoQuery? query}) async {
+    return await getApiResult<ApiGetInfoResult>(
+      ApiRequest()
+        ..command.v = commandInfo
+        ..setQuery(query),
+    );
+  }
+
+  /*
+  Future<ApiGetInfoFbResult> getInfoFb() async {
+    return await getApiResult<ApiGetInfoFbResult>(
+      ApiRequest()..command.v = commandInfoFb,
+    );
+  }*/
 
   Future<ApiEchoResult> echo(ApiEchoQuery query) async {
     return await getApiResult<ApiEchoResult>(

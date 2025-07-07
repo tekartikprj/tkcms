@@ -27,6 +27,9 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
   entityCollectionInfo;
   TkCmsFirestoreDatabaseEntityCollectionInfo get _info => entityCollectionInfo;
 
+  /// Collection info
+  TkCmsFirestoreDatabaseEntityCollectionInfo get info => _info;
+
   @override
   late final Firestore firestore;
   //FirestoreDatabaseContext? firestoreDatabaseContext;
@@ -306,6 +309,18 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
     });
   }
 
+  /// Make the user join the entity
+  Future<void> joinEntity({
+    required String userId,
+    required String entityId,
+    required TkCmsFsUserAccess userAccess,
+  }) async {
+    return await firestore.cvRunTransaction((txn) async {
+      var entityUserAccess = TkCmsFsUserAccess()..copyAccessFrom(userAccess);
+      txnSetEntityUserAccess(txn, entityId, userId, entityUserAccess);
+    });
+  }
+
   /// Create a project invite, return the id
   Future<void> deleteInviteEntity({
     required String inviteId,
@@ -491,6 +506,10 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
     }
   }
 
+  /// Get the entity
+  Future<TFsEntity> getEntity(String entityId) =>
+      fsEntityRef(entityId).get(firestore);
+
   // Admin only
   Future<void> deleteOldInvites() async {
     /// 7 days old
@@ -523,6 +542,9 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
       query = query.startAfter(values: [last.timestamp.v, list.last.id]);
     }
   }
+
+  /// The collection id (booklet, game, project...)
+  String get collectionId => _info.id;
 }
 
 class TkCmsFirestoreDatabaseEntityCollectionInfo<TEntity extends TkCmsFsEntity>

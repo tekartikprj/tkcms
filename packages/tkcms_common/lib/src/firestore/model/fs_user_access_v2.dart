@@ -127,6 +127,11 @@ extension TkCmsCvUserAccessCommonExt on TkCmsCvUserAccessCommon {
     userAccessFields.fromCvFields(other.userAccessFields);
     fixAccess();
   }
+
+  void grantAdminAccess() {
+    admin.v = true;
+    fixAccess();
+  }
 }
 
 const roleUser = 'user';

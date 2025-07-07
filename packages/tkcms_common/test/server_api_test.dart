@@ -26,6 +26,7 @@ Future<void> main() async {
     var ffServerApp = TkCmsServerAppV2(
       context: serverAppContext,
       apiVersion: apiVersion2,
+      version: Version(1, 2, 3),
     );
 
     ffServerApp.initFunctions();
@@ -54,16 +55,19 @@ Future<void> main() async {
     await ffServerHttp.close();
   });
 
-  /*
   test('info', () async {
     var info = await apiService.getInfo();
+    expect(info.version.v, '1.2.3');
+    expect(info.instanceCallCount.v, isNull);
     // ignore: avoid_print
     print(info);
-    info = await apiService.getInfo();
+    info = await apiService.getInfo(query: ApiGetInfoQuery()..debug.v = true);
+    expect(info.instanceCallCount.v, greaterThan(1));
     // ignore: avoid_print
     print(info);
-//    expect(info.version.v, appVersion.toString());
-  }, skip: 'TODO');
+    //    expect(info.version.v, appVersion.toString());
+  });
+  /*
   test('infofb', () async {
     var info = await apiService.getInfoFb();
     // ignore: avoid_print
