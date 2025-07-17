@@ -344,6 +344,7 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
     required String? userId,
     required TFsEntity entity,
     String? entityId,
+    String Function()? customIdGenerator,
   }) async {
     entity.created.v ??= Timestamp.now();
     entity.active.v ??= true;
@@ -360,7 +361,7 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
         // Find a unique id
         newEntityId = await _entityCollection
             .raw(firestore)
-            .txnGenerateUniqueId(txn);
+            .txnGenerateUniqueId(txn, customGenerator: customIdGenerator);
       }
 
       var entityRef = _entityCollection.doc(newEntityId);
