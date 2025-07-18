@@ -372,9 +372,7 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
 
         txnSetEntityUserAccess(txn, newEntityId, userId, entityUserAccess);
       }
-
       txn.refSet(entityRef, entity);
-
       return newEntityId;
     });
   }
