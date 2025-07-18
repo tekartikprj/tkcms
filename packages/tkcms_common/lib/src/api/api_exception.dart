@@ -23,12 +23,13 @@ Future<T> apiExceptionWrapAction<T>(Future<T> Function() action) async {
 }
 
 Future<ApiResponse> wrapActionToApiResponse(
-  Future<ApiResult> Function() action,
-) async {
+  Future<ApiResult> Function() action, {
+  bool? debug,
+}) async {
   try {
     return ApiResponse()..result.v = (await action()).toMap();
   } catch (e, st) {
-    return apiResponseFromException(e, st);
+    return apiResponseFromException(e, st: st, debug: debug);
   }
 }
 
@@ -98,7 +99,8 @@ class ApiException implements Exception {
 }
 
 /// ApiResponse from any exception
-ApiResponse apiResponseFromException(Object e, [StackTrace? st]) {
+ApiResponse apiResponseFromException(Object e, {StackTrace? st, bool? debug}) {
+  debug ??= isDebug;
   ApiResponse response;
   if (e is ApiException) {
     if (e.error != null) {
@@ -110,12 +112,16 @@ ApiResponse apiResponseFromException(Object e, [StackTrace? st]) {
           ..message.v = e.message ?? e.toString());
     }
   } else {
+    String? message;
+    if (e is StateError) {
+      message = e.message;
+    }
     response = ApiResponse()
       ..error.v = (ApiError()
         ..code.v = apiErrorCodeInternal
-        ..message.v = e.toString());
+        ..message.v = message ?? e.toString());
   }
-  if (isDebug) {
+  if (debug) {
     var error = response.error.v!;
     var detailsMap = error.details.v ??= CvMapModel();
     detailsMap['exception'] ??= e.toString();

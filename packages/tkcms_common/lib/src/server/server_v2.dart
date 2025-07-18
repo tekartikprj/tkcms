@@ -39,6 +39,9 @@ class TkAppCmsServerAppBase extends TkCmsServerAppV2 {
 class TkCmsServerAppV2 implements TkCmsCommonServerApp {
   final securedOptions = TkCmsApiSecuredOptions();
   final Version? version;
+
+  /// To set to true in firebase function to force extra debug mode
+  bool? debug;
   @override
   final int apiVersion;
   final TkCmsServerAppContext context;
@@ -202,7 +205,7 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
       return (ApiResponse()..result.v = (CvMapModel()..copyFrom(result)))
           .toMap();
     } catch (e, st) {
-      return apiResponseFromException(e, st).toMap();
+      return apiResponseFromException(e, st: st, debug: debug).toMap();
     }
   }
 
@@ -217,7 +220,10 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
         ApiResponse()..result.v = (CvMapModel()..copyFrom(result)),
       );
     } catch (e, st) {
-      await sendResponse(request, apiResponseFromException(e, st));
+      await sendResponse(
+        request,
+        apiResponseFromException(e, st: st, debug: debug),
+      );
     }
   }
 
