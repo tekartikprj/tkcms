@@ -8,4 +8,5 @@ export 'src/flavor/flavor.dart'
         appFlavorProdx,
         appFlavorTest,
         tkCmsFlavorContextFromUri,
-        tkCmsFlavorContextFromHost;
+        tkCmsFlavorContextFromHost,
+        tkCmsFlavorContextFromApp;

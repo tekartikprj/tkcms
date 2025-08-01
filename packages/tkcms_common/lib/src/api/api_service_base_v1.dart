@@ -10,7 +10,6 @@ const commandCron = 'cron';
 const commandInfo = 'info';
 const commandInfoFb = 'infofb';
 
-var debugWebServices = false; // devWarning(true);
 late TkCmsApiServiceBase gApiService;
 
 abstract interface class ApiService {

@@ -77,3 +77,11 @@ class TkCmsFbIdentityBloc
 
 /// Global fb identity bloc
 var globalTkCmsFbIdentityBloc = TkCmsFbIdentityBloc();
+
+/// Get the fb identity bloc
+TkCmsFbIdentityBloc getTkCmsFbIdentityBloc({FirebaseAuth? auth}) {
+  if (auth == null || globalTkCmsFbIdentityBloc.auth == auth) {
+    return globalTkCmsFbIdentityBloc;
+  }
+  return TkCmsFbIdentityBloc(auth: auth);
+}
