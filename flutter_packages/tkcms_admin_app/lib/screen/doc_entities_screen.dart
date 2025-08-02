@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:tekartik_app_flutter_widget/view/busy_indicator.dart';
 import 'package:tekartik_app_flutter_widget/view/busy_screen_state_mixin.dart';
 import 'package:tkcms_admin_app/audi/tkcms_audi.dart';
-import 'package:tkcms_admin_app/auth/auth.dart';
 import 'package:tkcms_admin_app/src/import_common.dart';
 import 'package:tkcms_admin_app/view/body_container.dart';
 import 'package:tkcms_common/tkcms_firestore_v2.dart';
@@ -31,21 +30,28 @@ class DocEntitiesScreenBlocState<T extends TkCmsFsDocEntity> {
 class DocEntitiesScreenBloc<T extends TkCmsFsDocEntity>
     extends AutoDisposeStateBaseBloc<DocEntitiesScreenBlocState<T>> {
   final bool selectMode;
-  var userId = gAuthBloc.currentUserId;
+  //var userId = gAuthBloc.currentUserId;
   final TkCmsFirestoreDatabaseServiceDocEntityAccessor<T> entityAccess;
   String get entityName => entityAccess.entityCollectionInfo.name;
   DocEntitiesScreenBloc({required this.entityAccess, this.selectMode = false}) {
     _init();
   }
+  TrackChangesSupportOptionsController? _supportOptionsController;
   Firestore get firestore => entityAccess.firestore;
   Future<void> _init() async {
+    _supportOptionsController = TrackChangesSupportOptionsController();
     audiAddStreamSubscription(
-      entityAccess.fsEntityCollectionRef.query().onSnapshots(firestore).listen((
-        event,
-      ) {
-        add(DocEntitiesScreenBlocState<T>(fsEntities: event));
-      }),
+      entityAccess.fsEntityCollectionRef
+          .query()
+          .onSnapshotsSupport(firestore, options: _supportOptionsController)
+          .listen((event) {
+            add(DocEntitiesScreenBlocState<T>(fsEntities: event));
+          }),
     );
+  }
+
+  void refresh() {
+    _supportOptionsController?.trigger();
   }
 
   Future<T> createTestEntity() async {

@@ -6,10 +6,10 @@ import 'package:tkcms_common/tkcms_auth.dart';
 mixin PopOnLoggedOutMixin<T extends StatefulWidget> on State<T>
     implements AutoDispose {
   void popOnLoggedOut([FirebaseAuth? auth]) {
-    auth ??= FirebaseAuth.instance;
+    var identityBloc = getTkCmsFbIdentityBloc(auth: auth);
     audiAddStreamSubscription(
-      auth.onCurrentUser.listen((user) {
-        if (user == null && mounted) {
+      identityBloc.state.listen((state) {
+        if (state.identity == null && mounted) {
           Navigator.of(context).pop();
         }
       }),

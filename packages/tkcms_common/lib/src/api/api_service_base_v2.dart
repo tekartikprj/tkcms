@@ -5,6 +5,15 @@ import 'package:tekartik_firebase_functions_call/functions_call.dart';
 import 'package:tkcms_common/tkcms_api.dart';
 import 'package:tkcms_common/tkcms_common.dart';
 
+/// Allow turning on debug logs
+var debugWebServices = false; // devWarning(true);
+/// Log full api content
+bool debugTkCmsApiFull = false;
+
+/// Full or truncated content
+String tkCmsApiLogModelContent(CvModel model) =>
+    debugTkCmsApiFull ? model.toMap().toString() : model.toString();
+
 /// Secured options
 class TkCmsApiSecuredOptions {
   /// Timestamp service to set by client and server
@@ -287,7 +296,7 @@ class TkCmsApiServiceBaseV2 implements TkCmsTimestampProvider {
 
     if (debugWebServices) {
       log('-> callable: $callableApi');
-      log('   $request');
+      log('   ${tkCmsApiLogModelContent(request)}');
     }
 
     return apiExceptionWrapAction(() async {
@@ -310,7 +319,7 @@ class TkCmsApiServiceBaseV2 implements TkCmsTimestampProvider {
       request.userId.setValue(userIdOrNull);
       if (debugWebServices) {
         log('-> uri: $uri');
-        log('   $request');
+        log('  ${tkCmsApiLogModelContent(request)}');
       }
       // devPrint('uri $uri');
       var headers = <String, String>{

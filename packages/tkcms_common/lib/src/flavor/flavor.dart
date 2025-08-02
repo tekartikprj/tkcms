@@ -15,6 +15,12 @@ FlavorContext tkCmsFlavorContextFromHost(String host) {
   return _map[flavorText] ?? FlavorContext.dev;
 }
 
+FlavorContext tkCmsFlavorContextFromApp(String appId) {
+  var hosting = appId.split('.').first;
+  var flavorText = hosting.split('-').last.split('_').last;
+  return _map[flavorText] ?? FlavorContext.dev;
+}
+
 /// Handle common firebase hosting such as my-app-dev.web.app and flavor parameter and direct flavor parameter
 /// - my-app-dev.web.app
 /// - mysite?flavor=dev
@@ -135,7 +141,8 @@ class AppFlavorContext {
   bool get isDev => flavorContext.isDev;
 
   @override
-  String toString() => 'ctx$appKeySuffix';
+  String toString() =>
+      'AppFlovorContext(app: $app, ${isDev ? 'dev' : 'prod'}, suffix: $appKeySuffix)';
 
   /// Copy with another app id
   AppFlavorContext copyWithAppId(String appId) {

@@ -16,4 +16,5 @@ export 'src/bloc/fb_identity_bloc.dart'
         TkCmsFbIdentityBloc,
         TkCmsFbIdentityBlocState,
         TkCmsFbIdentityUser,
-        globalTkCmsFbIdentityBloc;
+        globalTkCmsFbIdentityBloc,
+        getTkCmsFbIdentityBloc;

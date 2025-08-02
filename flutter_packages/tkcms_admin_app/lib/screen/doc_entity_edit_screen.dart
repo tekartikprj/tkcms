@@ -5,7 +5,6 @@ import 'package:tekartik_app_flutter_widget/view/body_h_padding.dart';
 import 'package:tekartik_app_flutter_widget/view/busy_indicator.dart';
 import 'package:tekartik_app_flutter_widget/view/busy_screen_state_mixin.dart';
 import 'package:tkcms_admin_app/audi/tkcms_audi.dart';
-import 'package:tkcms_admin_app/auth/auth.dart';
 import 'package:tkcms_admin_app/src/import_common.dart';
 import 'package:tkcms_admin_app/view/body_container.dart';
 import 'package:tkcms_common/tkcms_firestore_v2.dart';
@@ -22,7 +21,7 @@ class DocEntityEditScreenBlocState<T extends TkCmsFsDocEntity> {
 class DocEntityEditScreenBloc<T extends TkCmsFsDocEntity>
     extends AutoDisposeStateBaseBloc<DocEntityEditScreenBlocState<T>> {
   final String? entityId;
-  var userId = gAuthBloc.currentUserId;
+  // var userId = gAuthBloc.currentUserId;
 
   bool get isCreate => entityId == null;
   final TkCmsFirestoreDatabaseServiceEntityAccessor<T> entityAccess;
