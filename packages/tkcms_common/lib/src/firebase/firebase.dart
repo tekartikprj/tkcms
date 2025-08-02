@@ -93,7 +93,7 @@ class FirebaseServicesContext {
         functionsCallRegionOrNull != null) {
       functionsCall = functionsCallService.functionsCall(
         firebaseApp,
-        region: functionsCallRegion,
+        options: FirebaseFunctionsCallOptions(region: functionsCallRegion),
       );
     }
 
@@ -163,8 +163,10 @@ class FirebaseServicesContext {
         functionsCallRegionOrNull != null) {
       functionsCall = functionsCallService.functionsCall(
         firebaseApp,
-        region: functionsCallRegion,
-        baseUri: baseUri,
+        options: FirebaseFunctionsCallOptions(
+          region: functionsCallRegion,
+          baseUri: baseUri,
+        ),
       );
     }
 
