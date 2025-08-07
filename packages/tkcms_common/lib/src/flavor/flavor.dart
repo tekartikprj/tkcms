@@ -142,7 +142,7 @@ class AppFlavorContext {
 
   @override
   String toString() =>
-      'AppFlovorContext(app: $app, ${isDev ? 'dev' : 'prod'}, suffix: $appKeySuffix)';
+      'AppFlavorContext(app: $app, ${isDev ? 'dev' : 'prod'}, suffix: $appKeySuffix)';
 
   /// Copy with another app id
   AppFlavorContext copyWithAppId(String appId) {
