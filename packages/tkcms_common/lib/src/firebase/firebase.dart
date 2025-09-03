@@ -185,7 +185,11 @@ class FirebaseServicesContext {
   }
 }
 
-class FirebaseContext {
+/// Compat
+typedef FirebaseContext = TkCmsFirebaseContext;
+
+/// TkCms firebase context
+class TkCmsFirebaseContext {
   /// Compat
   FirebaseContext get firebaseContext => this;
 
@@ -209,7 +213,7 @@ class FirebaseContext {
   FfServer? ffServerOrNull;
   FfServer get ffServerHttp => ffServerOrNull!;
 
-  FirebaseContext({
+  TkCmsFirebaseContext({
     /// Ignored
     bool? local,
 
@@ -239,6 +243,32 @@ class FirebaseContext {
        serverAppOrNull = serverApp ?? firebaseContext?.serverAppOrNull;
 
   FirebaseFunctionsHttp get functionsHttp => functions as FirebaseFunctionsHttp;
+
+  /// Clone the object allowing overriding all properties
+  TkCmsFirebaseContext copyWith({
+    Firebase? firebase,
+    FirebaseApp? firebaseApp,
+    Auth? auth,
+    Firestore? firestore,
+    FirebaseFunctions? functions,
+    Storage? storage,
+    FirebaseFunctionsCall? functionsCall,
+    FfServer? ffServer,
+    TkCmsCommonServerApp? serverApp,
+  }) {
+    return TkCmsFirebaseContext(
+      local: local,
+      firebase: firebase ?? this.firebase,
+      firebaseApp: firebaseApp ?? this.firebaseApp,
+      auth: auth ?? authOrNull,
+      firestore: firestore ?? firestoreOrNull,
+      functions: functions ?? functionsOrNull,
+      storage: storage ?? storageOrNull,
+      functionsCall: functionsCall ?? functionsCallOrNull,
+      ffServer: ffServer ?? ffServerOrNull,
+      serverApp: serverApp ?? serverAppOrNull,
+    );
+  }
 }
 
 FirebaseContext? firebaseContextOrNull;
