@@ -393,17 +393,8 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
     });
   }
 
-  /// Mark as deleted and non active
-  Future<void> deleteEntity(String entityId, {required String userId}) async {
-    var entityUserAccessRef = _entityUserAccessDoc(entityId, userId);
+  Future<void> rootMarkAsDeleted(String entityId) async {
     var entityRef = _entityCollection.doc(entityId);
-
-    var entityAccessUser = await firestore.refGet(entityUserAccessRef);
-    if (!entityAccessUser.isAdmin) {
-      throw Exception(
-        'User $userId not allowed to delete $_entityName $entityId',
-      );
-    }
 
     await firestore.cvRunTransaction((txn) async {
       var entity = await txn.refGet(entityRef);
@@ -421,16 +412,49 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
     });
   }
 
+  /// Mark as deleted and non active
+  Future<void> deleteEntity(String entityId, {required String userId}) async {
+    var entityUserAccessRef = _entityUserAccessDoc(entityId, userId);
+
+    var entityAccessUser = await firestore.refGet(entityUserAccessRef);
+    if (!entityAccessUser.isAdmin) {
+      throw Exception(
+        'User $userId not allowed to delete $_entityName $entityId',
+      );
+    }
+
+    await rootMarkAsDeleted(entityId);
+  }
+
   /// Delete our userId last
   /// if userId != null, delete users last
-  Future<void> purgeEntity(String entityId, {String? userId}) async {
+  /// if force = true, ignore deleted state
+  Future<void> purgeEntity(
+    String entityId, {
+    String? userId,
+    bool? force,
+  }) async {
+    await rootPurgeEntity(entityId, userId: userId, force: force);
+  }
+
+  /// Delete our userId last
+  /// if userId != null, delete users last
+  /// if force = true, ignore deleted state
+  Future<void> rootPurgeEntity(
+    String entityId, {
+    String? userId,
+    bool? force,
+  }) async {
+    force ??= false;
     var entityRef = _entityCollection.doc(entityId);
     var project = await firestore.refGet(entityRef);
     if (!project.exists) {
       return;
     }
-    if (project.deleted.v != true) {
-      throw ArgumentError('$_entityName $entityId not deleted');
+    if (!force) {
+      if (project.deleted.v != true) {
+        throw ArgumentError('$_entityName $entityId not deleted');
+      }
     }
     var entityUserAccessCrollRef = _entityUserAccessColl(entityId);
     var query = entityUserAccessCrollRef.query().orderById().limit(20);
@@ -471,12 +495,13 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
       await entityRef.delete(firestore);
     }
 
-    await firestore.cvRunTransaction((txn) {
-      /// Delete last
-      if (userId != null) {
+    if (userId != null) {
+      await firestore.cvRunTransaction((txn) {
+        /// Delete last
+
         txnDeleteUserAccess(txn, userId);
-      }
-    });
+      });
+    }
   }
 
   Stream<TkCmsFsInviteEntity<TFsEntity>> onInviteEntity(
