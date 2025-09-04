@@ -185,7 +185,11 @@ class FirebaseServicesContext {
   }
 }
 
-class FirebaseContext {
+/// Compat
+typedef FirebaseContext = TkCmsFirebaseContext;
+
+/// TkCms firebase context
+class TkCmsFirebaseContext {
   /// Compat
   FirebaseContext get firebaseContext => this;
 
@@ -209,7 +213,7 @@ class FirebaseContext {
   FfServer? ffServerOrNull;
   FfServer get ffServerHttp => ffServerOrNull!;
 
-  FirebaseContext({
+  TkCmsFirebaseContext({
     /// Ignored
     bool? local,
 

@@ -174,6 +174,14 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
     return result;
   }
 
+  Future<ApiResult> onCronCommand(ApiRequest apiRequest) async {
+    var app = apiRequest.app.v;
+    if (app == null) {
+      await handleDailyCron();
+    }
+    return ApiEmpty();
+  }
+
   Future<ApiResult> onCommand(ApiRequest apiRequest) async {
     var command = apiRequest.command.v!;
     switch (command) {
@@ -187,8 +195,8 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
       case commandInfo:
         return await onGetInfoCommand(apiRequest);
       case commandCron:
-        await handleDailyCron();
-        return ApiEmpty();
+        return await onCronCommand(apiRequest);
+
       default:
         throw UnsupportedError('command ${apiRequest.command.v!}');
     }
