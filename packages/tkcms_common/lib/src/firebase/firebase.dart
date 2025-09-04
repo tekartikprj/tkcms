@@ -269,6 +269,12 @@ class TkCmsFirebaseContext {
       serverApp: serverApp ?? serverAppOrNull,
     );
   }
+
+  /// Cleanup firebase context (test only)
+  Future<void> close() async {
+    await ffServerOrNull?.close();
+    await firebaseApp.delete();
+  }
 }
 
 FirebaseContext? firebaseContextOrNull;
