@@ -199,13 +199,13 @@ void main() {
     var fsInviteId1 = fsInviteId1Ref.cv()
       ..entityId.v = entityId
       ..timestamp.v = now.substractDuration(
-        tkCmsInviteEntityExpirationDefault - Duration(minutes: 1),
+        tkCmsInviteEntityExpirationDefault - const Duration(minutes: 1),
       );
     var fsInviteId2Ref = db.fsInviteIdRef(inviteId2);
     var fsInviteId2 = fsInviteId2Ref.cv()
       ..entityId.v = entityId
       ..timestamp.v = now.substractDuration(
-        tkCmsInviteEntityExpirationDefault + Duration(minutes: 1),
+        tkCmsInviteEntityExpirationDefault + const Duration(minutes: 1),
       );
     var fsInviteEntity1Ref = db.fsInviteEntityRef(inviteId1, entityId);
     var fsInviteEntity2Ref = db.fsInviteEntityRef(inviteId2, entityId);
