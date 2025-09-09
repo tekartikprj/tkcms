@@ -190,4 +190,43 @@ void main() {
     userEntityAccess = await userEntityAccessRef2.get(firestore);
     expect(userEntityAccess.exists, isFalse);
   });
+  test('purge old invites', () async {
+    var now = Timestamp.now();
+    var inviteId1 = 'invite1';
+    var inviteId2 = 'invite2';
+    var entityId = 'booklet1';
+    var fsInviteId1Ref = db.fsInviteIdRef(inviteId1);
+    var fsInviteId1 = fsInviteId1Ref.cv()
+      ..entityId.v = entityId
+      ..timestamp.v = now.substractDuration(
+        tkCmsInviteEntityExpirationDefault - const Duration(minutes: 1),
+      );
+    var fsInviteId2Ref = db.fsInviteIdRef(inviteId2);
+    var fsInviteId2 = fsInviteId2Ref.cv()
+      ..entityId.v = entityId
+      ..timestamp.v = now.substractDuration(
+        tkCmsInviteEntityExpirationDefault + const Duration(minutes: 1),
+      );
+    var fsInviteEntity1Ref = db.fsInviteEntityRef(inviteId1, entityId);
+    var fsInviteEntity2Ref = db.fsInviteEntityRef(inviteId2, entityId);
+
+    var fsInviteEntity1 = fsInviteEntity1Ref.cv()..entityId.v = entityId;
+    var fsInviteEntity2 = fsInviteEntity2Ref.cv();
+
+    await db.firestore.cvRunTransaction((txn) {
+      txn.cvSet(fsInviteId1);
+      txn.cvSet(fsInviteId2);
+      txn.cvSet(fsInviteEntity1);
+      txn.cvSet(fsInviteEntity2);
+    });
+    expect((await fsInviteId1Ref.get(db.firestore)).exists, isTrue);
+    expect((await fsInviteId2Ref.get(db.firestore)).exists, isTrue);
+    expect((await fsInviteEntity1Ref.get(db.firestore)).exists, isTrue);
+    expect((await fsInviteEntity2Ref.get(db.firestore)).exists, isTrue);
+    await db.deleteOldInvites();
+    expect((await fsInviteId1Ref.get(db.firestore)).exists, isTrue);
+    expect((await fsInviteEntity1Ref.get(db.firestore)).exists, isTrue);
+    expect((await fsInviteId2Ref.get(db.firestore)).exists, isFalse);
+    expect((await fsInviteEntity2Ref.get(db.firestore)).exists, isFalse);
+  });
 }

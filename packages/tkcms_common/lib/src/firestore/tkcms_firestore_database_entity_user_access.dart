@@ -2,6 +2,8 @@ import 'package:tekartik_firebase_firestore/utils/copy_utils.dart';
 import 'package:tkcms_common/tkcms_common.dart';
 import 'package:tkcms_common/tkcms_firestore_v2.dart';
 
+const tkCmsInviteEntityExpirationDefault = Duration(days: 7);
+
 class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
     implements TkCmsFirestoreDatabaseServiceEntityAccessor<TFsEntity> {
   late final CvDocumentReference? rootDocument;
@@ -537,8 +539,8 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
   // Admin only
   Future<void> deleteOldInvites() async {
     /// 7 days old
-    var pastTimestamp = Timestamp.fromMillisecondsSinceEpoch(
-      Timestamp.now().millisecondsSinceEpoch - 1000 * 60 * 60 * 24 * 7,
+    var pastTimestamp = Timestamp.now().substractDuration(
+      tkCmsInviteEntityExpirationDefault,
     );
     var inviteIdCollection = _inviteIdCollection;
     var query = inviteIdCollection
@@ -557,8 +559,11 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
 
       for (var inviteIdDoc in list) {
         var inviteId = inviteIdDoc.id;
-        var entityId = inviteIdDoc.entityId.v!;
-        batch.refDelete(_inviteEntityDoc(inviteId, entityId));
+        var entityId = inviteIdDoc.entityId.v;
+        if (entityId != null) {
+          batch.refDelete(inviteIdDoc.ref);
+          batch.refDelete(_inviteEntityDoc(inviteId, entityId));
+        }
       }
       await batch.commit();
 
