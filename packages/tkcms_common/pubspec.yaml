@@ -17,152 +17,125 @@ dependencies:
   tekartik_app_rx:
     git:
       url: https://github.com/tekartik/app_common_utils.dart
-      ref: dart3a
       path: app_rx
     version: '>=0.1.0'
   rxdart: '>=0.27.7'
   tekartik_app_cv_firestore:
     git:
       url: https://github.com/tekartik/app_common_utils.dart
-      ref: dart3a
       path: app_cv_firestore
   tekartik_firebase_functions:
     git:
       url: https://github.com/tekartik/firebase_functions.dart
-      ref: dart3a
       path: firebase_functions
   tekartik_firebase_functions_http:
     git:
       url: https://github.com/tekartik/firebase_functions.dart
       path: firebase_functions_http
-      ref: dart3a
     version: '>=0.2.1'
   tekartik_firebase_rest:
     git:
       url: https://github.com/tekartik/firebase_rest.dart
       path: firebase_rest
-      ref: dart3a
     version: '>=0.6.2'
   tekartik_firebase_auth_rest:
     git:
       url: https://github.com/tekartik/firebase_rest.dart
       path: auth_rest
-      ref: dart3a
     version: '>=0.3.8'
   tekartik_firebase_firestore_rest:
     git:
       url: https://github.com/tekartik/firebase_rest.dart
       path: firestore_rest
-      ref: dart3a
     version: '>=0.8.0'
   tekartik_firebase_storage_rest:
     git:
       url: https://github.com/tekartik/firebase_rest.dart
       path: storage_rest
-      ref: dart3a
     version: '>=0.8.0'
   tekartik_firebase_firestore:
     git:
       url: https://github.com/tekartik/firebase_firestore.dart
       path: firestore
-      ref: dart3a
     version: '>=0.9.3'
   tekartik_firebase_storage:
     git:
       url: https://github.com/tekartik/firebase_storage.dart
       path: storage
-      ref: dart3a
     version: '>=0.8.0'
   tekartik_firebase_storage_fs:
     git:
       url: https://github.com/tekartik/firebase_storage.dart
-      ref: dart3a
       path: storage_fs
   tekartik_firebase_auth:
     git:
       url: https://github.com/tekartik/firebase_auth.dart
       path: auth
-      ref: dart3a
     version: '>=0.8.0'
   tekartik_firebase_auth_local:
     git:
       url: https://github.com/tekartik/firebase_auth.dart
       path: auth_local
-      ref: dart3a
     version: '>=0.3.8'
   tekartik_firebase_firestore_sembast:
     git:
       url: https://github.com/tekartik/firebase_firestore.dart
       path: firestore_sembast
-      ref: dart3a
     version: '>=0.8.0'
   tekartik_app_crypto:
     git:
       url: https://github.com/tekartik/app_common_utils.dart
-      ref: dart3a
       path: app_crypto
     version: '>=0.2.4'
   tekartik_app_http:
     git:
       url: https://github.com/tekartik/app_common_utils.dart
-      ref: dart3a
       path: app_http
     version: '>=0.1.0'
   tekartik_prefs:
     git:
       url: https://github.com/tekartik/prefs.dart
       path: prefs
-      ref: dart3a
     version: '>=0.1.0'
   tekartik_app_sembast:
     git:
       url: https://github.com/tekartik/app_common_utils.dart
-      ref: dart3a
       path: app_sembast
     version: '>=0.1.0'
   tekartik_http:
     git:
       url: https://github.com/tekartik/http.dart
-      ref: dart3a
       path: http
   tekartik_firebase_functions_call_http:
     git:
       url: https://github.com/tekartik/firebase_functions.dart
-      ref: dart3a
       path: functions_call_http
   tekartik_firebase_functions_call:
     git:
       url: https://github.com/tekartik/firebase_functions.dart
-      ref: dart3a
       path: functions_call
   tekartik_firebase_auth_sembast:
     git:
       url: https://github.com/tekartik/firebase_auth.dart
-      ref: dart3a
       path: auth_sembast
   tekartik_app_rx_bloc:
     git:
       url: https://github.com/tekartik/app_common_utils.dart
-      ref: dart3a
       path: app_rx_bloc
   tekartik_app_cv_sembast:
     git:
       url: https://github.com/tekartik/app_common_utils.dart
-      ref: dart3a
       path: app_cv_sembast
   tekartik_common_utils:
     git:
       url: https://github.com/tekartik/common_utils.dart
-      ref: dart3a
   tekaly_sembast_synced:
     git:
       url: https://github.com/tekartikprj/tekaly
-      ref: dart3a
       path: packages/sembast_synced
   tekartik_firebase_functions_io:
     git:
       url: https://github.com/tekartik/firebase_functions.dart
-      ref: dart3a
       path: firebase_functions_io
 
 dev_dependencies:

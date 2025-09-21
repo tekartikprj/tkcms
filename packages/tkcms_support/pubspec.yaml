@@ -14,42 +14,35 @@ dependencies:
   tekartik_firebase_build:
     git:
       url: https://github.com/tekartik/app_build.dart
-      ref: dart3a
       path: packages/firebase_build
     version: '>=0.1.0'
   tekartik_app_node_build_menu:
     git:
       url: https://github.com/tekartik/app_node_utils.dart
-      ref: dart3a
       path: app_build_menu
   path: ">=1.9.0"
   tekartik_build_menu_flutter:
     git:
       url: https://github.com/tekartik/build_flutter.dart
-      ref: dart3a
       path: packages/build_menu_flutter
     version: '>=0.1.0'
   tkcms_common:
     git:
       url: https://github.com/tekartikprj/tkcms.git
-      ref: dart3a
       path: packages/tkcms_common
   tekartik_app_csv:
     git:
       url: https://github.com/tekartik/app_common_utils.dart
-      ref: dart3a
       path: app_csv
     version: '>=0.1.3'
   image:
   tekartik_test_menu_io:
     git:
       url: https://github.com/tekartik/test_menu.dart
-      ref: dart3a
       path: test_menu_io
   tekartik_firebase_build_menu_flutter:
     git:
       url: https://github.com/tekartik/app_build.dart
-      ref: dart3a
       path: packages/firebase_build_menu_flutter
 
 dev_dependencies:
@@ -59,7 +52,6 @@ dev_dependencies:
   tekartik_common_utils:
     git:
       url: https://github.com/tekartik/common_utils.dart
-      ref: dart3a
     version: '>=0.15.8'
   collection: ">=1.18.0"
   csv:
@@ -68,7 +60,6 @@ dev_dependencies:
     git:
       url: https://github.com/tekartik/firebase_firestore.dart
       path: firestore
-      ref: dart3a
     version: '>=0.9.3'
   http:
 
