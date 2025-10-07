@@ -153,3 +153,16 @@ class AppFlavorContext {
     );
   }
 }
+
+/// Common extension
+extension FlavorContextExt on FlavorContext {
+  /// Returns a new [AppFlavorContext] with the given [appId] and optional [local] flag.
+  AppFlavorContext toAppFlavorContext({
+    String? appId,
+    String? baseAppId,
+    bool local = false,
+  }) {
+    appId ??= '$baseAppId-$flavor';
+    return AppFlavorContext(flavorContext: this, local: local, app: appId);
+  }
+}

@@ -6,6 +6,7 @@ class TkCmsFbIdentity {}
 
 /// Firebase identity service account
 class TkCmsFbIdentityServiceAccount implements TkCmsFbIdentity {
+  static String get userLocalId => '__service_account__';
   final String? projectId;
   const TkCmsFbIdentityServiceAccount({required this.projectId});
 }
