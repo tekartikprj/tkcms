@@ -92,6 +92,13 @@ class TkCmsFsEntityId extends CvFirestoreDocumentBase {
 class TkCmsFsUserAccess extends CvFirestoreDocumentBase
     with TkCmsCvUserAccessMixin {
   final inviteId = CvField<String>('inviteId');
+
+  TkCmsFsUserAccess();
+  factory TkCmsFsUserAccess.admin() {
+    var model = TkCmsFsUserAccess();
+    model.grantAdminAccess();
+    return model;
+  }
   @override
   CvFields get fields => [...userAccessMixinFields];
 }

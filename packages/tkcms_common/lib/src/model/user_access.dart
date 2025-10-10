@@ -1,4 +1,4 @@
-import 'package:cv/cv.dart';
+import 'package:tkcms_common/tkcms_firestore.dart';
 
 /// User access common
 abstract class TkCmsCvUserAccessCommon {
@@ -19,6 +19,12 @@ abstract class TkCmsCvUserAccessCommon {
 }
 
 class TkCmsCvUserAccess extends CvModelBase with TkCmsCvUserAccessMixin {
+  TkCmsCvUserAccess();
+  factory TkCmsCvUserAccess.admin() {
+    var model = TkCmsCvUserAccess();
+    model.grantAdminAccess();
+    return model;
+  }
   @override
   CvFields get fields => [...userAccessMixinFields];
 }
