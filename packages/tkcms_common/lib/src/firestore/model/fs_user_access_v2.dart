@@ -1,4 +1,5 @@
 import 'package:tekartik_common_utils/common_utils_import.dart';
+import 'package:tkcms_common/src/auth/roles.dart';
 import 'package:tkcms_common/tkcms_firestore.dart';
 
 // <entity>/{entity_id} * content
@@ -141,9 +142,9 @@ extension TkCmsCvUserAccessCommonExt on TkCmsCvUserAccessCommon {
   }
 }
 
-const roleUser = 'user';
-const roleAdmin = 'admin';
-const roleSuperAdmin = 'super_admin';
+const roleUser = tkCmsUserAccessRoleUser;
+const roleAdmin = tkCmsUserAccessRoleAdmin;
+const roleSuperAdmin = tkCmsUserAccessRoleSuperAdmin;
 
 mixin TkCmsBasicEntityMixin implements CvModel {
   final name = CvField<String>('name');
