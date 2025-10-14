@@ -1,10 +1,6 @@
 export 'package:tekartik_firebase_auth/auth.dart';
 export 'package:tekartik_firebase_auth_rest/auth_rest.dart';
-export 'src/auth/roles.dart'
-    show
-        tkCmsUserAccessRoleAdmin,
-        tkCmsUserAccessRoleUser,
-        tkCmsUserAccessRoleSuperAdmin;
+
 export 'src/auth/credentials.dart'
     show TkCmsEmailPasswordCredentials, TkCmsUidEmailPasswordCredentials;
 export 'src/auth/fs_access_auth_bloc.dart'
@@ -13,6 +9,11 @@ export 'src/auth/fs_access_auth_bloc.dart'
         TkCmsLoggedInUser,
         TkCmsLoggedInUserAccess,
         debugTkCmsAuthBloc;
+export 'src/auth/roles.dart'
+    show
+        tkCmsUserAccessRoleAdmin,
+        tkCmsUserAccessRoleUser,
+        tkCmsUserAccessRoleSuperAdmin;
 export 'src/bloc/fb_identity_bloc.dart'
     show
         TkCmsFbIdentityServiceAccount,
