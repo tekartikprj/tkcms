@@ -31,6 +31,7 @@ void initTkCmsFsUserAccessBuilders() {
   // firestore
   cvAddConstructors([
     TkCmsFsUserAccess.new,
+    TkCmsEditedFsUserAccess.new,
     TkCmsCvUserAccess.new,
     TkCmsFsEntityTypeInvite.new,
     TkCmsFsEntityTypeAccess.new,
@@ -90,6 +91,13 @@ class TkCmsFsEntityId extends CvFirestoreDocumentBase {
   CvFields get fields => [];
 }
 
+/// Only during edition
+class TkCmsEditedFsUserAccess extends TkCmsFsUserAccess {
+  final name = CvField<String?>('name');
+  @override
+  CvFields get fields => [name, ...super.fields];
+}
+
 class TkCmsFsUserAccess extends CvFirestoreDocumentBase
     with TkCmsCvUserAccessMixin {
   final inviteId = CvField<String>('inviteId');
@@ -98,6 +106,11 @@ class TkCmsFsUserAccess extends CvFirestoreDocumentBase
   factory TkCmsFsUserAccess.admin() {
     var model = TkCmsFsUserAccess();
     model.grantAdminAccess();
+    return model;
+  }
+  factory TkCmsFsUserAccess.superAdmin() {
+    var model = TkCmsFsUserAccess();
+    model.grantSuperAdminAccess();
     return model;
   }
   @override
@@ -137,6 +150,12 @@ extension TkCmsCvUserAccessCommonExt on TkCmsCvUserAccessCommon {
   }
 
   void grantAdminAccess() {
+    admin.v = true;
+    fixAccess();
+  }
+
+  void grantSuperAdminAccess() {
+    role.v = roleSuperAdmin;
     admin.v = true;
     fixAccess();
   }

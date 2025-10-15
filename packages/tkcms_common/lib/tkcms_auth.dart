@@ -18,6 +18,7 @@ export 'src/bloc/fb_identity_bloc.dart'
     show
         TkCmsFbIdentityServiceAccount,
         TkCmsFbIdentity,
+        TkCmsFbIdentityExtension,
         TkCmsFbIdentityBloc,
         TkCmsFbIdentityBlocState,
         TkCmsFbIdentityUser,

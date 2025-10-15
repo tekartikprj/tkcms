@@ -31,6 +31,7 @@ void initTkCmsFsBuilders() {
     TkCmsFsApp.new,
     TkCmsFsProject.new,
     TkCmsFsUserAccess.new,
+    TkCmsEditedFsUserAccess.new,
     TkCmsFsRootItem.new,
     TkCmsFsEntityTypeInvite.new,
     TkCmsFsEntityTypeAccess.new,

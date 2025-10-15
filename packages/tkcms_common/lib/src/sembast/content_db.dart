@@ -60,6 +60,10 @@ class ContentDb {
     );
   }();
 
+  Future<SyncedSyncStat> synchronize() async {
+    return await _syncedDb.synchronize();
+  }
+
   Future<void> close() async {
     if (_initialized) {
       await ready;

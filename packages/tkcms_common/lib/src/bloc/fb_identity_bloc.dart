@@ -1,14 +1,51 @@
+import 'package:cv/cv.dart';
 import 'package:tekartik_app_rx_bloc/auto_dispose_state_base_bloc.dart';
 import 'package:tkcms_common/tkcms_auth.dart';
 
 /// Firebase identity (service account or user)
 class TkCmsFbIdentity {}
 
+extension TkCmsFbIdentityExtension on TkCmsFbIdentity {
+  /// True for service account
+  bool get isServiceAccount => this is TkCmsFbIdentityServiceAccount;
+
+  /// True for user
+  bool get isUser => this is TkCmsFbIdentityUser;
+
+  /// Firebase user if any
+  FirebaseUser? get firebaseUser =>
+      isUser ? (this as TkCmsFbIdentityUser).user : null;
+
+  /// User id or service account id
+  String get userOrAccountId => isServiceAccount
+      ? TkCmsFbIdentityServiceAccount.userLocalId
+      : _asUser.firebaseUser!.uid;
+
+  String? get userLocalId => userOrAccountId;
+
+  TkCmsFbIdentityUser? get _asUserOrNull => anyAs<TkCmsFbIdentityUser?>();
+  TkCmsFbIdentityUser get _asUser => anyAs<TkCmsFbIdentityUser>();
+  TkCmsFbIdentityServiceAccount? get _asServiceAccountOrNull =>
+      anyAs<TkCmsFbIdentityServiceAccount?>();
+
+  /// Only for user identity
+  String? get userId => user?.uid;
+
+  /// Only for user identity
+  FirebaseUser? get user => _asUserOrNull?.user;
+
+  /// Only for service account identity
+  String? get serviceAccountProjectId => _asServiceAccountOrNull?.projectId;
+}
+
 /// Firebase identity service account
 class TkCmsFbIdentityServiceAccount implements TkCmsFbIdentity {
   static String get userLocalId => '__service_account__';
   final String? projectId;
   const TkCmsFbIdentityServiceAccount({required this.projectId});
+
+  @override
+  String toString() => 'IdentityServiceAccount(${projectId ?? "unknown"})';
 }
 
 /// Firebase identity user
