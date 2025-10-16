@@ -6,7 +6,7 @@ const tkCmsInviteEntityExpirationDefault = Duration(days: 7);
 
 class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
     implements TkCmsFirestoreDatabaseServiceEntityAccessor<TFsEntity> {
-  late final CvDocumentReference? rootDocument;
+  CvDocumentReference? get rootDocument => _entityCollectionRef.rootDocument;
   CvCollectionReference<T> _rootCollection<T extends CvFirestoreDocument>(
     String id,
   ) => CvCollectionReference<T>(getRootPath(id));
@@ -25,29 +25,42 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
   CvDocumentReference<TkCmsFsEntityTypeInvite> get _entityTypeInviteDoc =>
       _inviteCollection.doc(_info.id);
   @override
-  final TkCmsFirestoreDatabaseEntityCollectionInfo<TFsEntity>
-  entityCollectionInfo;
-  TkCmsFirestoreDatabaseEntityCollectionInfo get _info => entityCollectionInfo;
+  TkCmsFirestoreDatabaseEntityCollectionInfo<TFsEntity>
+  get entityCollectionInfo => _info;
 
-  /// Collection info
-  TkCmsFirestoreDatabaseEntityCollectionInfo get info => _info;
+  TkCmsFirestoreDatabaseEntityCollectionInfo<TFsEntity> get _info => ref.info;
 
+  /// Info shortcut
+  TkCmsFirestoreDatabaseEntityCollectionInfo<TFsEntity> get info => _info;
+
+  TkCmsFirestoreDatabaseEntityCollectionRef<TFsEntity> get ref =>
+      _entityCollectionRef;
+  late TkCmsFirestoreDatabaseEntityCollectionRef<TFsEntity>
+  _entityCollectionRef;
   @override
   late final Firestore firestore;
   //FirestoreDatabaseContext? firestoreDatabaseContext;
   TkCmsFirestoreDatabaseServiceEntityAccess({
-    required this.entityCollectionInfo,
+    TkCmsFirestoreDatabaseEntityCollectionRef<TFsEntity>? entityCollectionRef,
 
-    /// to prefer
+    /// Optional  prefer ref and firestore
+    TkCmsFirestoreDatabaseEntityCollectionInfo<TFsEntity>? entityCollectionInfo,
+
+    /// to prefer or ref and firestore
     FirestoreDatabaseContext? firestoreDatabaseContext,
-    // prefer using firestoreDatabaseContext
+
+    /// to prefer when using ref, otherwise use firestoreDatabaseContext
     Firestore? firestore,
     // prefer using firestoreDatabaseContext
     CvDocumentReference? rootDocument,
   }) {
+    _entityCollectionRef =
+        entityCollectionRef ??
+        entityCollectionInfo!.ref(
+          rootDocument: rootDocument ?? firestoreDatabaseContext?.rootDocument,
+        );
     this.firestore =
         firestore ?? firestoreDatabaseContext?.firestore ?? Firestore.instance;
-    this.rootDocument = rootDocument ?? firestoreDatabaseContext?.rootDocument;
 
     _init();
   }
@@ -576,6 +589,30 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
   String get collectionId => _info.id;
 }
 
+/// A reference to an entity collection with a root document
+class TkCmsFirestoreDatabaseEntityCollectionRef<TEntity extends TkCmsFsEntity> {
+  final TkCmsFirestoreDatabaseEntityCollectionInfo<TEntity> info;
+  final CvDocumentReference<CvFirestoreDocument>? rootDocument;
+  CvCollectionReference<TEntity> get collectionRef =>
+      CvCollectionReference<TEntity>(path);
+
+  TkCmsFirestoreDatabaseEntityCollectionRef({
+    required this.info,
+    required this.rootDocument,
+  });
+
+  String get path => _fixPath(info.id);
+  String _fixPath(String path) =>
+      rootDocument == null ? path : url.join(rootDocument!.path, path);
+
+  TkCmsFirestoreDatabaseEntityCollectionRef<U> cast<U extends TkCmsFsEntity>() {
+    return TkCmsFirestoreDatabaseEntityCollectionRef<U>(
+      info: info.cast<U>(),
+      rootDocument: rootDocument,
+    );
+  }
+}
+
 class TkCmsFirestoreDatabaseEntityCollectionInfo<TEntity extends TkCmsFsEntity>
     implements TkCmsFirestoreDatabaseDocEntityCollectionInfo<TEntity> {
   /// Sub collections def
@@ -598,4 +635,36 @@ class TkCmsFirestoreDatabaseEntityCollectionInfo<TEntity extends TkCmsFsEntity>
     required this.name,
     this.treeDef,
   });
+
+  // Copy
+  TkCmsFirestoreDatabaseEntityCollectionInfo<TEntity> copyWith({
+    String? id,
+    String? name,
+    TkCmsCollectionsTreeDef? treeDef,
+  }) {
+    return TkCmsFirestoreDatabaseEntityCollectionInfo<TEntity>(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      treeDef: treeDef ?? this.treeDef,
+    );
+  }
+
+  /// Cast to another entity type
+  TkCmsFirestoreDatabaseEntityCollectionInfo<U>
+  cast<U extends TkCmsFsEntity>() {
+    return TkCmsFirestoreDatabaseEntityCollectionInfo<U>(
+      id: id,
+      name: name,
+      treeDef: treeDef,
+    );
+  }
+
+  TkCmsFirestoreDatabaseEntityCollectionRef<TEntity> ref({
+    CvDocumentReference<CvFirestoreDocument>? rootDocument,
+  }) {
+    return TkCmsFirestoreDatabaseEntityCollectionRef<TEntity>(
+      info: cast<TEntity>(),
+      rootDocument: rootDocument,
+    );
+  }
 }

@@ -1,4 +1,6 @@
 import 'package:tekaly_sembast_synced/synced_db_firestore.dart';
+import 'package:tekartik_common_utils/common_utils_import.dart';
+import 'package:tekartik_common_utils/env_utils.dart';
 import 'package:tkcms_common/src/firestore/firestore.dart';
 import 'package:tkcms_common/tkcms_sembast.dart';
 
@@ -50,6 +52,13 @@ class ContentDb {
   var _initialized = false;
   late final Future<void> ready = () async {
     _initialized = true;
+    if (isDebug) {
+      // print('Opening ContentDb for projectId=$projectId');
+      // ignore: avoid_print
+      print(
+        'SyncedDb rootDocument: ${firestoreDatabaseContext.rootDocument} at ${sembastDatabaseContext.path}',
+      );
+    }
     _syncedDb = await AutoSynchronizedFirestoreSyncedDb.open(
       options: AutoSynchronizedFirestoreSyncedDbOptions(
         firestore: firestoreDatabaseContext.firestore,
