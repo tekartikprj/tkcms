@@ -73,8 +73,10 @@ class FirebaseServicesContext {
     );
   }
 
-  /// Compat
+  /// Compat, not valid for rest
   FirebaseContext initContext() => initSync();
+
+  /// Compat, not valid for rest
   FirebaseContext initSync({FirebaseAppOptions? appOptions}) {
     firebaseAppOrNull ??= firebase.initializeApp(
       options: appOptions ?? this.appOptions,
@@ -139,6 +141,7 @@ class FirebaseServicesContext {
     );
   }
 
+  // To prefer
   Future<FirebaseContext> init({
     FirebaseApp? firebaseApp,
     Uri? baseUri,

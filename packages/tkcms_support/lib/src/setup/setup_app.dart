@@ -5,7 +5,6 @@ import 'dart:io';
 
 import 'package:dev_build/menu/menu_io.dart';
 import 'package:tkcms_common/tkcms_auth.dart';
-import 'package:tkcms_common/tkcms_firebase.dart';
 import 'package:tkcms_common/tkcms_firestore.dart';
 
 /// Setup app menu

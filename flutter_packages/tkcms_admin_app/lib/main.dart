@@ -11,7 +11,6 @@ import 'package:tkcms_admin_app/screen/logged_in_screen.dart';
 import 'package:tkcms_admin_app/screen/login_screen.dart';
 import 'package:tkcms_admin_app/screen/start_screen.dart';
 import 'package:tkcms_common/tkcms_auth.dart';
-import 'package:tkcms_common/tkcms_firebase.dart';
 import 'package:tkcms_common/tkcms_firestore.dart';
 import 'package:tkcms_common/tkcms_flavor.dart';
 import 'package:tkcms_user_app/theme/theme1.dart';

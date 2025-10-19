@@ -1,6 +1,5 @@
 import 'package:tekartik_firebase_functions/firebase_functions.dart';
 import 'package:tkcms_common/src/api/token_info.dart';
-import 'package:tkcms_common/src/firebase/firebase.dart';
 import 'package:tkcms_common/src/flavor/flavor.dart';
 import 'package:tkcms_common/tkcms_api.dart';
 import 'package:tkcms_common/tkcms_common.dart';

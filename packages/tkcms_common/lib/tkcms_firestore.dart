@@ -13,3 +13,4 @@ export 'src/firestore/model/fs_models.dart';
 export 'src/firestore/tkcms_firestore_database_collections.dart';
 export 'src/firestore/tkcms_firestore_database_entity_user_access.dart';
 export 'src/model/user_access.dart';
+export 'tkcms_firebase.dart';
