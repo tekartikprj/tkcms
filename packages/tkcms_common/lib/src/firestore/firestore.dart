@@ -7,13 +7,24 @@ typedef FsTimestamp = Timestamp;
 class FirestoreDatabaseContext {
   final Firestore firestore;
 
+  late final String? rootDocumentPath;
+
   /// Document path
-  final CvDocumentReference? rootDocument;
+  late final CvDocumentReference? rootDocument;
 
   FirestoreDatabaseContext({
     required this.firestore,
-    required this.rootDocument,
-  });
+    CvDocumentReference? rootDocument,
+    String? rootDocumentPath,
+  }) {
+    var docPath = this.rootDocumentPath =
+        rootDocumentPath ?? rootDocument?.path;
+    if (docPath != null) {
+      rootDocument ??= CvDocumentReference<CvFirestoreDocument>(docPath);
+    }
+    // ignore: prefer_initializing_formals
+    this.rootDocument = rootDocument;
+  }
 
   @override
   String toString() {
