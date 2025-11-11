@@ -90,7 +90,7 @@ dependencies:
     git:
       url: https://github.com/tekartikprj/tkcms.git
       path: flutter_packages/tkcms_user_app
-  url_launcher: ">=6.1.0"
+  url_launcher: ">=6.3.2"
   tekartik_web_splash:
     git:
       url: https://github.com/tekartik/app_web_utils.dart
@@ -111,7 +111,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ">=5.0.0"
+  flutter_lints: ">=6.0.0"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
