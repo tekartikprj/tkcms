@@ -90,7 +90,7 @@ void _firestoreRulesMenu({required TkCmsFirestoreRulesManager manager}) {
     rules = await manager.getFirestoreRules();
     stdout.writeln('Rules:\n${rules!.ioText}');
   });
-  item('write rules to file (${manager.localPath})', () async {
+  item('get and write rules to file (${manager.localPath})', () async {
     rules ??= await manager.getFirestoreRules();
 
     await manager.writeFile(rules!);

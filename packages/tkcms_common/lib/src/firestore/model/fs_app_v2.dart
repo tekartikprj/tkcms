@@ -3,6 +3,7 @@ import 'package:tkcms_common/tkcms_firestore.dart';
 /// Generic app context
 class TkCmsFsApp extends TkCmsFsEntity {}
 
+/// App collection info.
 final tkCmsFsAppCollectionInfo =
     TkCmsFirestoreDatabaseEntityCollectionInfo<TkCmsFsApp>(
       id: 'app',

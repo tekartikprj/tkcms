@@ -3,22 +3,32 @@ import 'package:tkcms_common/tkcms_common.dart';
 import 'package:tkcms_common/tkcms_firestore.dart';
 import 'package:tkcms_common/tkcms_server.dart';
 
+/// dev command
 var functionCommandV2Dev = 'commandv2dev';
+
+/// prod command
 var functionCommandV2Prod = 'commandv2prod';
 
 /// Callable function (when supported)
 const callableFunctionCommandV2Dev = 'callcommandv2dev';
+
+/// prod command
 const callableFunctionCommandV2Prod = 'callcommandv2prod';
 
+/// dev daily cron
 var functionDailyCronV2Dev = 'daylycronv2dev';
+
+/// prod daily cron
 var functionDailyCronV2Prod = 'daylycronv2prod';
 
+/// base options.
 final baseCmsServerSecuredOptions = TkCmsApiSecuredOptions()
   ..add(apiCommandEcho, apiCommandEchoSecuredOptions)
   ..add(apiCommandEchoSecured, apiCommandEchoSecuredOptionsV2);
 
 /// With app reference
 class TkAppCmsServerAppBase extends TkCmsServerAppV2 {
+  /// App name.
   final String app;
 
   /// App flavor context
@@ -27,6 +37,8 @@ class TkAppCmsServerAppBase extends TkCmsServerAppV2 {
     app: app,
     local: this.firebaseContext.local,
   );
+
+  /// Server app base.
   TkAppCmsServerAppBase(
     this.app, {
     super.version,
@@ -35,30 +47,46 @@ class TkAppCmsServerAppBase extends TkCmsServerAppV2 {
   });
 }
 
+/// Server app.
 class TkCmsServerAppV2 implements TkCmsCommonServerApp {
+  /// Secured options.
   final securedOptions = TkCmsApiSecuredOptions();
+
+  /// version.
   final Version? version;
 
   /// To set to true in firebase function to force extra debug mode
   bool? debug;
   @override
   final int apiVersion;
+
+  /// App context.
   final TkCmsServerAppContext context;
+
+  /// Instance call count.
   int instanceCallCount = 0;
+
+  /// Global call count.
   static int globalInstanceCallCount = 0;
 
+  /// Firebase functions context.
   FirebaseFunctionsContext get firebaseFunctionsContext =>
       context.firebaseFunctionsContext;
 
+  /// Flavor context.
   FlavorContext get flavorContext => context.flavorContext;
 
+  /// Firebase context.
   FirebaseContext get firebaseContext =>
       firebaseFunctionsContext.firebaseContext;
 
+  /// Firebase functions.
   FirebaseFunctions get functions => firebaseFunctionsContext.functions;
 
+  /// Command uri.
   late Uri commandUri;
 
+  /// Server app v2
   TkCmsServerAppV2({
     required this.context,
     required this.apiVersion,
@@ -73,8 +101,10 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
   /// Default read config and call each app read
   Future<void> handleDailyCron() async {}
 
+  /// Firestore
   Firestore get firestore => firebaseContext.firestore;
 
+  /// Cron handler
   Future<void> dailyCronHandler(ScheduleEvent event) async {
     try {
       // ignore: avoid_print
@@ -95,16 +125,19 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
     }
   }
 
+  /// Command V2 Https function.
   HttpsFunction get commandV2 => functions.https.onRequestV2(
     HttpsOptions(cors: true, region: regionBelgium),
     onHttpsCommand,
   );
 
+  /// Command V2 Https callable function.
   HttpsCallableFunction get callCommandV2 => functions.https.onCall(
     onCallableCommand,
     callableOptions: HttpsCallableOptions(region: regionBelgium, cors: true),
   );
 
+  /// Handle secured command.
   Future<ApiResult> handleSecuredCommandRequest(ApiRequest apiRequest) async {
     try {
       var options = securedOptions.getOrThrow(
@@ -138,6 +171,7 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
     }
   }
 
+  /// Handle command once unwrapped.
   Future<ApiResult> onSecuredCommand(ApiRequest apiRequest) async {
     switch (apiRequest.command.v!) {
       case apiCommandEcho:
@@ -147,6 +181,7 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
     }
   }
 
+  /// Echo for test.
   Future<ApiResult> onEchoCommand(ApiRequest apiRequest) async {
     var echoQuery = apiRequest.query<ApiEchoQuery>();
     return ApiEchoResult()
@@ -154,6 +189,7 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
       ..timestamp.v = echoQuery.timestamp.v;
   }
 
+  /// Get info on the server.
   Future<ApiResult> onGetInfoCommand(ApiRequest apiRequest) async {
     var getInfoQuery = apiRequest.queryOrNull<ApiGetInfoQuery>();
     var debug = getInfoQuery?.debug.v ?? false;
@@ -173,6 +209,7 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
     return result;
   }
 
+  /// Cron command.
   Future<ApiResult> onCronCommand(ApiRequest apiRequest) async {
     var app = apiRequest.app.v;
     if (app == null) {
@@ -181,6 +218,7 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
     return ApiEmpty();
   }
 
+  /// Main command handler.
   Future<ApiResult> onCommand(ApiRequest apiRequest) async {
     var command = apiRequest.command.v!;
     switch (command) {
@@ -201,6 +239,7 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
     }
   }
 
+  /// Callable command handler.
   Future<Object> onCallableCommand(CallRequest request) async {
     try {
       var requestMap = request.dataAsMap;
@@ -216,6 +255,7 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
     }
   }
 
+  /// Https command handler
   Future<void> onHttpsCommand(ExpressHttpRequest request) async {
     try {
       var requestMap = request.bodyAsMap;
@@ -234,6 +274,7 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
     }
   }
 
+  /// Send catch response.
   Future<void> sendCatchErrorResponse(
     ExpressHttpRequest request,
     dynamic e,
@@ -277,6 +318,7 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
     await res.send(html);
   }
 
+  /// Send error response.
   Future<void> sendErrorResponse(
     ExpressHttpRequest request,
     int statusCode,

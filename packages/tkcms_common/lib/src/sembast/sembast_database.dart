@@ -1,5 +1,6 @@
 import 'package:tkcms_common/tkcms_sembast.dart';
 
+/// Init entity builders.
 void initTkCmsEntityBuilders() {
   initTkCmsDbEntityBuilders();
 }
@@ -15,10 +16,14 @@ void initTkCmsDbEntityBuilders() {
   }
 }
 
+/// Local db access.
+///
 /// TO REMOVE
 class LocalDbSembast {
+  /// Sembast database.
   final Database db;
 
+  /// Local db access.
   LocalDbSembast({required this.db}) {
     initTkCmsEntityBuilders();
   }

@@ -1,20 +1,32 @@
 import 'package:tekartik_app_crypto/encrypt.dart';
 
+/// Token http header.
 var tokenHeader = 'x-token';
 
 /// Must be supplied
 late String tokenApiPassword;
+
+/// Encrypt data.
 String tokenApiEncrypt(String data) => encrypt(data, tokenApiPassword);
+
+/// Decrypt data.
 String tokenApiDecrypt(String data) => decrypt(data, tokenApiPassword);
 
+/// Token info.
 class TokenInfo {
+  /// Client date time.
   final DateTime clientDateTime;
+
+  /// Server date time.
   final DateTime? serverDateTime;
   // Only from client
+  /// User auth token.
   final String? userAuthToken;
 
+  /// Token info.
   TokenInfo(this.clientDateTime, this.serverDateTime, this.userAuthToken);
 
+  /// Convert to token string.
   String toToken() {
     var buffer = StringBuffer();
     buffer.write(clientDateTime.toIso8601String());
@@ -31,6 +43,7 @@ class TokenInfo {
     return tokenApiEncrypt(buffer.toString());
   }
 
+  /// Create from token string.
   static TokenInfo? fromToken(String? token) {
     if (token != null) {
       String? decodedToken;

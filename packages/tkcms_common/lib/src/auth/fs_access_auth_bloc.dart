@@ -6,24 +6,31 @@ import 'package:tkcms_common/tkcms_auth.dart';
 import 'package:tkcms_common/tkcms_common.dart';
 import 'package:tkcms_common/tkcms_firestore.dart';
 
+/// Debug auth bloc
 var debugTkCmsAuthBloc = false; //devWarning(true);
 
+/// Logged in user with access extension.
 class TkCmsLoggedInUserAccess extends TkCmsLoggedInUser {
+  /// User access info.
   final FsUserAccess? fsUserAccess;
 
+  /// Logged in user with access extension.
   TkCmsLoggedInUserAccess({
     required String super.uid,
     this.fsUserAccess,
     super.flutterFireUser,
   });
 
+  /// Logged in user with access extension.
   TkCmsLoggedInUserAccess.none() : fsUserAccess = null, super.none();
 
   @override
   String get name => flutterFireUser?.email ?? fsUserAccess?.name.v ?? uid;
 
+  /// True if super admin.
   bool get isSuperAdmin => fsUserAccess?.isSuperAdmin ?? false;
 
+  /// True if admin.
   bool get isAdmin => fsUserAccess?.isAdmin ?? false;
 
   @override
@@ -37,16 +44,21 @@ class TkCmsLoggedInUser {
   /// Not null if logged in
   String get uid => _uidOrNull!;
   final String? _uidOrNull;
+
+  /// Flutter fire user if any.
   final User? flutterFireUser;
 
   /// True if logged in
   bool get isLoggedIn => _uidOrNull != null;
 
+  /// Logged in user.
   TkCmsLoggedInUser({required String? uid, this.flutterFireUser})
     : _uidOrNull = uid;
 
+  /// No user.
   TkCmsLoggedInUser.none() : _uidOrNull = null, flutterFireUser = null;
 
+  /// User name.
   String get name => flutterFireUser?.email ?? uid;
 
   @override
@@ -58,53 +70,42 @@ const tkCmsAuthLocalLoggedInUserIdKey = 'tkcmsLocalLoggedInUserId';
 
 /// Auth bloc
 abstract class TkCmsAuthBloc {
+  /// Local auth bloc
   factory TkCmsAuthBloc.local({
     required TkCmsFirestoreDatabaseService db,
     required Prefs prefs,
   }) => AuthBlocLocal(db: db, prefs: prefs);
+
+  /// Firebase auth bloc
   factory TkCmsAuthBloc.firebase({
     required FirebaseAuth auth,
     required TkCmsFirestoreDatabaseService db,
   }) => AuthBlocFirebase(auth: auth, db: db);
 
+  /// Logged in user stream.
   ValueStream<TkCmsLoggedInUser> get loggedInUser;
 
+  /// Logged in user access stream.
   ValueStream<TkCmsLoggedInUserAccess> get loggedInUserAccess;
 
   /// Crash if not logged in
   String get currentUserId;
+
+  /// Sign in.
   Future<void> signInWithEmailAndPassword({
     required String email,
     required String password,
   });
 
+  /// Sign out.
   void signOut();
 
+  /// True if super admin.
   bool get isLoggedInSuperAdmin;
 }
 
+/// Local auth bloc.
 class AuthBlocLocal extends AuthBlocBase {
-  String? prefsGetLocalUserId() =>
-      prefs.getString(tkCmsAuthLocalLoggedInUserIdKey);
-
-  void prefsSetLocalUserId(String? userId) =>
-      prefs.setString(tkCmsAuthLocalLoggedInUserIdKey, userId);
-
-  final Prefs prefs;
-
-  AuthBlocLocal({required super.db, required this.prefs}) {
-    var userId = prefsGetLocalUserId();
-    if (debugTkCmsAuthBloc) {
-      // ignore: avoid_print
-      print('userId from prefs: $userId');
-    }
-    if (userId != null) {
-      _loggedInUserSubject.add(TkCmsLoggedInUser(uid: userId));
-    } else {
-      _loggedInUserSubject.add(TkCmsLoggedInUser(uid: null));
-    }
-  }
-
   @override
   Future<void> signInWithEmailAndPassword({
     required String email,
@@ -178,9 +179,36 @@ class AuthBlocLocal extends AuthBlocBase {
     _loggedInUserSubject.add(TkCmsLoggedInUser.none());
     _loggedInUserAccessSubject.add(TkCmsLoggedInUserAccess.none());
   }
+
+  /// Get local user id.
+  String? prefsGetLocalUserId() =>
+      prefs.getString(tkCmsAuthLocalLoggedInUserIdKey);
+
+  /// Set local user id.
+  void prefsSetLocalUserId(String? userId) =>
+      prefs.setString(tkCmsAuthLocalLoggedInUserIdKey, userId);
+
+  /// Prefs service.
+  final Prefs prefs;
+
+  /// Local auth bloc.
+  AuthBlocLocal({required super.db, required this.prefs}) {
+    var userId = prefsGetLocalUserId();
+    if (debugTkCmsAuthBloc) {
+      // ignore: avoid_print
+      print('userId from prefs: $userId');
+    }
+    if (userId != null) {
+      _loggedInUserSubject.add(TkCmsLoggedInUser(uid: userId));
+    } else {
+      _loggedInUserSubject.add(TkCmsLoggedInUser(uid: null));
+    }
+  }
 }
 
+/// Base bloc
 abstract class AuthBlocBase implements TkCmsAuthBloc {
+  /// Firestore service.
   Firestore get firestore => db.firestore;
   @override
   bool get isLoggedInSuperAdmin =>
@@ -194,6 +222,7 @@ abstract class AuthBlocBase implements TkCmsAuthBloc {
   StreamSubscription? _loggedInUserAccessSubscription;
   String?
   _loggedInUserAccessSubscriptionUserId; // only if _loggedInUserAccessSubscription is not null
+  /// Dispose.
   void dispose() {
     _loggedInUserSubscription?.cancel();
     _loggedInUserAccessSubscription?.cancel();
@@ -203,7 +232,10 @@ abstract class AuthBlocBase implements TkCmsAuthBloc {
   ValueStream<TkCmsLoggedInUserAccess> get loggedInUserAccess =>
       _loggedInUserAccessSubject.stream;
 
+  /// App id.
   String get app => db.app;
+
+  /// Database service.
   final TkCmsFirestoreDatabaseService db;
   final _loggedInUserSubject = BehaviorSubject<TkCmsLoggedInUser>();
   final _loggedInUserAccessSubject = BehaviorSubject<TkCmsLoggedInUserAccess>();
@@ -213,6 +245,7 @@ abstract class AuthBlocBase implements TkCmsAuthBloc {
     _loggedInUserAccessSubscription?.cancel();
   }
 
+  /// Listen to user changes.
   void listenToUserId(TkCmsLoggedInUser loggedInUser) {
     var userId = loggedInUser.uid;
     if (userId != _loggedInUserAccessSubscriptionUserId) {
@@ -262,6 +295,7 @@ abstract class AuthBlocBase implements TkCmsAuthBloc {
     });
   }
 
+  /// Base bloc
   AuthBlocBase({required this.db}) {
     _listenToLoggedInUser().unawait();
   }
@@ -269,8 +303,23 @@ abstract class AuthBlocBase implements TkCmsAuthBloc {
 
 /// firestore based authorization
 class AuthBlocFirebase extends AuthBlocBase {
+  @override
+  Future<void> signInWithEmailAndPassword({
+    required String email,
+    required String password,
+  }) async {
+    await auth.signInWithEmailAndPassword(email: email, password: password);
+  }
+
+  @override
+  void signOut() {
+    auth.signOut();
+  }
+
+  /// Auth service.
   final FirebaseAuth auth;
 
+  /// Auth subscription
   StreamSubscription? authSubscription;
   @override
   void dispose() {
@@ -278,6 +327,7 @@ class AuthBlocFirebase extends AuthBlocBase {
     super.dispose();
   }
 
+  /// Firebase auth bloc
   AuthBlocFirebase({required this.auth, required super.db}) {
     authSubscription = auth.onCurrentUser.listen((User? user) {
       if (debugTkCmsAuthBloc) {
@@ -299,18 +349,5 @@ class AuthBlocFirebase extends AuthBlocBase {
         listenToUserId(loggedInUser);
       }
     });
-  }
-
-  @override
-  Future<void> signInWithEmailAndPassword({
-    required String email,
-    required String password,
-  }) async {
-    await auth.signInWithEmailAndPassword(email: email, password: password);
-  }
-
-  @override
-  void signOut() {
-    auth.signOut();
   }
 }

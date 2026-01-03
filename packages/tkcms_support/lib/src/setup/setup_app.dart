@@ -16,7 +16,7 @@ class TkCmsEntityAccessSetupAppMenu<T extends TkCmsFsEntity> {
   TkCmsEntityAccessSetupAppMenu({required this.setupApp}) {
     menu('Firebase ${setupApp.entityId}', () {
       void showInfo() {
-        stdout.writeln('projectId: ${setupApp.firebaseContext.projectId}');
+        stdout.writeln('projectId: ${setupApp.projectId}');
         stdout.writeln(
           '${setupApp.entityAccess.entityCollectionInfo.id}: ${setupApp.entityId}',
         );
@@ -44,7 +44,9 @@ class TkCmsEntityAccessSetupAppMenu<T extends TkCmsFsEntity> {
 /// Access setup app, list and create users
 class TkCmsEntityAccessSetupApp<T extends TkCmsFsEntity> {
   /// Firebase context
-  final FirebaseContext firebaseContext;
+  FirebaseContext get firebaseContext => _firebaseContext!;
+
+  final FirebaseContext? _firebaseContext;
 
   /// For example an app entityAccess
   final TkCmsFirestoreDatabaseServiceEntityAccess<T> entityAccess;
@@ -56,15 +58,15 @@ class TkCmsEntityAccessSetupApp<T extends TkCmsFsEntity> {
   final List<TkCmsUidEmailPasswordCredentials>? adminCredentials;
 
   /// Firestore
-  Firestore get firestore => firebaseContext.firestore;
+  Firestore get firestore => entityAccess.firestore;
 
   /// Constructor
   TkCmsEntityAccessSetupApp({
-    required this.firebaseContext,
+    FirebaseContext? firebaseContext,
     required this.entityAccess,
     required this.entityId,
     this.adminCredentials,
-  });
+  }) : _firebaseContext = firebaseContext;
 
   /// List users
   Future<void> listUsers() async {
@@ -93,4 +95,16 @@ class TkCmsEntityAccessSetupApp<T extends TkCmsFsEntity> {
       }
     }
   }
+}
+
+/// Setup app extension
+extension TkCmsEntityAccessSetupAppExt<T extends TkCmsFsEntity>
+    on TkCmsEntityAccessSetupApp<T> {
+  /// Access setup app
+  void menu() {
+    TkCmsEntityAccessSetupAppMenu<T>(setupApp: this);
+  }
+
+  /// Compat helper
+  String get projectId => firestore.app.projectId;
 }

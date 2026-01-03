@@ -3,6 +3,7 @@ import 'package:tkcms_common/src/firestore/tkcms_firestore_database_doc_entity.d
 import 'package:tkcms_common/tkcms_common.dart';
 import 'package:tkcms_common/tkcms_firestore.dart';
 
+/// debug flame.
 final debugTkCmsFirestoreDatabaseBasicEntity =
     false; // devWarning(true); //false;
 // ignore: unused_element
@@ -13,6 +14,7 @@ void _log(Object? message) {
   print(message);
 }
 
+/// Basic entity accessor
 class TkCmsFirestoreDatabaseServiceBasicEntityAccessor<
   TFsEntity extends TkCmsFsBasicEntity
 >
@@ -34,6 +36,7 @@ class TkCmsFirestoreDatabaseServiceBasicEntityAccessor<
   @override
   late final Firestore firestore;
   //FirestoreDatabaseContext? firestoreDatabaseContext;
+  /// Basic entity accessor
   TkCmsFirestoreDatabaseServiceBasicEntityAccessor({
     required this.entityCollectionInfo,
 
@@ -134,6 +137,7 @@ class TkCmsFirestoreDatabaseServiceBasicEntityAccessor<
   }
 }
 
+/// Basic entity collection info.
 class TkCmsFirestoreDatabaseBasicEntityCollectionInfo<
   TEntity extends TkCmsFsBasicEntity
 >
@@ -153,6 +157,8 @@ class TkCmsFirestoreDatabaseBasicEntityCollectionInfo<
   /// The entity type is the id!
   @override
   String get entityType => id;
+
+  /// Basic entity collection info.
   TkCmsFirestoreDatabaseBasicEntityCollectionInfo({
     required this.id,
     required this.name,

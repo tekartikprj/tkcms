@@ -2,6 +2,7 @@ import 'package:tekartik_firebase_firestore/utils/copy_utils.dart';
 import 'package:tkcms_common/tkcms_common.dart';
 import 'package:tkcms_common/tkcms_firestore.dart';
 
+/// Debu log
 final debugTkCmsFirestoreDatabaseDocEntity =
     false; // devWarning(true); //false;
 // ignore: unused_element
@@ -21,13 +22,17 @@ abstract class TkCmsFirestoreDatabaseServiceEntityAccessor<
   /// The firestore instance
   Firestore get firestore;
 
+  /// Collection info.
   TkCmsFirestoreDatabaseDocEntityCollectionInfo<TFsEntity>
   get entityCollectionInfo;
 
+  /// Collection reference.
   CvCollectionReference<TFsEntity> get fsEntityCollectionRef;
 
+  /// Document reference.
   CvDocumentReference<TFsEntity> fsEntityRef(String entityId);
 
+  /// Write entity.
   Future<void> writeEntity({required TFsEntity entity});
 }
 
@@ -42,10 +47,12 @@ abstract class TkCmsFirestoreDatabaseServiceUserEntityAccessor<
   Future<void> deleteEntity(String entityId);
 }
 
+/// Doc entity accessor.
 class TkCmsFirestoreDatabaseServiceDocEntityAccessor<
   TFsEntity extends TkCmsFsDocEntity
 >
     implements TkCmsFirestoreDatabaseServiceEntityAccessor<TFsEntity> {
+  /// Root document if any.
   late final CvDocumentReference? rootDocument;
   CvCollectionReference<T> _rootCollection<T extends CvFirestoreDocument>(
     String id,
@@ -62,6 +69,7 @@ class TkCmsFirestoreDatabaseServiceDocEntityAccessor<
   @override
   late final Firestore firestore;
   //FirestoreDatabaseContext? firestoreDatabaseContext;
+  /// Doc entity accessor.
   TkCmsFirestoreDatabaseServiceDocEntityAccessor({
     required this.entityCollectionInfo,
 
@@ -84,11 +92,16 @@ class TkCmsFirestoreDatabaseServiceDocEntityAccessor<
     initTkCmsFsUserAccessBuilders();
   }
 
+  /// Get root path.
   String getRootPath(String path) =>
       rootDocument == null ? path : url.join(rootDocument!.path, path);
+
+  /// Get root doc ref.
   CvDocumentReference<T> rootDocRef<T extends CvFirestoreDocument>(
     String path,
   ) => CvDocumentReference<T>(getRootPath(path));
+
+  /// Get root coll ref.
   CvCollectionReference<T> rootCollRef<T extends CvFirestoreDocument>(
     String path,
   ) => CvCollectionReference<T>(getRootPath(path));
@@ -157,6 +170,7 @@ class TkCmsFirestoreDatabaseServiceDocEntityAccessor<
   }
 }
 
+/// Doc entity info.
 class TkCmsFirestoreDatabaseDocEntityCollectionInfo<
   TEntity extends TkCmsFsDocEntity
 > {
@@ -171,6 +185,8 @@ class TkCmsFirestoreDatabaseDocEntityCollectionInfo<
 
   /// The entity type is the id!
   String get entityType => id;
+
+  /// Doc entity info.
   TkCmsFirestoreDatabaseDocEntityCollectionInfo({
     required this.id,
     required this.name,
@@ -178,10 +194,12 @@ class TkCmsFirestoreDatabaseDocEntityCollectionInfo<
   });
 }
 
+/// Accessor extension.
 extension TkCmsFirestoreDatabaseServiceEntityAccessorExt<
   TEntity extends TkCmsFsEntity
 >
     on TkCmsFirestoreDatabaseServiceEntityAccessor<TEntity> {
+  /// Create new entity from a map.
   TEntity newEntity(Map<String, dynamic> jsonMap) {
     return cvNewModel<TEntity>()..fsDataFromJsonMap(firestore, jsonMap);
   }

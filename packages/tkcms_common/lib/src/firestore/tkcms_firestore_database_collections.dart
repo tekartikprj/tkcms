@@ -1,5 +1,6 @@
 import 'package:tkcms_common/tkcms_firestore.dart';
 
+/// Recursive delete helpers.
 extension TkCmsCollectionReferenceRecursiveDeleteExt on CollectionReference {
   /// Delete all item in a query, return the count deleted
   /// Batch size default to 10
@@ -55,6 +56,7 @@ extension TkCmsCollectionReferenceRecursiveDeleteExt on CollectionReference {
   }
 }
 
+/// Recursive delete helpers.
 extension DocumentReferenceRecursiveDeleteExt on DocumentReference {
   /// Delete recursively
   Future<int> tkcmsRecursiveDelete(
@@ -81,11 +83,14 @@ extension DocumentReferenceRecursiveDeleteExt on DocumentReference {
 /// Collections def for delete
 class TkCmsCollectionsTreeDef {
   TkCmsCollectionsTreeDef._(this._model);
+
+  /// Collections tree def from map.
   TkCmsCollectionsTreeDef({Map? map}) {
     _model = map?.deepClone() ?? Model();
   }
   late final Model _model;
 
+  /// to map.
   Model toMap() => _model;
 
   void _addRootCollections(List<String> collectionIds) {
@@ -139,6 +144,7 @@ class TkCmsCollectionsTreeDef {
     return addCollections(parentCollections, [collectionId]);
   }
 
+  /// Get collection ids from parent collections
   List<String> getCollectionIds(List<String>? parentCollections) {
     if (parentCollections?.isNotEmpty ?? false) {
       var model = _getRootCollectionMap(parentCollections!.first);
@@ -152,6 +158,7 @@ class TkCmsCollectionsTreeDef {
     }
   }
 
+  /// Add a list of collections
   void addCollections(
     List<String>? parentCollections,
     List<String> collectionIds,

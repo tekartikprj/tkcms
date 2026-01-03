@@ -22,6 +22,7 @@ Future<T> apiExceptionWrapAction<T>(Future<T> Function() action) async {
   }
 }
 
+/// Create an api response from an action, catching any error.
 Future<ApiResponse> wrapActionToApiResponse(
   Future<ApiResult> Function() action, {
   bool? debug,
@@ -63,10 +64,17 @@ class ApiException implements Exception {
 
   /// Compat
   final ApiErrorResponse? errorResponse;
+
+  /// Http status code.
   final int? statusCode;
+
+  /// Message.
   late final String? message;
+
+  /// Original cause.
   final Object? cause;
 
+  /// Api exception.
   ApiException({
     /// Preferred error
     this.error,

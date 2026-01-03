@@ -3,17 +3,21 @@ import 'package:tkcms_common/src/import.dart';
 import 'package:tkcms_common/tkcms_api.dart';
 import 'package:tkcms_common/tkcms_common.dart';
 
+/// Time service.
 class TimeService {
   TkCmsApiServiceBase? _apiServiceOrNull;
 
   TkCmsApiServiceBase get _apiService => _apiServiceOrNull ??= gApiService;
   final _offsetSubject = BehaviorSubject<int>();
 
+  /// Time service.
   TimeService({TkCmsApiServiceBase? apiService})
     : _apiServiceOrNull = apiService;
 
+  /// Offset stream.
   Stream<int> get offsetStream => _offsetSubject.stream;
 
+  /// Current timestamp.
   DateTime get timestamp => DateTime.timestamp().add(
     Duration(milliseconds: offsetFromServerTimestampMs),
   );
@@ -25,10 +29,13 @@ class TimeService {
   final _lock = Lock();
 
   // Can be read from prefs in offline mode
+  /// Offset from server timestamp in milliseconds.
   var offsetFromServerTimestampMs = 0;
 
+  /// Sink for the offset.
   StreamSink<int> get offsetSink =>
       _offsetSubject.sink; // server - local => timestamp = local + offset
+  /// Run the service.
   Future<void> run() async {
     // Auto sync every minutes
     () async {
@@ -56,6 +63,7 @@ class TimeService {
     }
   }
 
+  /// Fix the timestamp.
   Future<void> fixTimestamp() async {
     if (!_lock.locked) {
       await _lock.synchronized(() async {
@@ -108,4 +116,5 @@ class TimeService {
   }
 }
 
+/// Global time service.
 final gTimeService = TimeService();

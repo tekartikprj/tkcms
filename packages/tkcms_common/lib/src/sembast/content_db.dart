@@ -6,11 +6,21 @@ import 'package:tkcms_common/tkcms_sembast.dart';
 
 export 'package:tekartik_app_cv_sembast/app_cv_sembast.dart';
 
+/// Note record.
 class DbNote extends DbStringRecordBase {
+  /// Title.
   final title = CvField<String>('title');
+
+  /// Description.
   final description = CvField<String>('description');
+
+  /// Content.
   final content = CvField<String>('content');
+
+  /// Creation date.
   final created = CvField<DbTimestamp>('created');
+
+  /// Updated date.
   final updated = CvField<DbTimestamp>('updated');
 
   /// Pinned note first order by time desc
@@ -27,20 +37,29 @@ class DbNote extends DbStringRecordBase {
   ];
 }
 
+/// Note model.
 final dbNoteModel = DbNote();
 
+/// Init db builders.
 void initDbNotesBuilders() {
   cvAddConstructors([DbNote.new]);
 }
 
+/// Note store.
 final dbNoteStore = cvStringStoreFactory.store<DbNote>('note');
 
+/// notes db name.
 String notesDbName(String projectId) => 'notes_${projectId}_v1.db';
 
+/// Content database.
 class ContentDb {
+  /// Sembast context.
   final SembastDatabaseContext sembastDatabaseContext;
+
+  /// Firestore context.
   final FirestoreDatabaseContext firestoreDatabaseContext;
 
+  /// Project id.
   final String projectId;
 
   /// Synced db
@@ -48,8 +67,11 @@ class ContentDb {
 
   late final AutoSynchronizedFirestoreSyncedDb _syncedDb;
 
+  /// Sembast database.
   late final Database db;
   var _initialized = false;
+
+  /// Ready when initialized.
   late final Future<void> ready = () async {
     _initialized = true;
     if (isDebug) {
@@ -69,10 +91,12 @@ class ContentDb {
     );
   }();
 
+  /// Synchronize with firestore.
   Future<SyncedSyncStat> synchronize() async {
     return await _syncedDb.synchronize();
   }
 
+  /// Close db
   Future<void> close() async {
     if (_initialized) {
       await ready;
@@ -83,6 +107,7 @@ class ContentDb {
   @override
   String toString() => 'ContextDb(app, $projectId, $hashCode)';
 
+  /// Content database.
   ContentDb({
     required this.projectId,
     required this.sembastDatabaseContext,

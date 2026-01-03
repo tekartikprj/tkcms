@@ -2,28 +2,38 @@ import 'package:tekartik_firebase_firestore/utils/copy_utils.dart';
 import 'package:tkcms_common/tkcms_common.dart';
 import 'package:tkcms_common/tkcms_firestore_v2.dart';
 
+/// Invite expiration
 const tkCmsInviteEntityExpirationDefault = Duration(days: 7);
 
+/// Entity access service.
 class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
     implements TkCmsFirestoreDatabaseServiceEntityAccessor<TFsEntity> {
+  /// Root document.
   CvDocumentReference? get rootDocument => _entityCollectionRef.rootDocument;
+
   CvCollectionReference<T> _rootCollection<T extends CvFirestoreDocument>(
     String id,
   ) => CvCollectionReference<T>(getRootPath(id));
+
   CvCollectionReference<TFsEntity> get _entityCollection =>
       _rootCollection<TFsEntity>(_info.id);
+
   CvCollectionReference<TkCmsFsEntityTypeAccess> get _accessCollection =>
       _rootCollection<TkCmsFsEntityTypeAccess>(
         tkCmsFsEntityTypeAccessCollectionId,
       );
+
   CvCollectionReference<TkCmsFsEntityTypeInvite> get _inviteCollection =>
       _rootCollection<TkCmsFsEntityTypeInvite>(
         tkCmsFsEntityTypeInviteCollectionId,
       );
+
   CvDocumentReference<TkCmsFsEntityTypeAccess> get _entityTypeAccessDoc =>
       _accessCollection.doc(_info.id);
+
   CvDocumentReference<TkCmsFsEntityTypeInvite> get _entityTypeInviteDoc =>
       _inviteCollection.doc(_info.id);
+
   @override
   TkCmsFirestoreDatabaseEntityCollectionInfo<TFsEntity>
   get entityCollectionInfo => _info;
@@ -33,13 +43,16 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
   /// Info shortcut
   TkCmsFirestoreDatabaseEntityCollectionInfo<TFsEntity> get info => _info;
 
+  /// Collection ref.
   TkCmsFirestoreDatabaseEntityCollectionRef<TFsEntity> get ref =>
       _entityCollectionRef;
   late TkCmsFirestoreDatabaseEntityCollectionRef<TFsEntity>
   _entityCollectionRef;
   @override
   late final Firestore firestore;
+
   //FirestoreDatabaseContext? firestoreDatabaseContext;
+  /// Entity access service.
   TkCmsFirestoreDatabaseServiceEntityAccess({
     TkCmsFirestoreDatabaseEntityCollectionRef<TFsEntity>? entityCollectionRef,
 
@@ -64,16 +77,22 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
 
     _init();
   }
+
   // ignore: unused_element
   void _init() {
     initTkCmsFsUserAccessBuilders();
   }
 
+  /// Get root path.
   String getRootPath(String path) =>
       rootDocument == null ? path : url.join(rootDocument!.path, path);
+
+  /// Root doc ref.
   CvDocumentReference<T> rootDocRef<T extends CvFirestoreDocument>(
     String path,
   ) => CvDocumentReference<T>(getRootPath(path));
+
+  /// Root coll ref.
   CvCollectionReference<T> rootCollRef<T extends CvFirestoreDocument>(
     String path,
   ) => CvCollectionReference<T>(getRootPath(path));
@@ -84,6 +103,7 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
       .collection(tkCmsFsEntityIdCollectionId)
       .doc(entityId)
       .collection<TkCmsFsUserAccess>(tkCmsFsUserAccessCollectionId);
+
   CvDocumentReference<TkCmsFsUserAccess> _entityUserAccessDoc(
     String entityId,
     String userId,
@@ -91,22 +111,26 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
 
   CvDocumentReference<CvFirestoreDocument> _userAccessTop(String userId) =>
       _entityTypeAccessDoc.collection(tkCmsFsUserIdCollectionId).doc(userId);
+
   CvDocumentReference<TkCmsFsUserAccess> _userEntityAccessDoc(
     String userId,
     String entityId,
   ) => _userAccessTop(userId)
       .collection<TkCmsFsUserAccess>(tkCmsFsEntityAccessCollectionId)
       .doc(entityId);
+
   CvDocumentReference<TkCmsFsUserAccess> _userInviteAccessDoc(
     String userId,
     String inviteCode,
   ) => _userAccessTop(userId)
       .collection<TkCmsFsUserAccess>(tkCmsFsInviteAccessCollectionId)
       .doc(inviteCode);
+
   CvCollectionReference<TkCmsFsInviteId> get _inviteIdCollection =>
       _entityTypeInviteDoc.collection<TkCmsFsInviteId>(
         tkCmsFsInviteIdCollectionId,
       );
+
   CvDocumentReference<TkCmsFsInviteEntity<TFsEntity>> _inviteEntityDoc(
     String inviteId,
     String entityId,
@@ -115,6 +139,7 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
         tkCmsFsInviteEntityCollectionId,
       )
       .doc(entityId);
+
   @override
   CvCollectionReference<TFsEntity> get fsEntityCollectionRef =>
       _entityCollection;
@@ -159,6 +184,7 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
 
   String get _entityName => _info.name;
 
+  /// Set user access from invite.
   Future<void> setUserAccessInviteCode({
     required String userId,
     required String inviteCode,
@@ -406,6 +432,7 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
     });
   }
 
+  /// Mark as deleted
   Future<void> rootMarkAsDeleted(String entityId) async {
     var entityRef = _entityCollection.doc(entityId);
 
@@ -517,6 +544,7 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
     }
   }
 
+  /// Listen on an invite.
   Stream<TkCmsFsInviteEntity<TFsEntity>> onInviteEntity(
     String inviteId,
     String entityId,
@@ -525,6 +553,7 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
   }
 
   // Admin only, 1 day ago
+  /// Purge all deleted entities.
   Future<void> purgeDeletedEntities() async {
     // var now = Timestamp.now().millisecondsSinceEpoch - 30 * 24 * 3600 * 1000;
     var now = Timestamp.fromMillisecondsSinceEpoch(
@@ -545,11 +574,12 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
     }
   }
 
-  /// Get the entity
+  /// Get entity by id.
   Future<TFsEntity> getEntity(String entityId) =>
       fsEntityRef(entityId).get(firestore);
 
   // Admin only
+  /// Delete old invites.
   Future<void> deleteOldInvites() async {
     /// 7 days old
     var pastTimestamp = Timestamp.now().substractDuration(
@@ -591,20 +621,29 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
 
 /// A reference to an entity collection with a root document
 class TkCmsFirestoreDatabaseEntityCollectionRef<TEntity extends TkCmsFsEntity> {
+  /// Collection info.
   final TkCmsFirestoreDatabaseEntityCollectionInfo<TEntity> info;
+
+  /// Root document.
   final CvDocumentReference<CvFirestoreDocument>? rootDocument;
+
+  /// Raw collection ref.
   CvCollectionReference<TEntity> get collectionRef =>
       CvCollectionReference<TEntity>(path);
 
+  /// Entity collection ref.
   TkCmsFirestoreDatabaseEntityCollectionRef({
     required this.info,
     required this.rootDocument,
   });
 
+  /// Path.
   String get path => _fixPath(info.id);
+
   String _fixPath(String path) =>
       rootDocument == null ? path : url.join(rootDocument!.path, path);
 
+  /// Cast to a subtype.
   TkCmsFirestoreDatabaseEntityCollectionRef<U> cast<U extends TkCmsFsEntity>() {
     return TkCmsFirestoreDatabaseEntityCollectionRef<U>(
       info: info.cast<U>(),
@@ -613,6 +652,7 @@ class TkCmsFirestoreDatabaseEntityCollectionRef<TEntity extends TkCmsFsEntity> {
   }
 }
 
+/// Entity collection info.
 class TkCmsFirestoreDatabaseEntityCollectionInfo<TEntity extends TkCmsFsEntity>
     implements TkCmsFirestoreDatabaseDocEntityCollectionInfo<TEntity> {
   /// Sub collections def
@@ -630,6 +670,8 @@ class TkCmsFirestoreDatabaseEntityCollectionInfo<TEntity extends TkCmsFsEntity>
   /// The entity type is the id!
   @override
   String get entityType => id;
+
+  /// Entity collection info.
   TkCmsFirestoreDatabaseEntityCollectionInfo({
     required this.id,
     required this.name,
@@ -637,6 +679,7 @@ class TkCmsFirestoreDatabaseEntityCollectionInfo<TEntity extends TkCmsFsEntity>
   });
 
   // Copy
+  /// Copy with new values.
   TkCmsFirestoreDatabaseEntityCollectionInfo<TEntity> copyWith({
     String? id,
     String? name,
@@ -659,12 +702,29 @@ class TkCmsFirestoreDatabaseEntityCollectionInfo<TEntity extends TkCmsFsEntity>
     );
   }
 
+  /// Create a ref from info.
   TkCmsFirestoreDatabaseEntityCollectionRef<TEntity> ref({
     CvDocumentReference<CvFirestoreDocument>? rootDocument,
   }) {
     return TkCmsFirestoreDatabaseEntityCollectionRef<TEntity>(
       info: cast<TEntity>(),
       rootDocument: rootDocument,
+    );
+  }
+}
+
+/// Extension to get service access from collection ref
+extension TkCmsFirestoreDatabaseEntityCollectionRefExt<
+  TEntity extends TkCmsFsEntity
+>
+    on TkCmsFirestoreDatabaseEntityCollectionRef<TEntity> {
+  /// Get service access
+  TkCmsFirestoreDatabaseServiceEntityAccess<TEntity> serviceAccess({
+    required Firestore firestore,
+  }) {
+    return TkCmsFirestoreDatabaseServiceEntityAccess<TEntity>(
+      entityCollectionRef: this,
+      firestore: firestore,
     );
   }
 }

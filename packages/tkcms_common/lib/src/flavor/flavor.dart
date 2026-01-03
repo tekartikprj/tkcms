@@ -1,7 +1,16 @@
+/// Dev flavor
 const appFlavorDev = 'dev';
+
+/// Devx flavor
 const appFlavorDevx = 'devx';
+
+/// Prod flavor
 const appFlavorProd = 'prod';
+
+/// Prodx flavor
 const appFlavorProdx = 'prodx';
+
+/// Test flavor
 const appFlavorTest = 'test';
 
 /// Handle common firebase hosting such as my-app-dev.web.app
@@ -15,6 +24,7 @@ FlavorContext tkCmsFlavorContextFromHost(String host) {
   return _map[flavorText] ?? FlavorContext.dev;
 }
 
+/// Get flavor context from app id.
 FlavorContext tkCmsFlavorContextFromApp(String appId) {
   var hosting = appId.split('.').first;
   var flavorText = hosting.split('-').last.split('_').last;
@@ -99,17 +109,23 @@ class AppFlavorContext {
 
   /// App id (firestore app name)
   String get appId => app;
+
+  /// Flavor context.
   final FlavorContext flavorContext;
+
+  /// True for local app.
   final bool local;
 
   String? _uniqueAppName;
 
+  /// App flavor context
   AppFlavorContext({
     required this.flavorContext,
     bool? local,
     required this.app,
   }) : local = local ?? false;
 
+  /// Flavor suffix if not prod.
   String get ifNotProdSuffix => flavorContext.ifNotProdFlavor;
 
   /// Unique app name for local use
@@ -119,6 +135,8 @@ class AppFlavorContext {
     var hasSuffix = app.endsWith(flavorSuffix1) || app.endsWith(flavorSuffix2);
     return '$app${hasSuffix ? '' : flavorSuffix1}${local ? '_local' : ''}';
   }();
+
+  /// App key suffix.
   late final appKeySuffix = '_$uniqueAppName';
 
   /// test local flavor

@@ -11,4 +11,5 @@ export 'src/sembast/sembast.dart';
 export 'src/sembast/sembast_database.dart';
 export 'src/sembast/sembast_firestore_entity_utils.dart';
 
+/// Sembast timestamp
 typedef DbTimestamp = Timestamp;

@@ -6,20 +6,33 @@ import 'package:tkcms_common/tkcms_common.dart';
 import 'package:tkcms_common/tkcms_firestore.dart';
 
 // New V2 ff only
+/// Dev command
 var functionCommandV1Dev = 'commandv1dev';
+
+/// Prod command
 var functionCommandV1Prod = 'commandv1prod';
 
 /// Callable function (when supported)
 const callableFunctionCommandV1Dev = 'callcommandv1dev';
+
+/// Prod callable command
 const callableFunctionCommandV1Prod = 'callcommandv1prod';
 
+/// Dev daily cron
 var functionDailyCronV1Dev = 'daylycronv1dev';
+
+/// Prod daily cron
 var functionDailyCronV1Prod = 'daylycronv1prod';
 
+/// Command handler.
 class CommandHandler {
+  /// Server app.
   final TkCmsServerApp serverApp;
+
+  /// Request
   final ExpressHttpRequest request;
 
+  /// Send error response
   Future<void> sendErrorResponse(int statusCode, CvModel model) async {
     var res = request.response;
     res.statusCode = statusCode;
@@ -27,8 +40,10 @@ class CommandHandler {
     await res.send(model.toMap());
   }
 
+  /// Command handler
   CommandHandler({required this.serverApp, required this.request});
 
+  /// Send basic response.
   Future<void> sendResponse(CvModel model) async {
     var res = request.response;
     try {
@@ -40,10 +55,13 @@ class CommandHandler {
   }
 }
 
+/// Cron command handler.
 class CronCommandHandler extends CommandHandler {
+  /// Cron command handler.
   CronCommandHandler({required super.request, required super.serverApp});
 
   // Read clientDateTime and return client and server date time
+  /// handle request
   Future<void> handle() async {
     // ignore: avoid_print
     print('cron');
@@ -52,12 +70,15 @@ class CronCommandHandler extends CommandHandler {
   }
 }
 
+/// Info command handler
 class InfoCommandHandler extends CommandHandler {
   TokenInfo? _tokenInfo;
 
+  /// Get token from header.
   TokenInfo? getTokenOrNull() =>
       _tokenInfo ??= TokenInfo.fromToken(request.headers.value(tokenHeader));
 
+  /// Check token validity
   Future<bool> requireToken() async {
     var tokenInfo = getTokenOrNull();
     if (tokenInfo?.serverDateTime == null) {
@@ -80,9 +101,11 @@ class InfoCommandHandler extends CommandHandler {
     return true;
   }
 
+  /// Info command handler
   InfoCommandHandler({required super.request, required super.serverApp});
 
   // Read clientDateTime and return client and server date time
+  /// handle request
   Future<void> handle() async {
     var instanceCallCount = ++serverApp.instanceCallCount;
     var globalInstanceCallCount = ++TkCmsServerApp.globalInstanceCallCount;
@@ -107,10 +130,13 @@ void ensureFields(CvModel model, CvFields fields) {
   }
 }
 
+/// Time command handler.
 class GetTimeCommandHandler extends CommandHandler {
+  /// Time command handler.
   GetTimeCommandHandler({required super.request, required super.serverApp});
 
   // Read clientDateTime and return client and server date time
+  /// handle request
   Future<void> handle() async {
     await sendResponse(
       ApiGetTimestampResponse()
@@ -119,24 +145,37 @@ class GetTimeCommandHandler extends CommandHandler {
   }
 }
 
+/// Create a server app.
 typedef TkCmsCreateServerAppFunction =
     TkCmsCommonServerApp Function(TkCmsServerAppContext context);
 
+/// Common server app interface.
 abstract interface class TkCmsCommonServerApp {
+  /// Api version.
   int get apiVersion;
+
+  /// init functions.
   void initFunctions();
   // v1 & v2
+  /// command.
   String get command;
   // v2
+  /// callable command.
   String get callCommand;
 }
 
+/// Server app context.
 class TkCmsServerAppContext {
   /// Compat
   FirebaseFunctionsContext get firebaseFunctionsContext => firebaseContext;
+
+  /// Firebase context.
   late final FirebaseContext firebaseContext;
+
+  /// Flavor context.
   final FlavorContext flavorContext;
 
+  /// Server app context.
   TkCmsServerAppContext({
     /// Compat
     FirebaseFunctionsContext? firebaseFunctionsContext,
@@ -148,29 +187,43 @@ class TkCmsServerAppContext {
 /// Compat
 typedef TkCmsServerApp = TkCmsServerAppV1;
 
+/// Server app v1.
 class TkCmsServerAppV1 implements TkCmsCommonServerApp {
   @override
   final int apiVersion;
+
+  /// App context.
   final TkCmsServerAppContext context;
+
+  /// Instance call count.
   int instanceCallCount = 0;
+
+  /// Global call count.
   static int globalInstanceCallCount = 0;
 
+  /// Firebase functions context.
   FirebaseFunctionsContext get firebaseFunctionsContext =>
       context.firebaseFunctionsContext;
 
+  /// Flavor context.
   FlavorContext get flavorContext => context.flavorContext;
 
+  /// Firebase context.
   FirebaseContext get firebaseContext =>
       firebaseFunctionsContext.firebaseContext;
 
+  /// Functions.
   FirebaseFunctions get functions => firebaseFunctionsContext.functions;
 
+  /// Command uri.
   late Uri commandUri;
 
+  /// Server app v1
   TkCmsServerAppV1({required this.context, this.apiVersion = apiVersion1}) {
     initFunctions();
   }
 
+  /// base handler
   Future<void> handle(ExpressHttpRequest request) async {
     var uri = request.uri;
 
@@ -213,6 +266,7 @@ class TkCmsServerAppV1 implements TkCmsCommonServerApp {
     return false;
   }
 
+  /// Handle core command.
   Future<bool> handleCore(ExpressHttpRequest request) async {
     var uri = request.uri;
 
@@ -261,6 +315,7 @@ class TkCmsServerAppV1 implements TkCmsCommonServerApp {
     }
   }
 
+  /// Default handle.
   Future<void> handleDefault(ExpressHttpRequest request) async {
     var uri = request.uri;
 
@@ -281,8 +336,10 @@ class TkCmsServerAppV1 implements TkCmsCommonServerApp {
     }
   }
 
+  /// Firestore instance.
   Firestore get firestore => firebaseContext.firestore;
 
+  /// Cron handler
   Future<void> dailyCronHandler(ScheduleEvent event) async {
     try {
       // ignore: avoid_print
@@ -303,21 +360,25 @@ class TkCmsServerAppV1 implements TkCmsCommonServerApp {
     }
   }
 
+  /// Command V1 Https function.
   HttpsFunction get commandV1 => functions.https.onRequestV2(
     HttpsOptions(cors: true, region: regionBelgium),
     commandHttp,
   );
 
+  /// Command V2 Https function.
   HttpsFunction get commandV2 => functions.https.onRequestV2(
     HttpsOptions(cors: true, region: regionBelgium),
     onHttpsCommandV2,
   );
 
+  /// Command V2 Https callable function.
   HttpsCallableFunction get callCommandV2 => functions.https.onCall(
     onCallableCommandV2,
     callableOptions: HttpsCallableOptions(region: regionBelgium, cors: true),
   );
 
+  /// V2 command handler.
   Future<ApiResult> onCommandV2(ApiRequest apiRequest) async {
     switch (apiRequest.command.v!) {
       case commandTimestamp:
@@ -331,6 +392,7 @@ class TkCmsServerAppV1 implements TkCmsCommonServerApp {
     }
   }
 
+  /// V2 callable handler.
   Future<Object> onCallableCommandV2(CallRequest request) async {
     try {
       var requestMap = request.dataAsMap;
@@ -359,6 +421,7 @@ class TkCmsServerAppV1 implements TkCmsCommonServerApp {
     }
   }
 
+  /// V2 https handler.
   Future<void> onHttpsCommandV2(ExpressHttpRequest request) async {
     try {
       var requestMap = request.bodyAsMap;
@@ -381,6 +444,7 @@ class TkCmsServerAppV1 implements TkCmsCommonServerApp {
     }
   }
 
+  /// Command http handler.
   Future<void> commandHttp(ExpressHttpRequest request) async {
     try {
       if (await handleCustom(request)) {
@@ -397,6 +461,7 @@ class TkCmsServerAppV1 implements TkCmsCommonServerApp {
     }
   }
 
+  /// Send catch response.
   Future<void> sendCatchErrorResponse(
     ExpressHttpRequest request,
     dynamic e,
@@ -418,6 +483,7 @@ class TkCmsServerAppV1 implements TkCmsCommonServerApp {
     await res.send(model.toMap());
   }
 
+  /// Send error response
   Future<void> sendErrorResponse(
     ExpressHttpRequest request,
     int statusCode,
@@ -501,9 +567,12 @@ class TkCmsServerAppV1 implements TkCmsCommonServerApp {
   }
 }
 
+/// Fb info command handler.
 class GetInfoFbCommandHandler extends CommandHandler {
+  /// Firebase context.
   final FirebaseContext firebaseContext;
 
+  /// Fb info command handler.
   GetInfoFbCommandHandler({
     required this.firebaseContext,
     required super.request,
@@ -511,6 +580,7 @@ class GetInfoFbCommandHandler extends CommandHandler {
   });
 
   // Read clientDateTime and return client and server date time
+  /// handle request
   Future<void> handle() async {
     await sendResponse(
       ApiInfoFbResponse()..projectId.v = firebaseContext.projectId,

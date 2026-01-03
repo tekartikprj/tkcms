@@ -30,18 +30,30 @@ extension on fbfs.Timestamp {
   }
 }
 
+/// Local db options from firestore.
 class LocalDbFromFsOptions {
+  /// User id.
   final String userId;
 
+  /// Local db options from firestore.
   LocalDbFromFsOptions({required this.userId});
 }
 
+/// Sync helper.
 class SembastFirestoreSyncHelper<TFsEntity extends fbfs.TkCmsFsEntity> {
+  /// Sembast database.
   final sembast.Database db;
+
+  /// Firestore service.
   fbfs.Firestore get firestore => entityAccess.firestore;
+
+  /// Entity access.
   final fbfs.TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity> entityAccess;
+
+  /// Options.
   final LocalDbFromFsOptions options;
 
+  /// Sync helper.
   SembastFirestoreSyncHelper({
     required this.db,
     required this.entityAccess,
@@ -78,6 +90,7 @@ class SembastFirestoreSyncHelper<TFsEntity extends fbfs.TkCmsFsEntity> {
     }
   }
 
+  /// Add fs entity to local db.
   Future<void> localDbAddFsEntity({required TFsEntity fsEntity}) async {
     await db.transaction((txn) async {
       var recordRef = sembast.cvDbEntityStore.record(fsEntity.id);
@@ -89,6 +102,7 @@ class SembastFirestoreSyncHelper<TFsEntity extends fbfs.TkCmsFsEntity> {
     });
   }
 
+  /// Sync user access.
   Future<void> localDbSyncUserAccess(
     String entityId, {
     required LocalDbFromFsOptions options,
@@ -108,6 +122,7 @@ class SembastFirestoreSyncHelper<TFsEntity extends fbfs.TkCmsFsEntity> {
     });
   }
 
+  /// Add and sync user access.
   Future<void> localDbAddAndSyncUserAccess({
     required TFsEntity fsEntity,
   }) async {
@@ -136,6 +151,7 @@ class SembastFirestoreSyncHelper<TFsEntity extends fbfs.TkCmsFsEntity> {
     });
   }
 
+  /// Generate local db from firestore.
   Future<void> generateLocalDbFromEntitiesUserAccess() async {
     var firestore = entityAccess.firestore;
     var userId = options.userId;
@@ -212,11 +228,13 @@ class SembastFirestoreSyncHelper<TFsEntity extends fbfs.TkCmsFsEntity> {
     }
   }
 
+  /// Sync one entity.
   Future<void> localDbSyncOne({required String entityId}) async {
     var fsEntity = await entityAccess.fsEntityRef(entityId).get(firestore);
     await localDbAddAndSyncUserAccess(fsEntity: fsEntity);
   }
 
+  /// Delete one entity.
   Future<void> localDbDeleteOne({required String entityId}) async {
     await db.transaction((txn) async {
       await sembast.cvDbEntityStore.record(entityId).delete(txn);
@@ -253,6 +271,7 @@ Future<void> _dbCheckAndPutUserAccess(
   }
 }
 
+/// Add entity to local db.
 Future<void> localDbAddEntity<TFsEntity extends fbfs.TkCmsFsEntity>({
   required sembast.Database db,
   required TFsEntity fsEntity,
@@ -267,6 +286,7 @@ Future<void> localDbAddEntity<TFsEntity extends fbfs.TkCmsFsEntity>({
   });
 }
 
+/// Generate local db from fs.
 Future<void>
 generateLocalDbFromEntitiesUserAccess<TFsEntity extends fbfs.TkCmsFsEntity>({
   required sembast.Database db,

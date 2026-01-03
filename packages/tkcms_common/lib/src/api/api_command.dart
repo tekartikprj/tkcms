@@ -22,10 +22,14 @@ final apiCommandEchoSecuredOptions = ApiSecuredEncOptions(
   encPaths: ['timestamp'],
   password: 'GhxVdwaE3mNwEjjCzv9FreaGHJEu4vfQ',
 );
+
+/// V1 options
 final apiCommandEchoSecuredOptionsV1 = ApiSecuredEncOptions(
   encPaths: ['timestamp'],
   password: _password,
 );
+
+/// V2 options
 final apiCommandEchoSecuredOptionsV2 = ApiSecuredEncOptions(
   encPaths: ['timestamp'],
   password: _password,

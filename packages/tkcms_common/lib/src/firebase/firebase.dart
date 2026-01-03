@@ -6,32 +6,61 @@ import 'package:tkcms_common/tkcms_auth.dart';
 import 'package:tkcms_common/tkcms_firestore.dart';
 import 'package:tkcms_common/tkcms_server.dart';
 
+/// Firebase services context.
 class FirebaseServicesContext {
+  /// Firestore service, might be null.
   final FirestoreService? firestoreServiceOrNull;
+
+  /// Firestore service.
   FirestoreService get firestoreService => firestoreServiceOrNull!;
 
+  /// Functions service, might be null.
   final FirebaseFunctionsService? functionsServiceOrNull;
+
+  /// Functions service.
   FirebaseFunctionsService get functionsService => functionsServiceOrNull!;
 
+  /// Functions call service, might be null.
   final FirebaseFunctionsCallService? functionsCallServiceOrNull;
+
+  /// Functions call service.
   FirebaseFunctionsCallService get functionsCallService =>
       functionsCallServiceOrNull!;
 
+  /// Storage service, might be null.
   final StorageService? storageServiceOrNull;
+
+  /// Storage service.
   StorageService get storageService => storageServiceOrNull!;
 
+  /// Auth service, might be null
   final FirebaseAuthService? authServiceOrNull;
+
+  /// Auth service.
   FirebaseAuthService get authService => authServiceOrNull!;
 
+  /// Firebase instance.
   final Firebase firebase;
+
+  /// true if local.
   bool get local => firebase.isLocal;
+
+  /// Firebase app.
   FirebaseApp get firebaseApp => firebaseAppOrNull!;
+
+  /// Firebase app, might be null.
   FirebaseApp? firebaseAppOrNull;
 
+  /// functions call region, might be null.
   String? functionsCallRegionOrNull;
+
+  /// functions call region.
   String get functionsCallRegion => functionsCallRegionOrNull!;
 
+  /// App options.
   FirebaseAppOptions? appOptions;
+
+  /// Firebase services context.
   FirebaseServicesContext({
     bool? local,
     required this.firebase,
@@ -51,6 +80,7 @@ class FirebaseServicesContext {
        functionsServiceOrNull = functionsService,
        firebaseAppOrNull = firebaseApp;
 
+  /// Copy with new services.
   FirebaseServicesContext copyWith({
     FirebaseApp? firebaseApp,
     FirebaseFunctionsService? functionsService,
@@ -111,12 +141,14 @@ class FirebaseServicesContext {
     );
   }
 
+  /// Init firebase app.
   Future<FirebaseApp> initApp() async {
     return firebaseAppOrNull ??= await firebase.initializeAppAsync(
       options: appOptions,
     );
   }
 
+  /// Init server context.
   Future<FirebaseContext> initServer({FirebaseApp? firebaseApp}) async {
     firebaseApp ??= firebaseAppOrNull ??= await firebase.initializeAppAsync(
       options: appOptions,
@@ -142,6 +174,7 @@ class FirebaseServicesContext {
   }
 
   // To prefer
+  /// Init all services and return a context.
   Future<FirebaseContext> init({
     FirebaseApp? firebaseApp,
     Uri? baseUri,
@@ -196,26 +229,61 @@ class TkCmsFirebaseContext {
   /// Compat
   FirebaseContext get firebaseContext => this;
 
+  /// Firebase app.
   final FirebaseApp firebaseApp;
+
+  /// Firebase services.
   final Firebase firebase;
+
+  /// Project id.
   String get projectId => firebaseApp.options.projectId ?? 'local';
+
+  /// Firestore service, might be null.
   late Firestore? firestoreOrNull;
+
+  /// Firestore service.
   Firestore get firestore => firestoreOrNull!;
 
+  /// Storage service, might be null.
   late Storage? storageOrNull;
+
+  /// Storage service.
   Storage get storage => storageOrNull!;
+
+  /// Auth service, might be null.
   FirebaseAuth? authOrNull;
+
+  /// Auth service.
   FirebaseAuth get auth => authOrNull!;
+
+  /// Functions service, might be null.
   FirebaseFunctions? functionsOrNull;
+
+  /// Functions service.
   FirebaseFunctions get functions => functionsOrNull!;
+
+  /// Functions call service, might be null.
   FirebaseFunctionsCall? functionsCallOrNull;
+
+  /// Functions call service.
   FirebaseFunctionsCall get functionsCall => functionsCallOrNull!;
+
+  /// true if local.
   bool get local => firebase.isLocal;
+
+  /// Server app, might be null.
   TkCmsCommonServerApp? serverAppOrNull;
+
+  /// Server app.
   TkCmsCommonServerApp get serverApp => serverAppOrNull!;
+
+  /// Firebase functions server, might be null.
   FfServer? ffServerOrNull;
+
+  /// Firebase functions server.
   FfServer get ffServerHttp => ffServerOrNull!;
 
+  /// Firebase context.
   TkCmsFirebaseContext({
     /// Ignored
     bool? local,
@@ -245,6 +313,7 @@ class TkCmsFirebaseContext {
        ffServerOrNull = ffServer ?? firebaseContext?.ffServerOrNull,
        serverAppOrNull = serverApp ?? firebaseContext?.serverAppOrNull;
 
+  /// Firebase functions http.
   FirebaseFunctionsHttp get functionsHttp => functions as FirebaseFunctionsHttp;
 
   /// Clone the object allowing overriding all properties
@@ -280,7 +349,10 @@ class TkCmsFirebaseContext {
   }
 }
 
+/// Global context.
 FirebaseContext? firebaseContextOrNull;
+
+/// Global context.
 @Deprecated('Use globalFirebaseContext')
 FirebaseContext get firebaseContext => () {
   if (firebaseContextOrNull == null) {

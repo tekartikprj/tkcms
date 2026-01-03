@@ -2,11 +2,13 @@ import 'package:tkcms_common/tkcms_common.dart';
 
 /// Timestamp async provider
 abstract class TkCmsTimestampProvider {
+  /// Fetch current time.
   Future<DateTime> fetchNow();
 }
 
 /// Timestamp service
 abstract class TkCmsTimestampService {
+  /// Get current time.
   Future<DateTime> now({bool forceFetch = false});
 
   /// Local timestamp service
@@ -23,6 +25,7 @@ abstract class TkCmsTimestampService {
     return _TkCmsTimestampService(timestampProvider: timestampProvider);
   }
 
+  /// Dispose service.
   void dispose();
 }
 

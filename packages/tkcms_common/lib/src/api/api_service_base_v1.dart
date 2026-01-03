@@ -2,30 +2,54 @@ import 'package:tekartik_app_http/app_http.dart' as universal;
 import 'package:tkcms_common/tkcms_api.dart';
 import 'package:tkcms_common/tkcms_common.dart';
 
+/// Paris timezone
 const timezoneEuropeParis = 'Europe/Paris';
 
+/// Timestamp command.
 const commandTimestamp = 'timestamp';
+
+/// Proxy command.
 const commandProxy = 'proxy';
+
+/// Cron command.
 const commandCron = 'cron';
+
+/// Info command.
 const commandInfo = 'info';
+
+/// InfoFb command.
 const commandInfoFb = 'infofb';
 
+/// Global api service.
 late TkCmsApiServiceBase gApiService;
 
+/// API service interface.
 abstract interface class ApiService {
+  /// Send a command.
   Future<T> send<T extends CvModel>(String command, CvModel request);
 }
 
 /// Compat
 typedef TkCmsApiServiceBase = TkCmsApiServiceBaseV1;
 
+/// V1 implementation.
 class TkCmsApiServiceBaseV1 implements ApiService {
   /// Can be modified by client.
   late Uri commandUri;
+
+  /// Inner client.
   late Client innerClient;
+
+  /// Retry client.
   late Client retryClient;
+
+  /// Secure client.
   late Client secureClient;
+
+  /// For testing.
   var retryCount = 0;
+
+  /// Http client factory.
   final HttpClientFactory httpClientFactory;
 
   /// Set from login and prefs
@@ -36,11 +60,13 @@ class TkCmsApiServiceBaseV1 implements ApiService {
     initApiBuilders();
   }
 
+  /// Log.
   void log(String message) {
     // ignore: avoid_print
     print(message);
   }
 
+  /// Init client.
   Future<void> initClient() async {
     innerClient = httpClientFactory.newClient();
     retryClient = RetryClient(
@@ -78,6 +104,7 @@ class TkCmsApiServiceBaseV1 implements ApiService {
         retryClient; //SecureAuthClient(secureApiService: this, inner: client);
   }
 
+  /// Get command uri.
   Uri getUri(String command) {
     return commandUri.replace(path: url.join(commandUri.path, command));
   }
@@ -118,6 +145,7 @@ class TkCmsApiServiceBaseV1 implements ApiService {
     }
   }
 
+  /// Send a command using a client.
   Future<ServiceResponse<T>> clientSend<T extends CvModel>(
     Client client,
     String command,
@@ -192,15 +220,18 @@ class TkCmsApiServiceBaseV1 implements ApiService {
     }
   }
 
+  /// Get server info.
   Future<ApiInfoResponse> getInfo() async {
     return await send<ApiInfoResponse>(commandInfo, ApiEmpty());
   }
 
+  /// Get firebase info.
   Future<ApiInfoFbResponse> getInfoFb() async {
     return await send<ApiInfoFbResponse>(commandInfoFb, ApiEmpty());
   }
 
   //@override
+  /// Get server timestamp.
   Future<ApiGetTimestampResponse> getTimestamp() async {
     return await send<ApiGetTimestampResponse>(
       commandTimestamp,
@@ -210,12 +241,20 @@ class TkCmsApiServiceBaseV1 implements ApiService {
   }
 }
 
+/// Service response.
 class ServiceResponse<T extends CvModel> {
+  /// Response data.
   T? data;
+
+  /// Status code.
   int statusCode;
+
+  /// Error if any.
   ApiErrorResponse? error;
 
+  /// Check if successful.
   bool get isSuccessful => data != null;
 
+  /// Service response.
   ServiceResponse({required this.statusCode, this.data, this.error});
 }

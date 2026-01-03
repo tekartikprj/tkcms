@@ -1,7 +1,9 @@
 import 'package:tkcms_common/tkcms_flavor.dart';
 
+/// App name.
 const tkCmsAppDev = 'tkcms_dev';
 
+/// App helpers.
 class TkCmsApp {}
 
 FlavorContext? _hostDetectFlavorContext(String host) {

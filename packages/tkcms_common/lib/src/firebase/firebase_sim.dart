@@ -12,12 +12,16 @@ import 'package:tkcms_common/tkcms_firebase.dart';
 /// Global sim context.
 FirebaseContext? firebaseContextSimOrNull;
 
+/// Firebase functions context.
 FirebaseFunctionsContext? get firebaseFunctionsContextSimOrNull =>
     firebaseContextSimOrNull;
+
+/// Set global functions context.
 set firebaseFunctionsContextSimOrNull(FirebaseFunctionsContext? value) {
   firebaseContextSimOrNull = value;
 }
 
+/// Init memory services.
 Future<FirebaseServicesContext> initFirebaseServicesSimMemory() async {
   var firebase = FirebaseLocal();
   var firestoreService = newFirestoreServiceMemory();
@@ -37,6 +41,7 @@ Future<FirebaseServicesContext> initFirebaseServicesSimMemory() async {
   return firebaseServicesContext;
 }
 
+/// Init memory services synchronously.
 FirebaseServicesContext initFirebaseServicesSimMemorySync() {
   var firebase = FirebaseLocal();
   var firestoreService = newFirestoreServiceMemory();
@@ -52,6 +57,7 @@ FirebaseServicesContext initFirebaseServicesSimMemorySync() {
   return firebaseServicesContext;
 }
 
+/// Init memory services and context.
 Future<FirebaseContext> initFirebaseFunctionsSimMemory() async {
   var firebaseContext = (await initFirebaseServicesSimMemory()).initContext();
   return firebaseContext;
@@ -80,6 +86,7 @@ FirebaseContext initFirebaseSim({
   ).initContext();
 }
 
+/// Init memory services and context, reusing global context if any.
 FirebaseContext initFirebaseSimMemory({
   required String projectId,
 
@@ -92,6 +99,7 @@ FirebaseContext initFirebaseSimMemory({
   );
 }
 
+/// Init new memory services and context.
 FirebaseContext initNewFirebaseSimMemory({
   required String projectId,
 

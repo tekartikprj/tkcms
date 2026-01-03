@@ -5,9 +5,13 @@ export 'package:tkcms_common/tkcms_sembast.dart';
 
 /// Convenient database context
 class SembastDatabaseContext {
+  /// Sembast factory.
   final DatabaseFactory factory;
+
+  /// Path.
   final String path;
 
+  /// Convenient database context
   SembastDatabaseContext({required this.factory, required this.path});
 
   @override
@@ -21,8 +25,10 @@ extension SembastDatabaseContextExt on SembastDatabaseContext {}
 
 /// Convenient databases context
 class SembastDatabasesContext extends SembastDatabaseContext {
+  /// Convenient databases context
   SembastDatabasesContext({required super.factory, required super.path});
 
+  /// Get a database context by name.
   SembastDatabaseContext db(String name) =>
       SembastDatabaseContext(factory: factory, path: join(path, name));
 }

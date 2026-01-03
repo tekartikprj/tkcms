@@ -20,6 +20,7 @@ class TkCmsApiSecuredOptions {
   TkCmsTimestampService? timestampServiceOrNull;
   final _map = <String, ApiSecuredEncOptions>{};
 
+  /// Add commands
   void addCommands(List<String> commands, ApiSecuredEncOptions options) {
     for (var command in commands) {
       add(command, options);
@@ -41,10 +42,12 @@ class TkCmsApiSecuredOptions {
     }
   }
 
+  /// Get options for a command.
   ApiSecuredEncOptions? get(String command) {
     return _map[command];
   }
 
+  /// Get options for a command, throwing if not found.
   ApiSecuredEncOptions getOrThrow(String command) {
     var options = get(command);
     if (options == null) {
@@ -53,11 +56,13 @@ class TkCmsApiSecuredOptions {
     return options;
   }
 
+  /// Wrap a request in a secured request.
   ApiRequest wrapInSecuredRequest(ApiRequest apiRequest) {
     var options = get(apiRequest.apiCommand)!;
     return apiRequest.wrapInSecuredRequest(options);
   }
 
+  /// Wrap a request in a secured request v2.
   Future<ApiRequest> wrapInSecuredRequestV2Async(ApiRequest apiRequest) {
     var options = get(apiRequest.apiCommand)!;
     var timestampService = timestampServiceOrNull!;
@@ -67,6 +72,7 @@ class TkCmsApiSecuredOptions {
     );
   }
 
+  /// Unwrap a secured request.
   ApiRequest unwrapSecuredRequest(ApiRequest apiRequest, {bool check = true}) {
     var command = apiRequest.securedInnerRequestCommand;
 
@@ -81,6 +87,7 @@ class TkCmsApiSecuredOptions {
     return apiRequest.unwrapSecuredRequest(options, check: check);
   }
 
+  /// Unwrap a secured request v2.
   Future<ApiRequest> unwrapSecuredRequestV2Async(
     ApiRequest apiRequest, {
     bool check = true,
@@ -102,16 +109,22 @@ class TkCmsApiSecuredOptions {
     );
   }
 
+  /// Add all options from another instance.
   void addAll(TkCmsApiSecuredOptions other) {
     _map.addAll(other._map);
   }
 }
 
+/// V2 api service.
 class TkCmsApiServiceBaseV2 implements TkCmsTimestampProvider {
+  /// Secured options.
   @Deprecated('use securedOptions')
   TkCmsApiSecuredOptions get secureOptions => securedOptions;
+
+  /// Secured options.
   final securedOptions = TkCmsApiSecuredOptions();
 
+  /// Api version.
   final int apiVersion;
   // V2
   // ---
@@ -126,6 +139,8 @@ class TkCmsApiServiceBaseV2 implements TkCmsTimestampProvider {
 
   /// Can be modified by client.
   late Client _client;
+
+  /// Http client factory.
   final HttpClientFactory httpClientFactory;
 
   /// Rest support
@@ -152,27 +167,32 @@ class TkCmsApiServiceBaseV2 implements TkCmsTimestampProvider {
     }
   }
 
+  /// Log helper.
   void log(String message) {
     // ignore: avoid_print
     print(message);
   }
 
+  /// Initialize the client.
   Future<void> initClient() async {
     _client = httpClientFactory.newClient();
   }
 
+  /// Call 'timestamp' command
   Future<ApiGetTimestampResult> callGetTimestamp() async {
     return await callGetApiResult<ApiGetTimestampResult>(
       ApiRequest()..command.v = commandTimestamp,
     );
   }
 
+  /// Get server timestamp
   Future<ApiGetTimestampResult> getTimestamp() async {
     return await getApiResult<ApiGetTimestampResponse>(
       ApiRequest()..command.v = commandTimestamp,
     );
   }
 
+  /// Get server info
   Future<ApiGetInfoResult> getInfo({ApiGetInfoQuery? query}) async {
     return await getApiResult<ApiGetInfoResult>(
       ApiRequest()
@@ -187,7 +207,7 @@ class TkCmsApiServiceBaseV2 implements TkCmsTimestampProvider {
       ApiRequest()..command.v = commandInfoFb,
     );
   }*/
-
+  /// Echo a query.
   Future<ApiEchoResult> echo(ApiEchoQuery query) async {
     return await getApiResult<ApiEchoResult>(
       ApiRequest()
@@ -196,15 +216,18 @@ class TkCmsApiServiceBaseV2 implements TkCmsTimestampProvider {
     );
   }
 
+  /// Secured echo a query.
   Future<ApiEchoResult> securedEcho(ApiEchoQuery query) async {
     var apiRequest = ApiRequest(command: apiCommandEcho, data: query.toMap());
     return getSecuredApiResult<ApiEchoResult>(apiRequest);
   }
 
+  /// Call cron command
   Future<ApiEmpty> cron() async {
     return await getApiResult<ApiEmpty>(ApiRequest()..command.v = commandCron);
   }
 
+  /// Get timestamp using http.
   Future<ApiGetTimestampResult> httpGetTimestamp() async {
     return await httpGetApiResult<ApiGetTimestampResult>(
       ApiRequest()..command.v = commandTimestamp,
@@ -229,6 +252,7 @@ class TkCmsApiServiceBaseV2 implements TkCmsTimestampProvider {
     return await action();
   }
 
+  /// Get api result (callable or http)
   Future<R> getApiResult<R extends ApiResult>(
     ApiRequest request, {
     bool? preferHttp,
@@ -238,6 +262,7 @@ class TkCmsApiServiceBaseV2 implements TkCmsTimestampProvider {
     });
   }
 
+  /// Get secured api result (callable or http)
   Future<R> getSecuredApiResult<R extends ApiResult>(
     ApiRequest apiRequest, {
     bool? preferHttp,
@@ -291,6 +316,7 @@ class TkCmsApiServiceBaseV2 implements TkCmsTimestampProvider {
     }
   }
 
+  /// Get api result through a callable.
   Future<R> callGetApiResult<R extends ApiResult>(ApiRequest request) async {
     assert(callableApi != null);
 
@@ -309,6 +335,7 @@ class TkCmsApiServiceBaseV2 implements TkCmsTimestampProvider {
     });
   }
 
+  /// Get api result through http.
   Future<R> httpGetApiResult<R extends ApiResult>(ApiRequest request) async {
     assert(httpsApiUri != null);
     return apiExceptionWrapAction(() async {
@@ -369,6 +396,7 @@ class TkCmsApiServiceBaseV2 implements TkCmsTimestampProvider {
     });
   }
 
+  /// Close client.
   Future<void> close() async {
     try {
       _client.close();

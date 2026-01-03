@@ -5,6 +5,7 @@ import 'package:tkcms_common/tkcms_auth.dart';
 /// Firebase identity (service account or user)
 class TkCmsFbIdentity {}
 
+/// Firebase identity extension.
 extension TkCmsFbIdentityExtension on TkCmsFbIdentity {
   /// True for service account
   bool get isServiceAccount => this is TkCmsFbIdentityServiceAccount;
@@ -21,6 +22,7 @@ extension TkCmsFbIdentityExtension on TkCmsFbIdentity {
       ? TkCmsFbIdentityServiceAccount.userLocalId
       : _asUser.firebaseUser!.uid;
 
+  /// User local id.
   String? get userLocalId => userOrAccountId;
 
   TkCmsFbIdentityUser? get _asUserOrNull => anyAs<TkCmsFbIdentityUser?>();
@@ -40,8 +42,13 @@ extension TkCmsFbIdentityExtension on TkCmsFbIdentity {
 
 /// Firebase identity service account
 class TkCmsFbIdentityServiceAccount implements TkCmsFbIdentity {
+  /// Service account user local id.
   static String get userLocalId => '__service_account__';
+
+  /// Project id.
   final String? projectId;
+
+  /// Firebase identity service account
   const TkCmsFbIdentityServiceAccount({required this.projectId});
 
   @override
@@ -50,8 +57,10 @@ class TkCmsFbIdentityServiceAccount implements TkCmsFbIdentity {
 
 /// Firebase identity user
 class TkCmsFbIdentityUser implements TkCmsFbIdentity {
+  /// App user.
   final FirebaseUser user;
 
+  /// Firebase identity user
   const TkCmsFbIdentityUser({required this.user});
 
   @override
@@ -72,18 +81,23 @@ class TkCmsFbIdentityUser implements TkCmsFbIdentity {
 
 /// Firebase identity bloc state
 class TkCmsFbIdentityBlocState {
+  /// Current identity.
   final TkCmsFbIdentity? identity;
 
+  /// Firebase identity bloc state
   TkCmsFbIdentityBlocState({required this.identity});
 }
 
 /// Firebase identity bloc
 class TkCmsFbIdentityBloc
     extends AutoDisposeStateBaseBloc<TkCmsFbIdentityBlocState> {
+  /// Auth service.
   late final FirebaseAuth auth;
 
   /// True for service account
   bool get hasAdminCredentials => auth.app.hasAdminCredentials;
+
+  /// Firebase identity bloc
   TkCmsFbIdentityBloc({FirebaseAuth? auth}) {
     this.auth = auth ??= FirebaseAuth.instance;
     var app = auth.app;

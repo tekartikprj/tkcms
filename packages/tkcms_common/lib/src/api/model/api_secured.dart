@@ -21,6 +21,7 @@ const apiSecuredEncOptionsVersion2 = 2;
 
 /// Encoding options
 class ApiSecuredEncOptions {
+  /// version
   final int version;
 
   /// List of paths to encode (timestamp, list.0, ...
@@ -29,6 +30,7 @@ class ApiSecuredEncOptions {
   /// Encryption password
   final String password;
 
+  /// Secured encoding options.
   ApiSecuredEncOptions({
     this.encPaths = const [_securedTimestampKey],
     required this.password,
@@ -39,6 +41,7 @@ class ApiSecuredEncOptions {
   String toString() => 'EncPaths($encPaths, $version, ${password.obfuscate()})';
 }
 
+/// Secured encoding options extension.
 extension ApiSecuredEncOptionsExt on ApiSecuredEncOptions {
   /// This is the value to compare
   String hashValuesDigest(List<Object?> values) {
@@ -55,6 +58,7 @@ extension ApiSecuredEncOptionsExt on ApiSecuredEncOptions {
     return aesEncrypt(text, password);
   }
 
+  /// Decrypt text
   String decryptText(String encrypted) {
     return aesDecrypt(encrypted, password);
   }
@@ -69,10 +73,15 @@ extension ApiSecuredEncOptionsExt on ApiSecuredEncOptions {
 
 const _securedTimestampKey = 'timestamp';
 
+/// Secured query.
 class ApiSecuredQuery extends ApiQuery {
   /// Generated client timestamp, always part of enc
   final timestamp = CvField<String>(_securedTimestampKey);
+
+  /// Encrypted data.
   final enc = CvField<String>('enc');
+
+  /// Query data.
   final data = CvField<Map>('data');
 
   @override
@@ -95,29 +104,36 @@ extension TekartikApiQuerySecuredExt on ApiSecuredQuery {
   }
 }
 
+/// Secured request extension.
 extension TekartikApiQuerySecuredRequestExt on ApiRequest {
+  /// Get inner secured request.
   ApiRequest get securedInnerRequest {
     return (mapValueFromParts(data.v as Map, ['data']) as Map).cv<ApiRequest>();
   }
 
+  /// Get inner secured request command.
   String get securedInnerRequestCommand {
     return (mapValueFromParts(data.v as Map, ['data', 'command']) as String);
   }
 
+  /// Get secured query timestamp.
   String? get securedQueryTimestampOrNull {
     return (mapValueFromParts(data.v as Map, ['timestamp']) as String?);
   }
 
+  /// For testing only.
   @visibleForTesting
   void securedOverrideEncValue(String text) {
     data.v!['enc'] = text;
   }
 
+  /// Get existing enc value.
   String get securedExistingEncValue => securedQuery.enc.v!;
 
   /// For secured request only
   ApiSecuredQuery get securedQuery => data.v!.cv<ApiSecuredQuery>();
 
+  /// Wrap a request in a secured request.
   ApiRequest wrapInSecuredRequest(
     ApiSecuredEncOptions options, {
     TkCmsTimestampService? timestampService,
@@ -135,6 +151,7 @@ extension TekartikApiQuerySecuredRequestExt on ApiRequest {
   }
 
   // Secured v2 only
+  /// Wrap a request in a secured request v2.
   Future<ApiRequest> wrapInSecuredRequestV2Async(
     ApiSecuredEncOptions options, {
     required TkCmsTimestampService timestampService,
@@ -165,6 +182,7 @@ extension TekartikApiQuerySecuredRequestExt on ApiRequest {
     return securedRequest;
   }
 
+  /// Unwrap a secured request v2.
   Future<ApiRequest> unwrapSecuredRequestV2Async(
     ApiSecuredEncOptions options, {
     required TkCmsTimestampService timestampService,
@@ -226,6 +244,7 @@ extension TekartikApiQuerySecuredRequestExt on ApiRequest {
     return innerRequest;
   }
 
+  /// Unwrap a secured request.
   ApiRequest unwrapSecuredRequest(
     ApiSecuredEncOptions options, {
     bool check = true,
@@ -289,6 +308,7 @@ extension TekartikModelSecuredExt on Map {
     }
   }
 */
+  /// Debug map.
   Model encDebugMap(ApiSecuredEncOptions options) {
     var map = newModel();
     var values = valuesToHash(options.encPaths);
@@ -305,20 +325,29 @@ String apiSecuredHashValuesDigest(List<Object?> values) {
   return md5Hash(jsonEncode(values));
 }
 
+/// Md5 of a text
 String apiSecuredDigestText(String text) => md5Hash(text);
 
+/// To check against dart vm.
 String apiSecuredHashValuesAsTest(List<Object?> values) {
   return jsonEncode(values);
 }
 
+/// Secured map extension.
 extension TekartikModelSecuredPrvExt on Map {
+  /// Generate encrypted text from paths.
   String encGenerate(ApiSecuredEncOptions options) =>
       aesEncrypt(encHashText(options.encPaths), options.password);
+
+  /// Generate hash from paths.
   String encGenerateHashText(ApiSecuredEncOptions options) =>
       encHashText(options.encPaths);
 
+  /// Get unencrypted value.
   String encGenerateUnencryptedValue(List<String> encPaths) =>
       jsonEncode(valuesToHash(encPaths));
+
+  /// Hash from paths.
   String encHashText(List<String> encPaths) =>
       md5Hash(encGenerateUnencryptedValue(encPaths));
 

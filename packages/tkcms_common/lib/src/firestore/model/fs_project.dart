@@ -4,6 +4,7 @@ import 'package:tkcms_common/tkcms_flavor.dart';
 /// V2
 class TkCmsFsProject extends TkCmsFsEntity {}
 
+/// Project collection info.
 var fsProjectCollectionInfo =
     TkCmsFirestoreDatabaseEntityCollectionInfo<TkCmsFsProject>(
       id: 'project',
@@ -11,6 +12,7 @@ var fsProjectCollectionInfo =
       treeDef: TkCmsCollectionsTreeDef(map: {'item': null}),
     );
 
+/// Project access from context.
 TkCmsFirestoreDatabaseServiceEntityAccess<TkCmsFsProject>
 fsProjectAccessFromAppFlavorContext({
   required AppFlavorContext appFlavorContext,

@@ -68,24 +68,35 @@ final dbProjectStore = cvStringStoreFactory.store<DbProject>('project');
 final dbProjectUserStore =
     cvStringStoreFactory.store<DbProjectUser>('projectUser');
 */
+/// Synced entities options.
 class SyncedEntitiesOptions {
+  /// Sembast context.
   final SembastDatabaseContext sembastDatabaseContext;
 
+  /// Synced entities options.
   SyncedEntitiesOptions({required this.sembastDatabaseContext});
 }
 
 /// Users Projects db, synchronized with firestore projects
 class SyncedEntitiesDb<T extends TkCmsFsEntity> {
+  /// Entity access.
   late final TkCmsFirestoreDatabaseServiceEntityAccess<T> entityAccess;
+
+  /// Synced db.
   late final AutoSynchronizedFirestoreSyncedDb syncedDb;
 
-  /// Database
+  /// Sembast database.
   late final Database db;
+
+  /// Options.
   late final SyncedEntitiesOptions options;
+
+  /// Synced entities db.
   SyncedEntitiesDb({required this.entityAccess, required this.options}) {
     initTkCmsEntityBuilders();
   }
 
+  /// Close db.
   Future<void> close() async {
     if (!_closed) {
       _closed = true;
@@ -98,6 +109,8 @@ class SyncedEntitiesDb<T extends TkCmsFsEntity> {
 
   var _closed = false;
   var _started = false;
+
+  /// Ready when initialized.
   late var ready = () async {
     if (_closed) {
       throw StateError('closed');
@@ -117,6 +130,7 @@ class SyncedEntitiesDb<T extends TkCmsFsEntity> {
     await syncedDb.initialSynchronizationDone();
   }();
 
+  /// Sync one entity.
   Future<void> syncOneFromFirestore({
     required String entityId,
     required String userId,
