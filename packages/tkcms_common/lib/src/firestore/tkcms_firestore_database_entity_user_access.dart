@@ -432,14 +432,14 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
     });
   }
 
-  /// Mark as deleted
-  Future<void> rootMarkAsDeleted(String entityId) async {
+  /// Mark as deleted, true if modified
+  Future<bool> rootMarkAsDeleted(String entityId) async {
     var entityRef = _entityCollection.doc(entityId);
 
-    await firestore.cvRunTransaction((txn) async {
+    return await firestore.cvRunTransaction((txn) async {
       var entity = await txn.refGet(entityRef);
       if (entity.deleted.v == true) {
-        return;
+        return false;
       }
 
       entity.deleted.v = true;
@@ -449,6 +449,7 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
         entity.toMap()
           ..withServerTimestamp(tkCmsFsEntityModel.deletedTimestamp),
       );
+      return true;
     });
   }
 
