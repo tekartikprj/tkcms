@@ -10,6 +10,10 @@ updates:
     schedule:
       interval: "monthly"
   - package-ecosystem: "pub"
+    directory: "flutter_packages/tkcms_user_app"
+    schedule:
+      interval: "monthly"
+  - package-ecosystem: "pub"
     directory: "packages/tkcms_common"
     schedule:
       interval: "monthly"
@@ -19,6 +23,10 @@ updates:
       interval: "monthly"
   - package-ecosystem: "pub"
     directory: "packages/tkcms_support"
+    schedule:
+      interval: "monthly"
+  - package-ecosystem: "pub"
+    directory: "packages/tkcms_test"
     schedule:
       interval: "monthly"
   - package-ecosystem: "github-actions"
