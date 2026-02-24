@@ -65,6 +65,10 @@ class ContentDb {
   /// Synced db
   SyncedDb get syncedDb => _syncedDb.syncedDb;
 
+  /// Auto synchronizer
+  /// Allow getting synchronizer and listening to it.
+  AutoSynchronizedFirestoreSyncedDb get autoSynchronizeDb => _syncedDb;
+
   late final AutoSynchronizedFirestoreSyncedDb _syncedDb;
 
   /// Sembast database.
