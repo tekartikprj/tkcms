@@ -128,7 +128,7 @@ class AppFlavorContext {
   /// Flavor suffix if not prod.
   String get ifNotProdSuffix => flavorContext.ifNotProdFlavor;
 
-  /// Unique app name for local use
+  /// Unique app name for local use (_dev or _prod)
   String get uniqueAppName => _uniqueAppName ??= () {
     var flavorSuffix1 = '_${flavorContext.flavor}';
     var flavorSuffix2 = '-${flavorContext.flavor}';
@@ -169,6 +169,15 @@ class AppFlavorContext {
       local: local,
       app: appId,
     );
+  }
+
+  /// Default common package extension (.dev for dev, nothing for prod)
+  String get ifNotProdFlavorExtension {
+    var flavor = flavorContext.ifNotProdFlavor;
+    if (flavor.isEmpty) {
+      return flavor;
+    }
+    return '.$flavor';
   }
 }
 
