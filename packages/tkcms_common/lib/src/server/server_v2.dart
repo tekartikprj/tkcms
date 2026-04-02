@@ -15,12 +15,6 @@ const callableFunctionCommandV2Dev = 'callcommandv2dev';
 /// prod command
 const callableFunctionCommandV2Prod = 'callcommandv2prod';
 
-/// dev daily cron
-var functionDailyCronV2Dev = 'daylycronv2dev';
-
-/// prod daily cron
-var functionDailyCronV2Prod = 'daylycronv2prod';
-
 /// base options.
 final baseCmsServerSecuredOptions = TkCmsApiSecuredOptions()
   ..add(apiCommandEcho, apiCommandEchoSecuredOptions)
@@ -98,32 +92,8 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
     securedOptions.timestampServiceOrNull = TkCmsTimestampService.local();
   }
 
-  /// Default read config and call each app read
-  Future<void> handleDailyCron() async {}
-
   /// Firestore
   Firestore get firestore => firebaseContext.firestore;
-
-  /// Cron handler
-  Future<void> dailyCronHandler(ScheduleEvent event) async {
-    try {
-      // ignore: avoid_print
-      print(
-        'dailyCron handler ${DateTime.now().toIso8601String()} ${event.jobName} ${event.scheduleTime}',
-      );
-      try {
-        await handleDailyCron();
-      } catch (e) {
-        // ignore: avoid_print
-        print('cron dev error $e');
-      }
-      // ignore: avoid_print
-      print('Cron done');
-    } catch (e) {
-      // ignore: avoid_print
-      print('Cron Caught error $e');
-    }
-  }
 
   /// Command V2 Https function.
   HttpsFunction get commandV2 => functions.https.onRequestV2(
@@ -211,10 +181,6 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
 
   /// Cron command.
   Future<ApiResult> onCronCommand(ApiRequest apiRequest) async {
-    var app = apiRequest.app.v;
-    if (app == null) {
-      await handleDailyCron();
-    }
     return ApiEmpty();
   }
 
@@ -342,59 +308,26 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
 
   @override
   void initFunctions() {
-    String cron;
     switch (flavorContext) {
       case FlavorContext.prod:
       case FlavorContext.prodx:
         command = functionCommandV2Prod;
         callCommand = callableFunctionCommandV2Prod;
-        cron = functionDailyCronV2Prod;
         break;
       case FlavorContext.dev:
       case FlavorContext.devx:
       default:
         command = functionCommandV2Dev;
         callCommand = callableFunctionCommandV2Dev;
-        cron = functionDailyCronV2Dev;
         break;
     }
     switch (apiVersion) {
       case apiVersion2:
         functions[command] = commandV2;
         functions[callCommand] = callCommandV2;
-        /*
-    functions[callableCommand] = functions.https.onCall((request) {
-    var userId = request.context.auth?.uid;
-    var requestData = request.dataAsMap;
-    var callableCommand = requestData.cv<ApiRequest>();
-    var command = callableCommand.command.v!;
-    var data = callableCommand.data.value;
-    return onNotelioCommand(userId, command, data);
-    },*/
         break;
       default:
         throw 'unsupported version $apiVersion';
-    }
-
-    if (!firebaseContext.local) {
-      try {
-        // Every day at 11pm
-        functions[cron] = functions.scheduler.onSchedule(
-          ScheduleOptions(
-            schedule: '0 23 * * *',
-            region: regionBelgium,
-            timeZone: timezoneEuropeParis,
-          ),
-          dailyCronHandler,
-        );
-      } catch (e, st) {
-        if (isRunningAsJavascript) {
-          // ignore: avoid_print
-          print('error setup daily cron: $e');
-          // ignore: avoid_print
-          print(st);
-        }
-      }
     }
   }
 }

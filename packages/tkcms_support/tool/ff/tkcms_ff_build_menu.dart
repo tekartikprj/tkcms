@@ -16,7 +16,7 @@ String get tkTestCmsProjectId => tkTestCmsProjectIdKv.value ?? 'tkcms';
 var tkCmsFfPackagesTop = join('..', 'tkcms_ff');
 var tkCmsGcfNodeAppOptions = GcfNodeAppOptions(
   projectId: tkTestCmsProjectId,
-  functions: [functionCommandV2Dev, functionDailyCronV2Dev],
+  functions: [functionCommandV2Dev],
   packageTop: tkCmsFfPackagesTop,
 );
 
