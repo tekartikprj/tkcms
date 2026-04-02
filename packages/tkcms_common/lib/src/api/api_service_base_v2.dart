@@ -135,7 +135,12 @@ class TkCmsApiServiceBaseV2 implements TkCmsTimestampProvider {
   FirebaseFunctionsCallable? callableApi;
 
   /// Required for v2
-  late String app;
+  String get app => _appOrNull!;
+
+  /// Allow setting later
+  set app(String app) => _appOrNull = app;
+
+  String? _appOrNull;
 
   /// Can be modified by client.
   late Client _client;
@@ -300,7 +305,9 @@ class TkCmsApiServiceBaseV2 implements TkCmsTimestampProvider {
 
   /// Fix the request filling the app
   ApiRequest fixRequestApp(ApiRequest request) {
-    request.app.v ??= app;
+    if (_appOrNull != null) {
+      request.app.v ??= app;
+    }
     return request;
   }
 
@@ -308,7 +315,7 @@ class TkCmsApiServiceBaseV2 implements TkCmsTimestampProvider {
     ApiRequest request, {
     bool? preferHttp,
   }) async {
-    request.app.v ??= app;
+    request = fixRequestApp(request);
     if (callableApi != null && (preferHttp != true)) {
       return await callGetApiResult<R>(request);
     } else {
