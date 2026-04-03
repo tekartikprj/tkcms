@@ -6,6 +6,7 @@ import 'package:tekartik_firebase_functions_call_http/functions_call_memory.dart
 import 'package:tekartik_firebase_functions_http/firebase_functions_memory.dart';
 // ignore: depend_on_referenced_packages
 import 'package:tekartik_firebase_local/firebase_local.dart';
+import 'package:tekartik_firebase_storage_fs/storage_fs.dart';
 import 'package:tkcms_common/tkcms_common.dart';
 import 'package:tkcms_common/tkcms_firebase.dart';
 
@@ -27,6 +28,7 @@ Future<FirebaseServicesContext> initFirebaseServicesSimMemory() async {
   var firestoreService = newFirestoreServiceMemory();
   var functionsService = firebaseFunctionsServiceMemory;
   var functionsCallService = firebaseFunctionsCallServiceMemory;
+  var storageService = newStorageServiceMemory();
   final authService = FirebaseAuthServiceSembast(
     databaseFactory: newDatabaseFactoryMemory(),
   );
@@ -37,6 +39,7 @@ Future<FirebaseServicesContext> initFirebaseServicesSimMemory() async {
     functionsCallService: functionsCallService,
     functionsCallRegion: regionBelgium,
     authService: authService,
+    storageService: storageService,
   );
   return firebaseServicesContext;
 }
@@ -47,12 +50,14 @@ FirebaseServicesContext initFirebaseServicesSimMemorySync() {
   var firestoreService = newFirestoreServiceMemory();
   var functionsService = firebaseFunctionsServiceMemory;
   var functionsCallService = firebaseFunctionsCallServiceMemory;
+  var storageService = newStorageServiceMemory();
   var firebaseServicesContext = FirebaseServicesContext(
     firebase: firebase,
     firestoreService: firestoreService,
     functionsService: functionsService,
     functionsCallService: functionsCallService,
     functionsCallRegion: regionBelgium,
+    storageService: storageService,
   );
   return firebaseServicesContext;
 }

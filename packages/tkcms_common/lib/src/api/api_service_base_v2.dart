@@ -170,6 +170,7 @@ class TkCmsApiServiceBaseV2 implements TkCmsTimestampProvider {
     if (app != null) {
       this.app = app;
     }
+    _client = httpClientFactory.newClient();
   }
 
   /// Log helper.
@@ -179,9 +180,8 @@ class TkCmsApiServiceBaseV2 implements TkCmsTimestampProvider {
   }
 
   /// Initialize the client.
-  Future<void> initClient() async {
-    _client = httpClientFactory.newClient();
-  }
+  /// To deprecate - no-op
+  Future<void> initClient() async {}
 
   /// Call 'timestamp' command
   Future<ApiGetTimestampResult> callGetTimestamp() async {
