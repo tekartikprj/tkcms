@@ -96,9 +96,9 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
   Firestore get firestore => firebaseContext.firestore;
 
   /// Command V2 Https function.
-  HttpsFunction get commandV2 => functions.https.onRequestV2(
-    HttpsOptions(cors: true, region: regionBelgium),
+  HttpsFunction get commandV2 => functions.https.onRequest(
     onHttpsCommand,
+    httpsOptions: HttpsOptions(cors: true, region: regionBelgium),
   );
 
   /// Command V2 Https callable function.
