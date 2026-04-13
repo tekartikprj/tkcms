@@ -530,15 +530,7 @@ class TkCmsServerAppV1 implements TkCmsCommonServerApp {
       case apiVersion2:
         functions[command] = commandV2;
         functions[callCommand] = callCommandV2;
-        /*
-    functions[callableCommand] = functions.https.onCall((request) {
-    var userId = request.context.auth?.uid;
-    var requestData = request.dataAsMap;
-    var callableCommand = requestData.cv<ApiRequest>();
-    var command = callableCommand.command.v!;
-    var data = callableCommand.data.value;
-    return onNotelioCommand(userId, command, data);
-    },*/
+
         break;
       default:
         throw 'unsupported version $apiVersion';

@@ -42,6 +42,17 @@ void main() {
       firestore: firestore,
     );
   });
+  test('path', () async {
+    expect(db.fsEntityCollectionRef.path, 'type1');
+    var otherDb = TkCmsFirestoreDatabaseServiceEntityAccess<TestFsEntity>(
+      entityCollectionInfo: testFsEntityCollectionInfo,
+      firestoreDatabaseContext: FirestoreDatabaseContext(
+        firestore: firestore,
+        rootDocumentPath: 'app/test',
+      ),
+    );
+    expect(otherDb.fsEntityCollectionRef.path, 'app/test/type1');
+  });
   test('create entity with id', () async {
     var entity = TestFsEntity()
       ..name.v = 'e1'
