@@ -62,11 +62,11 @@ class TkCmsEntityAccessSetupApp<T extends TkCmsFsEntity> {
 
   /// Constructor
   TkCmsEntityAccessSetupApp({
-    FirebaseContext? firebaseContext,
+    this._firebaseContext,
     required this.entityAccess,
     required this.entityId,
     this.adminCredentials,
-  }) : _firebaseContext = firebaseContext;
+  });
 
   /// List users
   Future<void> listUsers() async {
