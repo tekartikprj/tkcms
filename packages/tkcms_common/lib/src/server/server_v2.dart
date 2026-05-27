@@ -327,7 +327,7 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
         functions[callCommand] = callCommandV2;
         break;
       default:
-        throw 'unsupported version $apiVersion';
+        throw StateError('unsupported version $apiVersion');
     }
   }
 }

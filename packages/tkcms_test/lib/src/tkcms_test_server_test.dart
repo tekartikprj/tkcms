@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:dev_test/test.dart';
 import 'package:tekartik_firebase_functions/ff_server.dart';
 import 'package:tkcms_common/tkcms_app.dart';
@@ -84,7 +86,6 @@ void testServerTest(Future<TestApiContext> Function() initAllContext) {
     if (apiService.callableApi != null) {
       var timestamp = await apiService.callGetTimestamp();
       expect(Timestamp.tryParse(timestamp.timestamp.v!), isNotNull);
-      // ignore: avoid_print
       print(timestamp);
     }
   });
@@ -141,13 +142,11 @@ void testServerTest(Future<TestApiContext> Function() initAllContext) {
   test('timestamp', () async {
     var timestamp = await apiService.getTimestamp();
     expect(Timestamp.tryParse(timestamp.timestamp.v!), isNotNull);
-    // ignore: avoid_print
     print(timestamp);
   });
   test('httpTimestamp', () async {
     var timestamp = await apiService.httpGetTimestamp();
     expect(Timestamp.tryParse(timestamp.timestamp.v!), isNotNull);
-    // ignore: avoid_print
     print(timestamp);
   });
   for (var preferHttp in [false, true]) {

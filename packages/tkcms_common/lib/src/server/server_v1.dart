@@ -533,7 +533,7 @@ class TkCmsServerAppV1 implements TkCmsCommonServerApp {
 
         break;
       default:
-        throw 'unsupported version $apiVersion';
+        throw StateError('unsupported version $apiVersion');
     }
 
     if (!firebaseContext.local) {
