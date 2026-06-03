@@ -1,5 +1,5 @@
 import 'package:sembast/sembast_memory.dart';
-import 'package:tekartik_app_sembast/sembast.dart';
+
 import 'package:tekartik_firebase_auth_sembast/auth_sembast.dart';
 import 'package:tekartik_firebase_firestore_sembast/firestore_sembast.dart';
 import 'package:tekartik_firebase_functions_call_http/functions_call_memory.dart';
@@ -70,12 +70,12 @@ Future<FirebaseContext> initFirebaseFunctionsSimMemory() async {
 
 /// app used as package name
 FirebaseContext initFirebaseSim({
+  required DatabaseFactory sembastDatabaseFactory,
   required String projectId,
   String? packageName,
 }) {
   // isFirebaseSim = true;
   var firebase = FirebaseLocal();
-  var sembastDatabaseFactory = getDatabaseFactory(packageName: packageName);
   var firestoreService = FirestoreServiceSembast(sembastDatabaseFactory);
   var authService = FirebaseAuthServiceSembast(
     databaseFactory: sembastDatabaseFactory,

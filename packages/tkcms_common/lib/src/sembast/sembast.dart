@@ -1,5 +1,5 @@
 import 'package:path/path.dart';
-import 'package:tekartik_app_sembast/sembast.dart';
+import 'package:sembast/sembast.dart';
 
 export 'package:tkcms_common/tkcms_sembast.dart';
 
@@ -34,6 +34,12 @@ class SembastDatabasesContext extends SembastDatabaseContext {
 }
 
 /// Initialize the local sembast factory
+@Deprecated('Do not use')
 Future<DatabaseFactory> initLocalSembastFactory() async {
-  return getDatabaseFactory(rootPath: join('.dart_tool', 'tkcms_local'));
+  throw UnsupportedError(
+    'Not supported, create the factory in your application',
+  );
 }
+
+/// Default root path
+String get localSembastFactoryRootPath => join('.dart_tool', 'tkcms_local');

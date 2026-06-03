@@ -3,6 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:tekartik_app_flutter_common_utils/common_utils_import.dart';
 import 'package:tekartik_app_flutter_widget/mini_ui.dart';
 import 'package:tekartik_app_prefs/app_prefs.dart';
+import 'package:tekartik_app_sembast/sembast.dart';
 import 'package:tekartik_common_utils/env_utils.dart';
 import 'package:tekartik_firebase_ui_auth/ui_auth.dart';
 import 'package:tkcms_admin_app/auth/auth.dart';
@@ -21,6 +22,10 @@ import 'screen/debug_screen.dart';
 import 'screen/project_info.dart';
 import 'sembast/sembast.dart';
 
+DatabaseFactory prvTkCmsAdminAppInitLocalSembastFactory() {
+  return getDatabaseFactory(rootPath: localSembastFactoryRootPath);
+}
+
 Future<void> main() async {
   if (isDebug) {
     gDebugLogFirestore = true;
@@ -30,7 +35,12 @@ Future<void> main() async {
   var packageName = 'tkcms.example';
   var prefsFactory = getPrefsFactory(packageName: 'tkcms.example');
   var prefs = await prefsFactory.openPreferences('tkcms_example_prefs.db');
-  var context = initFirebaseSim(projectId: 'tkcms', packageName: packageName);
+  var databaseFactory = prvTkCmsAdminAppInitLocalSembastFactory();
+  var context = initFirebaseSim(
+    sembastDatabaseFactory: databaseFactory,
+    projectId: 'tkcms',
+    packageName: packageName,
+  );
   gFsDatabaseService = TkCmsFirestoreDatabaseService(
     firebaseContext: context,
     flavorContext: AppFlavorContext.testLocal,
@@ -38,7 +48,7 @@ Future<void> main() async {
 
   globalTkCmsAdminAppFlavorContext = AppFlavorContext.testLocal;
   globalTkCmsAdminAppFirebaseContext = context;
-  var sembastDatabaseFactory = await initLocalSembastFactory();
+  var sembastDatabaseFactory = prvTkCmsAdminAppInitLocalSembastFactory();
   var sembastDatabaseContext = SembastDatabasesContext(
     factory: sembastDatabaseFactory,
     path: '.local/tkcms_${globalTkCmsAdminAppFlavorContext.appKeySuffix}',

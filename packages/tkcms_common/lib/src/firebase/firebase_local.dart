@@ -2,8 +2,8 @@
 
 import 'package:fs_shim/fs_shim.dart';
 import 'package:process_run/shell.dart';
+import 'package:sembast/sembast.dart';
 import 'package:tekartik_app_http/app_http.dart';
-import 'package:tekartik_app_sembast/sembast.dart';
 import 'package:tekartik_firebase_auth_sembast/auth_sembast.dart';
 import 'package:tekartik_firebase_firestore_sembast/firestore_sembast.dart';
 import 'package:tekartik_firebase_functions_call_http/functions_call_memory.dart';
@@ -18,6 +18,7 @@ export 'firebase.dart';
 
 /// Sembast based
 FirebaseServicesContext initFirebaseServicesLocalSembast({
+  required DatabaseFactory databaseFactory,
   required String projectId,
   bool isWeb = false,
   bool? useHttpFunctions,
@@ -33,12 +34,8 @@ FirebaseServicesContext initFirebaseServicesLocalSembast({
   // isFirebaseSim = true;
   //debugPrintAbsoluteOpenedDatabasePath = true;
   var firebase = FirebaseLocal(localPath: path);
-  var firestoreSembastDatabaseFactory = getDatabaseFactory(
-    rootPath: join(firebase.localPath!, 'firestore'),
-  );
-  var authSembastDatabaseFactory = getDatabaseFactory(
-    rootPath: join(firebase.localPath!, 'auth'),
-  );
+  var firestoreSembastDatabaseFactory = databaseFactory;
+  var authSembastDatabaseFactory = databaseFactory;
   var storageService = newStorageServiceFs(
     fileSystem: fileSystemDefault,
     basePath: join(firebase.localPath!, 'storage'),
