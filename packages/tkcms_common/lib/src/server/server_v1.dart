@@ -1,9 +1,14 @@
 import 'package:tekartik_firebase_functions/firebase_functions.dart';
+import 'package:tkcms_common/firebase/firebase.dart';
+import 'package:tkcms_common/firebase/firestore.dart';
 import 'package:tkcms_common/src/api/token_info.dart';
 import 'package:tkcms_common/src/flavor/flavor.dart';
 import 'package:tkcms_common/tkcms_api.dart';
 import 'package:tkcms_common/tkcms_common.dart';
-import 'package:tkcms_common/tkcms_firestore.dart';
+
+import 'server_common.dart';
+
+export 'server_common.dart';
 
 // New V2 ff only
 /// Dev command
@@ -148,41 +153,6 @@ class GetTimeCommandHandler extends CommandHandler {
 /// Create a server app.
 typedef TkCmsCreateServerAppFunction =
     TkCmsCommonServerApp Function(TkCmsServerAppContext context);
-
-/// Common server app interface.
-abstract interface class TkCmsCommonServerApp {
-  /// Api version.
-  int get apiVersion;
-
-  /// init functions.
-  void initFunctions();
-  // v1 & v2
-  /// command.
-  String get command;
-  // v2
-  /// callable command.
-  String get callCommand;
-}
-
-/// Server app context.
-class TkCmsServerAppContext {
-  /// Compat
-  FirebaseFunctionsContext get firebaseFunctionsContext => firebaseContext;
-
-  /// Firebase context.
-  late final FirebaseContext firebaseContext;
-
-  /// Flavor context.
-  final FlavorContext flavorContext;
-
-  /// Server app context.
-  TkCmsServerAppContext({
-    /// Compat
-    FirebaseFunctionsContext? firebaseFunctionsContext,
-    FirebaseContext? firebaseContext,
-    required this.flavorContext,
-  }) : firebaseContext = firebaseContext ?? firebaseFunctionsContext!;
-}
 
 /// Compat
 typedef TkCmsServerApp = TkCmsServerAppV1;

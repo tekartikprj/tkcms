@@ -1,31 +1,11 @@
+import 'package:tekartik_firebase_functions/firebase_functions.dart';
+import 'package:tkcms_common/firebase/firebase.dart';
+import 'package:tkcms_common/firebase/firestore.dart';
+import 'package:tkcms_common/server/server_common.dart';
 import 'package:tkcms_common/src/flavor/flavor.dart';
+import 'package:tkcms_common/tkcms_api.dart';
 import 'package:tkcms_common/tkcms_common.dart';
-import 'package:tkcms_common/tkcms_firestore.dart';
-import 'package:tkcms_common/tkcms_server.dart';
-
-/// dev command
-const functionCommandV2Dev = 'commandv2dev';
-
-/// dev command (dart)
-const functionCommandDartV2Dev = 'commanddartv2dev';
-
-/// prod command
-const functionCommandV2Prod = 'commandv2prod';
-
-/// prod command (dart)
-const functionCommandDartV2Prod = 'commanddartv2prod';
-
-/// Callable function (when supported)
-const callableFunctionCommandV2Dev = 'callcommandv2dev';
-
-/// Callable function (dart)
-const callableFunctionCommandDartV2Dev = 'callcommanddartv2dev';
-
-/// prod command
-const callableFunctionCommandV2Prod = 'callcommandv2prod';
-
-/// prod command (dart)
-const callableFunctionCommandDartV2Prod = 'callcommanddartv2prod';
+//import 'package:tkcms_common/tkcms_server.dart';
 
 /// base options.
 final baseCmsServerSecuredOptions = TkCmsApiSecuredOptions()

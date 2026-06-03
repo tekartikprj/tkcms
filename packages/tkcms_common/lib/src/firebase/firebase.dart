@@ -1,10 +1,12 @@
+import 'package:tekartik_firebase_auth/auth.dart';
 import 'package:tekartik_firebase_functions/ff_server.dart';
 import 'package:tekartik_firebase_functions_call_http/functions_call_http.dart';
 import 'package:tekartik_firebase_functions_http/firebase_functions_http.dart';
 import 'package:tekartik_firebase_storage/storage.dart';
-import 'package:tkcms_common/tkcms_auth.dart';
-import 'package:tkcms_common/tkcms_firestore.dart';
-import 'package:tkcms_common/tkcms_server.dart';
+//import 'package:tkcms_common/tkcms_server.dart';
+
+import 'package:tkcms_common/firebase/firestore.dart';
+import 'package:tkcms_common/server/server_common.dart';
 
 /// Firebase services context.
 class FirebaseServicesContext {

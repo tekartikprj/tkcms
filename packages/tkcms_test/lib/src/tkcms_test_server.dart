@@ -1,4 +1,4 @@
-import 'package:tkcms_common/tkcms_firestore.dart';
+import 'package:tkcms_common/firebase/firestore.dart';
 import 'package:tkcms_common/tkcms_server.dart';
 import 'package:tkcms_test/tkcms_test_server_api.dart';
 

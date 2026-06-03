@@ -1,6 +1,6 @@
+import 'package:tkcms_common/firebase/firestore.dart';
 import 'package:tkcms_common/src/api/api_exception.dart';
 import 'package:tkcms_common/src/api/model/api_secured.dart';
-import 'package:tkcms_common/tkcms_firestore.dart';
 
 import 'api_empty.dart';
 import 'api_error.dart';
