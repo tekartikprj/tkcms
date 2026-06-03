@@ -4,7 +4,6 @@ import 'package:fs_shim/fs_shim.dart';
 import 'package:process_run/shell.dart';
 import 'package:tekartik_app_http/app_http.dart';
 import 'package:tekartik_app_sembast/sembast.dart';
-import 'package:tekartik_firebase_auth_local/auth_local.dart';
 import 'package:tekartik_firebase_auth_sembast/auth_sembast.dart';
 import 'package:tekartik_firebase_firestore_sembast/firestore_sembast.dart';
 import 'package:tekartik_firebase_functions_call_http/functions_call_memory.dart';
@@ -72,26 +71,4 @@ FirebaseServicesContext initFirebaseServicesLocalSembast({
     firestoreService: firestoreService,
     functionsService: functionsService,
   );
-}
-
-/// Memory based
-FirebaseServicesContext initFirebaseServicesLocalMemory({
-  required String projectId,
-}) {
-  var firebase = FirebaseLocal();
-  var firestoreService = newFirestoreServiceMemory();
-
-  var functionsService = firebaseFunctionsServiceMemory;
-  var authService = newAuthServiceLocal();
-  var functionsCallService = firebaseFunctionsCallServiceMemory;
-  var firebaseServicesContext = FirebaseServicesContext(
-    appOptions: FirebaseAppOptions(projectId: projectId),
-    firebase: firebase,
-    authService: authService,
-    firestoreService: firestoreService,
-    functionsService: functionsService,
-    functionsCallService: functionsCallService,
-    functionsCallRegion: regionBelgium,
-  );
-  return firebaseServicesContext;
 }

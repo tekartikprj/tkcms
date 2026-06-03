@@ -4,16 +4,28 @@ import 'package:tkcms_common/tkcms_firestore.dart';
 import 'package:tkcms_common/tkcms_server.dart';
 
 /// dev command
-var functionCommandV2Dev = 'commandv2dev';
+const functionCommandV2Dev = 'commandv2dev';
+
+/// dev command (dart)
+const functionCommandDartV2Dev = 'commanddartv2dev';
 
 /// prod command
-var functionCommandV2Prod = 'commandv2prod';
+const functionCommandV2Prod = 'commandv2prod';
+
+/// prod command (dart)
+const functionCommandDartV2Prod = 'commanddartv2prod';
 
 /// Callable function (when supported)
 const callableFunctionCommandV2Dev = 'callcommandv2dev';
 
+/// Callable function (dart)
+const callableFunctionCommandDartV2Dev = 'callcommanddartv2dev';
+
 /// prod command
 const callableFunctionCommandV2Prod = 'callcommandv2prod';
+
+/// prod command (dart)
+const callableFunctionCommandDartV2Prod = 'callcommanddartv2prod';
 
 /// base options.
 final baseCmsServerSecuredOptions = TkCmsApiSecuredOptions()

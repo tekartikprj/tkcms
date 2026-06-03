@@ -6,5 +6,6 @@ export 'package:tekartik_firebase/firebase_admin.dart';
 export 'src/firebase/firebase.dart' show TkCmsFirebaseContext;
 export 'src/firebase/firebase.dart';
 export 'src/firebase/firebase_local.dart';
+export 'src/firebase/firebase_memory.dart';
 export 'src/firebase/firebase_rest.dart';
 export 'src/firebase/firebase_sim.dart';

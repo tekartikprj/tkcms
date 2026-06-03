@@ -80,14 +80,14 @@ Future<void> main() async {
     // ignore: avoid_print
     print(timestamp);
   });
-  test('timestamp', () async {
-    var timestamp = await apiService.getTimestamp();
+  test('httpTimestamp', () async {
+    var timestamp = await apiService.httpGetTimestamp();
     expect(Timestamp.tryParse(timestamp.timestamp.v!), isNotNull);
     // ignore: avoid_print
     print(timestamp);
   });
-  test('httpTimestamp', () async {
-    var timestamp = await apiService.httpGetTimestamp();
+  test('timestamp', () async {
+    var timestamp = await apiService.getTimestamp();
     expect(Timestamp.tryParse(timestamp.timestamp.v!), isNotNull);
     // ignore: avoid_print
     print(timestamp);

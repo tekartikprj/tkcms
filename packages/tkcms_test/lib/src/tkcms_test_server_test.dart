@@ -1,5 +1,3 @@
-// ignore_for_file: avoid_print
-
 import 'package:dev_test/test.dart';
 import 'package:tekartik_firebase_functions/ff_server.dart';
 import 'package:tkcms_common/tkcms_app.dart';
@@ -86,8 +84,15 @@ void testServerTest(Future<TestApiContext> Function() initAllContext) {
     if (apiService.callableApi != null) {
       var timestamp = await apiService.callGetTimestamp();
       expect(Timestamp.tryParse(timestamp.timestamp.v!), isNotNull);
-      print(timestamp);
+      // ignore: avoid_print
+      print('callTimestamp: $timestamp');
     }
+  });
+  test('httpTimestamp', () async {
+    var timestamp = await apiService.httpGetTimestamp();
+    expect(Timestamp.tryParse(timestamp.timestamp.v!), isNotNull);
+    // ignore: avoid_print
+    print('httpTimestamp: $timestamp');
   });
   test('echo', () async {
     var timestamp = (await apiService.getTimestamp()).timestamp.v!;
@@ -142,11 +147,13 @@ void testServerTest(Future<TestApiContext> Function() initAllContext) {
   test('timestamp', () async {
     var timestamp = await apiService.getTimestamp();
     expect(Timestamp.tryParse(timestamp.timestamp.v!), isNotNull);
+    // ignore: avoid_print
     print(timestamp);
   });
   test('httpTimestamp', () async {
     var timestamp = await apiService.httpGetTimestamp();
     expect(Timestamp.tryParse(timestamp.timestamp.v!), isNotNull);
+    // ignore: avoid_print
     print(timestamp);
   });
   for (var preferHttp in [false, true]) {
@@ -154,6 +161,7 @@ void testServerTest(Future<TestApiContext> Function() initAllContext) {
     test('$prefix test no arg', () async {
       var result = await apiService.test(ApiTestQuery());
       expect(result, isNotNull);
+      // ignore: avoid_print
       print(result);
     });
     test('$prefix test throw no retry', () async {
@@ -171,6 +179,7 @@ void testServerTest(Future<TestApiContext> Function() initAllContext) {
         fail('should fail');
       } catch (e) {
         expect(e, isNot(isA<TestFailure>()));
+        // ignore: avoid_print
         print(e);
       }
       var timestampAfter = Timestamp.parse(
@@ -200,6 +209,7 @@ void testServerTest(Future<TestApiContext> Function() initAllContext) {
         fail('should fail');
       } catch (e) {
         expect(e, isNot(isA<TestFailure>()));
+        // ignore: avoid_print
         print(e);
       }
       var timestampAfter = Timestamp.parse(
