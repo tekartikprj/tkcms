@@ -10,7 +10,7 @@ import 'package:tkcms_common/tkcms_firebase.dart';
 export 'firebase.dart';
 
 /// Memory based
-FirebaseServicesContext initFirebaseServicesMemory({
+FirebaseServicesContext initFirebaseServicesLocalMemory({
   required String projectId,
 }) {
   var firebase = FirebaseLocal();

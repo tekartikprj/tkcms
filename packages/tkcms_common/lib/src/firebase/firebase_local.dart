@@ -18,6 +18,9 @@ export 'firebase.dart';
 
 /// Sembast based
 FirebaseServicesContext initFirebaseServicesLocalSembast({
+  // Path is not important so just use getDatabaseFactory from
+  // tekartik_app_sembast, however since it has sqflite_common_ffi
+  // It is no longer optional
   required DatabaseFactory databaseFactory,
   required String projectId,
   bool isWeb = false,
