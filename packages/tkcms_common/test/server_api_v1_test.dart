@@ -21,7 +21,7 @@ Future<void> main() async {
       firebaseFunctionsContext: ffContext,
       flavorContext: FlavorContext.test,
     );
-    var ffServerApp = TkCmsServerApp(context: serverAppContext);
+    var ffServerApp = TkCmsServerAppV1(context: serverAppContext);
 
     ffServerApp.initFunctions();
     //var httpServer = await ff.serveHttp();

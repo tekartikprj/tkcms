@@ -32,7 +32,7 @@ var functionDailyCronV1Prod = 'daylycronv1prod';
 /// Command handler.
 class CommandHandler {
   /// Server app.
-  final TkCmsServerApp serverApp;
+  final TkCmsServerAppV1 serverApp;
 
   /// Request
   final ExpressHttpRequest request;
@@ -113,7 +113,7 @@ class InfoCommandHandler extends CommandHandler {
   /// handle request
   Future<void> handle() async {
     var instanceCallCount = ++serverApp.instanceCallCount;
-    var globalInstanceCallCount = ++TkCmsServerApp.globalInstanceCallCount;
+    var globalInstanceCallCount = ++TkCmsServerAppV1.globalInstanceCallCount;
     var info = ApiInfoResponse()
       ..uri.v = request.uri.toString()
       ..instanceCallCount.v = instanceCallCount
@@ -155,6 +155,7 @@ typedef TkCmsCreateServerAppFunction =
     TkCmsCommonServerApp Function(TkCmsServerAppContext context);
 
 /// Compat
+@Deprecated('User V1 or V2 directly')
 typedef TkCmsServerApp = TkCmsServerAppV1;
 
 /// Server app v1.
