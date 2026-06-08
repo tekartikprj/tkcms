@@ -180,12 +180,15 @@ class FirebaseServicesContext {
   Future<FirebaseContext> init({
     FirebaseApp? firebaseApp,
     Uri? baseUri,
+    // Local server
     FfServer? ffServer,
     TkCmsCommonServerApp? serverApp,
     bool debugFirestore = false,
+    String? name,
   }) async {
     firebaseApp ??= firebaseAppOrNull ??= await firebase.initializeAppAsync(
       options: appOptions,
+      name: name,
     );
     var firestore = firestoreServiceOrNull?.firestore(firebaseApp);
     if (debugFirestore || gDebugLogFirestore) {

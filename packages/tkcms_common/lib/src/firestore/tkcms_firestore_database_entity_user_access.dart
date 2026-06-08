@@ -467,6 +467,11 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
     await rootMarkAsDeleted(entityId);
   }
 
+  /// Mark as deleted and non active - admin account only
+  Future<void> adminDeleteEntity(String entityId) async {
+    await rootMarkAsDeleted(entityId);
+  }
+
   /// Delete our userId last
   /// if userId != null, delete users last
   /// if force = true, ignore deleted state
@@ -481,6 +486,13 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
   /// Delete our userId last
   /// if userId != null, delete users last
   /// if force = true, ignore deleted state
+  Future<void> adminPurgeEntity(String entityId, {bool? force}) async {
+    await rootPurgeEntity(entityId, force: force);
+  }
+
+  /// Delete our userId last
+  /// if userId != null, delete users last
+  /// if force = true, ignore deleted state
   Future<void> rootPurgeEntity(
     String entityId, {
     String? userId,
@@ -489,11 +501,11 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
     force ??= false;
     var entityRef = _entityCollection.doc(entityId);
     var project = await firestore.refGet(entityRef);
-    if (!project.exists) {
-      return;
-    }
+    //if (!project.exists) {
+    //  return;
+    // }
     if (!force) {
-      if (project.deleted.v != true) {
+      if (project.exists && project.deleted.v != true) {
         throw ArgumentError('$_entityName $entityId not deleted');
       }
     }

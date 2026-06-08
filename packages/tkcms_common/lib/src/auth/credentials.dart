@@ -1,3 +1,5 @@
+import 'package:tekartik_common_utils/string_utils.dart';
+
 /// Email/password credentials.
 class TkCmsEmailPasswordCredentials {
   /// User email.
@@ -14,7 +16,7 @@ class TkCmsEmailPasswordCredentials {
 
   /// to map.
   Map<String, Object?> toMap() {
-    return {'email': email, 'password': password};
+    return {'email': email, 'password': password.obfuscate()};
   }
 
   @override

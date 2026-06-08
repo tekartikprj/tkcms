@@ -1,4 +1,5 @@
 export 'package:tekartik_firebase_auth/auth.dart';
+export 'package:tekartik_firebase_auth/auth_admin.dart';
 export 'package:tekartik_firebase_auth_rest/auth_rest.dart';
 
 export 'src/auth/credentials.dart'
