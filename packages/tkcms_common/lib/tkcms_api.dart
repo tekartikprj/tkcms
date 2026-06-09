@@ -10,7 +10,8 @@ export 'src/api/api_command.dart'
         apiCommandEchoSecuredOptionsV2,
         apiCommandEchoSecuredOptions,
         apiCommandEchoSecuredOptionsV1,
-        apiCommandEchoSecured;
+        apiCommandEchoSecured,
+        apiCommandAuthMe;
 export 'src/api/api_exception.dart';
 export 'src/api/api_service_base_v1.dart';
 export 'src/api/api_service_base_v2.dart';

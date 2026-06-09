@@ -41,6 +41,7 @@ void initTkCmsApiBuilders() {
       ApiEchoResult.new,
       ApiEchoQuery.new,
       ApiSecuredQuery.new,
+      ApiAuthMeResult.new,
     ]);
   }
 }
@@ -64,6 +65,15 @@ class ApiGetInfoQuery extends ApiQuery {
 
   @override
   late final CvFields fields = [debug];
+}
+
+/// Get my user uid
+class ApiAuthMeResult extends ApiResult {
+  /// User id.
+  final uid = CvField<String>('uid');
+
+  @override
+  late final CvFields fields = [uid];
 }
 
 /// Get info result.

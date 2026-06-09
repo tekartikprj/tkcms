@@ -12,6 +12,9 @@ const apiCommandEcho = 'echo';
 /// Secured V2
 const apiCommandEchoSecured = 'secured_echo';
 
+/// Get logged in command
+const apiCommandAuthMe = 'auth/me';
+
 var _password = aesDecrypt(
   r'9LlbJVe2/1c9PhSa3WTPKg==B9GuYNoXe9mFsRyS85rOha1hydC3H13nnt357CCKYgFX7kG/LRNiwO9wYgRmpCad',
   'qQzA8fjuMuXsfrqAYdXCZFGzurzCBC9d',

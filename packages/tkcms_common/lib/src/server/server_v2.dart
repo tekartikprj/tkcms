@@ -171,6 +171,13 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
     return result;
   }
 
+  /// Get info on the server.
+  Future<ApiResult> onAuthMeCommand(ApiRequest apiRequest) async {
+    var result = ApiAuthMeResult()..uid.setValue(apiRequest.apiUserId);
+
+    return result;
+  }
+
   /// Cron command.
   Future<ApiResult> onCronCommand(ApiRequest apiRequest) async {
     return ApiEmpty();
@@ -191,7 +198,8 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
         return await onGetInfoCommand(apiRequest);
       case commandCron:
         return await onCronCommand(apiRequest);
-
+      case apiCommandAuthMe:
+        return await onAuthMeCommand(apiRequest);
       default:
         throw UnsupportedError('command ${apiRequest.command.v!}');
     }
@@ -201,6 +209,7 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
   Future<Object> onCallableCommand(CallRequest request) async {
     try {
       var requestMap = request.dataAsMap;
+      // set user id
       var apiRequest = requestMap.cv<ApiRequest>();
       var userId = request.context.auth?.uid;
       apiRequest.userId.v = userId;

@@ -183,6 +183,13 @@ class TkCmsApiServiceBaseV2 implements TkCmsTimestampProvider {
   /// To deprecate - no-op
   Future<void> initClient() async {}
 
+  /// Get auth info from server
+  Future<ApiAuthMeResult> getAuthMe() async {
+    return await getApiResult<ApiAuthMeResult>(
+      ApiRequest()..command.v = apiCommandAuthMe,
+    );
+  }
+
   /// Call 'timestamp' command
   Future<ApiGetTimestampResult> callGetTimestamp() async {
     return await callGetApiResult<ApiGetTimestampResult>(

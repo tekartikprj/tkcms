@@ -26,8 +26,11 @@ extension TkCmsServerAppAdminSdkExt on TkCmsServerAppV2 {
     late ApiResponse response;
     try {
       var data = request.data as Map;
-
-      var result = await onCommand(data.cv<ApiRequest>());
+      // set user id
+      var apiRequest = data.cv<ApiRequest>();
+      var userId = request.auth?.uid;
+      apiRequest.userId.v = userId;
+      var result = await onCommand(apiRequest);
       response = ApiResponse()..result.v = (CvMapModel()..copyFrom(result));
     } catch (e, st) {
       response = apiResponseFromException(e, st: st);
