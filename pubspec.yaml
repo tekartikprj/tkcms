@@ -7,5 +7,7 @@ workspace:
   - flutter_packages/tkcms_user_app
   - packages/tkcms_common
   - packages/tkcms_ff
+  - packages/tkcms_ff_dart
+  - packages/tkcms_ff_dart/functions
   - packages/tkcms_support
   - packages/tkcms_test
