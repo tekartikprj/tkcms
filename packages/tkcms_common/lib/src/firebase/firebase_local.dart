@@ -62,7 +62,10 @@ FirebaseServicesContext initFirebaseServicesLocalSembast({
   }
 
   return FirebaseServicesContext(
-    appOptions: FirebaseAppOptions(projectId: projectId),
+    appOptions: FirebaseAppOptions(
+      projectId: projectId,
+      storageBucket: 'bucket-$projectId.appspot.com',
+    ),
     storageService: storageService,
     firebase: firebase,
     functionsCallService: functionsCallService,
