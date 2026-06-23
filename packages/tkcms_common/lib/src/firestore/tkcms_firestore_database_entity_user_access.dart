@@ -278,6 +278,15 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
     });
   }
 
+  /// From user side
+  Future<TkCmsFsUserAccess> userGetEntityAccess({
+    required String userId,
+    required String entityId,
+  }) async {
+    var userEntityAccessRef = _userEntityAccessDoc(userId, entityId);
+    return await firestore.refGet(userEntityAccessRef);
+  }
+
   /// Set user access
   Future<void> setEntityUserAccess({
     required String entityId,
