@@ -44,6 +44,7 @@ extension TkCmsServerAppAdminSdkExt on TkCmsServerAppV2 {
     FirebaseFunctions firebaseFunctions,
     Request request,
   ) async {
+    print('request: ${request.headers}');
     late ApiResponse response;
     try {
       var requestMap = (await request.readAsString()).jsonToMap();

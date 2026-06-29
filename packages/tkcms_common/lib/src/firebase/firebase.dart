@@ -197,7 +197,13 @@ class FirebaseServicesContext {
     }
     var auth = authServiceOrNull?.auth(firebaseApp);
     var storage = storageServiceOrNull?.storage(firebaseApp);
-    var functions = functionsServiceOrNull?.functions(firebaseApp);
+    var functions = () {
+      try {
+        return functionsServiceOrNull?.functions(firebaseApp!);
+      } catch (e) {
+        print('Error for functions');
+      }
+    }();
     FirebaseFunctionsCall? functionsCall;
     baseUri ??= ffServer?.uri;
     if (functionsCallServiceOrNull != null &&
