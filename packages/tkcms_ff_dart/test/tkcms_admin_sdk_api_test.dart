@@ -2,10 +2,7 @@
 library;
 // ignore_for_file: depend_on_referenced_packages
 
-import 'package:festenao_common/api/festenao_api_fs_entity_client.dart';
 import 'package:festenao_common/auth/festenao_auth.dart';
-import 'package:festenao_common/firebase/firestore_database.dart';
-import 'package:festenao_common/test/festenao_test_server_test_runner.dart';
 
 import 'package:tekartik_firebase_functions_admin_sdk_http/functions_admin_sdk_http.dart';
 import 'package:tekartik_firebase_functions_call_http/functions_call_http.dart';

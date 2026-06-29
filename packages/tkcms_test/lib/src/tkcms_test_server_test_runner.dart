@@ -28,7 +28,7 @@ class TestServerContext extends TestApiContext {
 }
 
 Future<TestApiContext> initAllMemory() async {
-  var ffServicesContext = await initFirebaseServicesSimMemory();
+  var ffServicesContext = await initFirebaseServicesMemory();
   var ffServerContext = await ffServicesContext.initServer();
 
   var httpClientFactory = httpClientFactoryMemory;
@@ -133,7 +133,7 @@ void testServerTest(Future<TestApiContext> Function() initAllContext) {
         print('skipped null callableApi');
       }
     }
-  }, solo: true);
+  });
   test('callTimestamp', () async {
     if (apiService.callableApi != null) {
       var timestamp = await apiService.callGetTimestamp();

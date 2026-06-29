@@ -13,7 +13,7 @@ Future<void> main() async {
   late FfServer ffServerHttp;
   // debugWebServices = devWarning(true);
   setUpAll(() async {
-    var ffServicesContext = await initFirebaseServicesSimMemory();
+    var ffServicesContext = await initFirebaseServicesMemory();
     var ffServerContext = await ffServicesContext.initServer();
 
     var httpClientFactory = httpClientFactoryMemory;

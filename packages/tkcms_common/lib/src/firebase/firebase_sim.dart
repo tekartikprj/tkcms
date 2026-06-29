@@ -2,7 +2,6 @@ import 'package:sembast/sembast_memory.dart';
 
 import 'package:tekartik_firebase_auth_sembast/auth_sembast.dart';
 import 'package:tekartik_firebase_firestore_sembast/firestore_sembast.dart';
-import 'package:tekartik_firebase_functions_admin_sdk/functions_admin_sdk.dart';
 import 'package:tekartik_firebase_functions_admin_sdk_http/functions_admin_sdk_http.dart';
 import 'package:tekartik_firebase_functions_call_http/functions_call_memory.dart';
 import 'package:tekartik_firebase_functions_http/firebase_functions_memory.dart';
@@ -99,7 +98,7 @@ FirebaseServicesContext initFirebaseServicesSimMemorySync() {
 
 /// Init memory services and context.
 Future<FirebaseContext> initFirebaseFunctionsSimMemory() async {
-  var firebaseContext = (await initFirebaseServicesSimMemory()).initContext();
+  var firebaseContext = (await initFirebaseServicesMemory()).initContext();
   return firebaseContext;
 }
 

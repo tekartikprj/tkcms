@@ -201,6 +201,7 @@ class FirebaseServicesContext {
       try {
         return functionsServiceOrNull?.functions(firebaseApp!);
       } catch (e) {
+        // ignore: avoid_print
         print('Error for functions');
       }
     }();
