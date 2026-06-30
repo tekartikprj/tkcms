@@ -17,11 +17,18 @@ const appFlavorTest = 'test';
 /// - my-app-dev.web.app
 /// - mysite?flavor=dev
 /// - mysite?dev
-/// Default to devx
+/// Default to prod if not localhost
 FlavorContext tkCmsFlavorContextFromHost(String host) {
+  if (host == 'localhost' || host == '127.0.0.1') {
+    return FlavorContext.dev;
+  }
   var hosting = host.split('.').first;
+  // If it looks like an ip address, it is dev
+  if (host.contains(RegExp(r'^\d+\.\d+\.\d+\.\d+$'))) {
+    return FlavorContext.dev;
+  }
   var flavorText = hosting.split('-').last;
-  return _map[flavorText] ?? FlavorContext.dev;
+  return _map[flavorText] ?? FlavorContext.prod;
 }
 
 /// Get flavor context from app id.
@@ -35,7 +42,7 @@ FlavorContext tkCmsFlavorContextFromApp(String appId) {
 /// - my-app-dev.web.app
 /// - mysite?flavor=dev
 /// - mysite?dev
-/// Default to devx
+/// default to prod on the web.
 FlavorContext tkCmsFlavorContextFromUri(Uri uri) {
   var flavorText = uri.queryParameters['flavor'];
   if (flavorText == null) {

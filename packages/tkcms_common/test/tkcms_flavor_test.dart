@@ -31,4 +31,33 @@ void main() {
       'myapp-dev',
     );
   });
+  test('tkCmsFlavorContextFromHost', () {
+    expect(tkCmsFlavorContextFromHost('dev.example.com'), FlavorContext.dev);
+    expect(tkCmsFlavorContextFromHost('prod.example.com'), FlavorContext.prod);
+    expect(tkCmsFlavorContextFromHost('any'), FlavorContext.prod);
+    expect(tkCmsFlavorContextFromHost('localhost'), FlavorContext.dev);
+    expect(tkCmsFlavorContextFromHost('127.0.0.1'), FlavorContext.dev);
+
+    expect(
+      tkCmsFlavorContextFromUri(Uri.parse('http://127.0.0.1')),
+      FlavorContext.dev,
+    );
+    expect(
+      tkCmsFlavorContextFromUri(Uri.parse('http://1.2.3.4')),
+      FlavorContext.dev,
+    );
+
+    expect(
+      tkCmsFlavorContextFromUri(Uri.parse('https://test.web.app')),
+      FlavorContext.prod,
+    );
+    expect(
+      tkCmsFlavorContextFromUri(Uri.parse('https://test.web.app?dev')),
+      FlavorContext.dev,
+    );
+    expect(
+      tkCmsFlavorContextFromUri(Uri.parse('https://test.web.app?flavor=dev')),
+      FlavorContext.dev,
+    );
+  });
 }
