@@ -2,6 +2,7 @@ import 'package:tekartik_firebase_auth_rest/auth_rest.dart';
 import 'package:tekartik_firebase_firestore_rest/firestore_rest.dart';
 import 'package:tekartik_firebase_functions_call_rest/functions_call_rest.dart';
 import 'package:tekartik_firebase_rest/firebase_rest.dart';
+import 'package:tekartik_firebase_storage_rest/storage_rest.dart';
 import 'package:tkcms_common/tkcms_firebase.dart';
 
 import '../../tkcms_firestore.dart';
@@ -30,7 +31,14 @@ Future<FirebaseServicesContext> initFirebaseServicesRest({
 extension FirebaseContextRestExt on FirebaseContext {
   /// Use emulator.
   Future<void> useEmulator() async {
-    await (auth as FirebaseAuthRest).useAuthEmulator('localhost', 9099);
-    await (firestore as FirestoreRest).useFirestoreEmulator('localhost', 8080);
+    await (authOrNull as FirebaseAuthRest?)?.useAuthEmulator('localhost', 9099);
+    await (firestoreOrNull as FirestoreRest?)?.useFirestoreEmulator(
+      'localhost',
+      8080,
+    );
+    await (storageOrNull as StorageRest?)?.useStorageEmulator(
+      'localhost',
+      9199,
+    );
   }
 }
