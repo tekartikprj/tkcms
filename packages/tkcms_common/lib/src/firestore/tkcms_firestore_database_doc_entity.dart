@@ -135,7 +135,7 @@ class TkCmsFirestoreDatabaseServiceDocEntityAccessor<
         var entityRef = _entityCollection.doc(newEntityId);
         var entitySnapshot = await txn.refGet(entityRef);
         if (entitySnapshot.exists) {
-          throw StateError('Entity $newEntityId already exists');
+          throw StateError('Doc Entity $newEntityId already exists');
         }
       } else {
         // Find a unique id
