@@ -467,6 +467,10 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
     var entityUserAccessRef = _entityUserAccessDoc(entityId, userId);
 
     var entityAccessUser = await firestore.refGet(entityUserAccessRef);
+    if (!entityAccessUser.exists) {
+      // throw Exception('User $userId not part of project $entityId');
+      return;
+    }
     if (!entityAccessUser.isAdmin) {
       throw Exception(
         'User $userId not allowed to delete $_entityName $entityId',

@@ -13,6 +13,7 @@ export 'src/api/api_command.dart'
         apiCommandEchoSecured,
         apiCommandAuthMe;
 export 'src/api/api_exception.dart';
+export 'src/api/api_handler.dart' show FestenaoApiHandler;
 export 'src/api/api_service_base_v1.dart';
 export 'src/api/api_service_base_v2.dart';
 export 'src/api/api_service_common.dart';
