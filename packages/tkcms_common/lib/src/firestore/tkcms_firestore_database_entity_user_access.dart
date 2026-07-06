@@ -468,8 +468,7 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
 
     var entityAccessUser = await firestore.refGet(entityUserAccessRef);
     if (!entityAccessUser.exists) {
-      // throw Exception('User $userId not part of project $entityId');
-      return;
+      throw Exception('User $userId not part of project $entityId');
     }
     if (!entityAccessUser.isAdmin) {
       throw Exception(
