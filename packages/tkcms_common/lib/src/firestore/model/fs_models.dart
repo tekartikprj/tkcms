@@ -9,6 +9,7 @@ export 'fs_user.dart';
 export 'fs_user_access.dart';
 export 'fs_user_access_v2.dart';
 export 'fs_user_prv.dart';
+export 'fs_public_access.dart';
 
 var _fsBuildersInitialized = false;
 
@@ -38,6 +39,7 @@ void initTkCmsFsBuilders() {
     TkCmsFsRootItem.new,
     TkCmsFsEntityTypeInvite.new,
     TkCmsFsEntityTypeAccess.new,
+    TkCmsFsPublicAccess.new,
   ]);
 }
 
