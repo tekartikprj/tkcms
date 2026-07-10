@@ -1,5 +1,5 @@
 import 'package:tkcms_test/tkcms_test_server_runner.dart';
 
-Future<void> main() async {
+void main() {
   testServerTest(initAllMemory);
 }

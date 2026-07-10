@@ -155,7 +155,7 @@ class TkCmsFsUserAccess extends CvFirestoreDocumentBase
     return model;
   }
   @override
-  CvFields get fields => [...userAccessMixinFields];
+  CvFields get fields => [inviteId, ...userAccessMixinFields];
 }
 
 /// User access extension.
