@@ -4,10 +4,13 @@ import 'package:tkcms_common/tkcms_flavor.dart';
 /// V2
 class TkCmsFsProject extends TkCmsFsEntity {}
 
+/// Project in `/app/<app_id>/project/<project_id>`
+const tkCmsProjectFirestorePathPart = 'project';
+
 /// Project collection info.
 var fsProjectCollectionInfo =
     TkCmsFirestoreDatabaseEntityCollectionInfo<TkCmsFsProject>(
-      id: 'project',
+      id: tkCmsProjectFirestorePathPart,
       name: 'Project',
       treeDef: TkCmsCollectionsTreeDef(map: {'item': null}),
     );

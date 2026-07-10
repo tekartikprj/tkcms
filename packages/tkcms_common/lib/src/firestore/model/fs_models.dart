@@ -8,6 +8,7 @@ export 'fs_root_item.dart';
 export 'fs_user.dart';
 export 'fs_user_access.dart';
 export 'fs_user_access_v2.dart';
+export 'fs_user_prv.dart';
 
 var _fsBuildersInitialized = false;
 
