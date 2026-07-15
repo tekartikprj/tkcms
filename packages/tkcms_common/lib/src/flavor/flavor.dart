@@ -107,6 +107,9 @@ class FlavorContext {
     }
     return false;
   }
+
+  /// For web hosting
+  String get ifNotProdHostingIdSuffix => isProd ? '' : '-$flavor';
 }
 
 /// App flavor context.
