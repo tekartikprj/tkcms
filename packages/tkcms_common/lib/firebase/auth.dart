@@ -13,6 +13,16 @@ extension TkCmsFirebaseAuthExt on FirebaseAuth {
   }
 
   /// Helper
+  Future<UserCredential> signInOrUpWithCredentials(
+    TkCmsEmailPasswordCredentials credentials,
+  ) async {
+    return signInOrUpWithEmailAndPassword(
+      email: credentials.email,
+      password: credentials.password,
+    );
+  }
+
+  /// Helper
   Future<String> ensureUserWithCredentials(
     TkCmsEmailPasswordCredentials credentials,
   ) async {

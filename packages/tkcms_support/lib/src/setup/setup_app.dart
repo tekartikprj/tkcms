@@ -55,7 +55,7 @@ class TkCmsEntityAccessSetupApp<T extends TkCmsFsEntity> {
   late final String entityId;
 
   /// Optional admin credentails
-  final List<TkCmsUidEmailPasswordCredentials>? adminCredentials;
+  final List<TkCmsEmailPasswordCredentials>? adminCredentials;
 
   /// Firestore
   Firestore get firestore => entityAccess.firestore;
@@ -88,9 +88,20 @@ class TkCmsEntityAccessSetupApp<T extends TkCmsFsEntity> {
         ..admin.v = true
         ..fixAccess();
       for (var user in users) {
+        late String userUid;
+        if (user is TkCmsUidEmailPasswordCredentials) {
+          userUid = user.uid;
+        } else {
+          var createdUser = await firebaseContext.auth
+              .getOrCreateUserWithEmailAndPassword(
+                email: user.email,
+                password: user.password,
+              );
+          userUid = createdUser.uid;
+        }
         await entityAccess
             .fsEntityUserAccessCollectionRef(entityId)
-            .doc(user.uid)
+            .doc(userUid)
             .set(firestore, access);
       }
     }
