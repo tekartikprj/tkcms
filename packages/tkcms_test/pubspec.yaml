@@ -12,7 +12,7 @@ dependencies:
     git:
       url: https://github.com/tekartikprj/tkcms.git
       path: packages/tkcms_common
-  dev_test: ">=1.0.1"
+  dev_test: ">=1.0.3"
   # path: ^1.8.0
 
 dev_dependencies:

@@ -12,8 +12,8 @@ environment:
 dependencies:
   path: ">=1.9.1"
   http:
-  sembast: ">=3.8.5+1"
-  cv: ">=1.1.10"
+  sembast: ">=3.8.8"
+  cv: ">=1.1.11"
   tekartik_app_rx:
     git:
       url: https://github.com/tekartik/app_common_utils.dart
