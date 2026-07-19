@@ -133,6 +133,7 @@ class AppFlavorContext {
     required this.flavorContext,
     bool? local,
     required this.app,
+    this._uniqueAppName,
   }) : local = local ?? false;
 
   /// Flavor suffix if not prod.
@@ -178,6 +179,21 @@ class AppFlavorContext {
       flavorContext: flavorContext,
       local: local,
       app: appId,
+    );
+  }
+
+  /// Copy with
+  AppFlavorContext copyWith({
+    String? appId,
+    FlavorContext? flavorContext,
+    bool? local,
+    String? uniqueAppName,
+  }) {
+    return AppFlavorContext(
+      flavorContext: flavorContext ?? this.flavorContext,
+      local: local ?? this.local,
+      app: appId ?? app,
+      uniqueAppName: uniqueAppName ?? _uniqueAppName,
     );
   }
 
