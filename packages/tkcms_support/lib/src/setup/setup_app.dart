@@ -84,25 +84,32 @@ class TkCmsEntityAccessSetupApp<T extends TkCmsFsEntity> {
   Future<void> setupUsers() async {
     var users = adminCredentials;
     if (users != null) {
-      var access = TkCmsFsUserAccess()
-        ..admin.v = true
-        ..fixAccess();
+      var access = TkCmsFsUserAccess()..grantSuperAdminAccess();
+
       for (var user in users) {
+        stdout.writeln('user: $user');
         late String userUid;
         if (user is TkCmsUidEmailPasswordCredentials) {
           userUid = user.uid;
         } else {
-          var createdUser = await firebaseContext.auth
-              .getOrCreateUserWithEmailAndPassword(
-                email: user.email,
-                password: user.password,
-              );
-          userUid = createdUser.uid;
+          var auth = firebaseContext.auth as FirebaseAuthAdmin;
+          var foundUser = await auth.getUserByEmail(user.email);
+          if (foundUser == null) {
+            var createdUser = await firebaseContext.auth
+                .getOrCreateUserWithEmailAndPassword(
+                  email: user.email,
+                  password: user.password,
+                );
+            userUid = createdUser.uid;
+          } else {
+            userUid = foundUser.uid;
+          }
         }
-        await entityAccess
-            .fsEntityUserAccessCollectionRef(entityId)
-            .doc(userUid)
-            .set(firestore, access);
+        await entityAccess.setEntityUserAccess(
+          entityId: entityId,
+          userId: userUid,
+          userAccess: access,
+        );
       }
     }
   }
