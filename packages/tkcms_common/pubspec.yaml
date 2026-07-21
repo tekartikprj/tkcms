@@ -13,6 +13,7 @@ dependencies:
   path: ">=1.9.1"
   http:
   sembast: ">=3.8.8"
+  idb_shim: ">=2.9.6+2"
   cv: ">=1.1.11"
   tekartik_app_rx:
     git:
@@ -82,6 +83,11 @@ dependencies:
       url: https://github.com/tekartik/firebase_firestore.dart
       path: firestore_sembast
     version: '>=0.8.0'
+  tekartik_firebase_firestore_idb:
+    git:
+      url: https://github.com/tekartik/firebase_firestore.dart
+      path: firestore_idb
+    version: '>=0.8.2'
   tekartik_app_crypto:
     git:
       url: https://github.com/tekartik/app_common_utils.dart
@@ -113,6 +119,11 @@ dependencies:
     git:
       url: https://github.com/tekartik/firebase_auth.dart
       path: auth_sembast
+  tekartik_firebase_auth_sdb:
+    git:
+      url: https://github.com/tekartik/firebase_auth.dart
+      path: auth_sdb
+    version: '>=1.0.0'
   tekartik_app_rx_bloc:
     git:
       url: https://github.com/tekartik/app_common_utils.dart
