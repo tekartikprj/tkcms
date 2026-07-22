@@ -60,7 +60,7 @@ class TkCmsEntityAccessSetupApp<T extends TkCmsFsEntity> {
   /// Firestore
   Firestore get firestore => entityAccess.firestore;
 
-  /// Constructor
+  /// Creates a [TkCmsEntityAccessSetupApp] with optional [_firebaseContext], required [entityAccess], [entityId], and optional [adminCredentials].
   TkCmsEntityAccessSetupApp({
     this._firebaseContext,
     required this.entityAccess,

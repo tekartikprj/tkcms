@@ -4,6 +4,6 @@ import 'package:tkcms_common/tkcms_server.dart';
 
 /// Server app
 class FfApp extends TkCmsServerAppV2 {
-  /// Constructor
+  /// Creates an [FfApp] instance with the given [context].
   FfApp({required super.context}) : super(apiVersion: apiVersion2);
 }

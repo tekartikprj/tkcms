@@ -43,7 +43,7 @@ class TkCmsFirestoreRulesManager {
     'firestore.rules.txt',
   );
 
-  /// Constructor
+  /// Creates a [TkCmsFirestoreRulesManager] with optional [firebaseApp] and [localPath].
   TkCmsFirestoreRulesManager({FirebaseApp? firebaseApp, String? localPath}) {
     var app = this.firebaseApp =
         (firebaseApp ?? FirebaseApp.instance) as FirebaseAppRest;
