@@ -281,6 +281,7 @@ class TkCmsFirebaseContext {
   FirebaseFunctionsCall get functionsCall => functionsCallOrNull!;
 
   /// true if local.
+  @Deprecated('since 2026-07-23')
   bool get local => firebase.isLocal;
 
   /// Server app, might be null.
@@ -294,6 +295,19 @@ class TkCmsFirebaseContext {
 
   /// Firebase functions server.
   FfServer get ffServerHttp => ffServerOrNull!;
+
+  /// Context from an app.
+  factory TkCmsFirebaseContext.fromApp({FirebaseApp? firebaseApp}) {
+    var app = firebaseApp ?? FirebaseApp.instance;
+    return TkCmsFirebaseContext(
+      firebaseApp: app,
+      firebase: app.firebase,
+      auth: app.getProduct<FirebaseAuth>(),
+      firestore: app.getProduct<Firestore>(),
+      storage: app.getProduct<Storage>(),
+      functions: app.getProduct<FirebaseFunctions>(),
+    );
+  }
 
   /// Firebase context.
   TkCmsFirebaseContext({
@@ -341,7 +355,6 @@ class TkCmsFirebaseContext {
     TkCmsCommonServerApp? serverApp,
   }) {
     return TkCmsFirebaseContext(
-      local: local,
       firebase: firebase ?? this.firebase,
       firebaseApp: firebaseApp ?? this.firebaseApp,
       auth: auth ?? authOrNull,

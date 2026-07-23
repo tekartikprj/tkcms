@@ -507,7 +507,10 @@ class TkCmsServerAppV1 implements TkCmsCommonServerApp {
         throw StateError('unsupported version $apiVersion');
     }
 
-    if (!firebaseContext.local) {
+    // Remove since 2026-07-23
+    // ignore: dead_code
+    if (false) {
+      // !firebaseContext.local) {
       try {
         // Every day at 11pm
         functions[cron] = functions.scheduler.onSchedule(

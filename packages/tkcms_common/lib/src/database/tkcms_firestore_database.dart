@@ -27,6 +27,17 @@ class TkCmsFirestoreDatabaseService {
     initFsBuilders();
   }
 
+  /// Firestore database service.
+  factory TkCmsFirestoreDatabaseService.fromApp({
+    required FirebaseApp firebaseApp,
+    required AppFlavorContext flavorContext,
+  }) {
+    return TkCmsFirestoreDatabaseService(
+      firebaseContext: TkCmsFirebaseContext.fromApp(firebaseApp: firebaseApp),
+      flavorContext: flavorContext,
+    );
+  }
+
   /// Firestore service
   Firestore get firestore => firebaseContext.firestore;
 

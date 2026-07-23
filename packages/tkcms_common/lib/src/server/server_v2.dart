@@ -21,7 +21,7 @@ class TkAppCmsServerAppBase extends TkCmsServerAppV2 {
   late final appFlavorContext = AppFlavorContext(
     flavorContext: flavorContext,
     app: app,
-    local: this.firebaseContext.local,
+    //local: this.firebaseContext.local,
   );
 
   /// Server app base.
