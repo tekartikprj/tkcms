@@ -1,5 +1,8 @@
 import 'package:sembast/sembast_memory.dart';
-
+import 'package:tekartik_firebase_admin_sdk/firebase_admin_sdk.dart';
+import 'package:tekartik_firebase_admin_sdk/firebase_auth_admin_sdk.dart';
+import 'package:tekartik_firebase_admin_sdk/firebase_storage_admin_sdk.dart';
+import 'package:tekartik_firebase_admin_sdk/firestore_admin_sdk.dart';
 import 'package:tekartik_firebase_auth_sembast/auth_sembast.dart';
 import 'package:tekartik_firebase_firestore_sembast/firestore_sembast.dart';
 import 'package:tekartik_firebase_functions_admin_sdk_http/functions_admin_sdk_http.dart';
@@ -10,6 +13,22 @@ import 'package:tekartik_firebase_storage_fs/storage_fs.dart';
 import 'package:tekartik_http/http_memory.dart';
 import 'package:tkcms_common/tkcms_common.dart';
 import 'package:tkcms_common/tkcms_firebase.dart';
+
+/// Admin sdk based services.
+FirebaseServicesContext initFirebaseServicesAdminSdk() {
+  var firebase = firebaseAdminSdk;
+  var firestoreService = firestoreServiceAdminSdk;
+
+  var authService = firebaseAuthServiceAdminSdk;
+  var storageService = firebaseStorageServiceAdminSdk;
+  var firebaseServicesContext = FirebaseServicesContext(
+    firebase: firebase,
+    authService: authService,
+    firestoreService: firestoreService,
+    storageService: storageService,
+  );
+  return firebaseServicesContext;
+}
 
 /// Init memory services.
 Future<FirebaseServicesContext> initFirebaseServicesMemoryAdminSdk() async {

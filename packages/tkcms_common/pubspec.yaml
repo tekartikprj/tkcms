@@ -155,6 +155,10 @@ dependencies:
     git:
       url: https://github.com/tekartik/firebase_admin_sdk.dart
       path: firebase_functions_admin_sdk_http
+  tekartik_firebase_admin_sdk:
+    git:
+      url: https://github.com/tekartik/firebase_admin_sdk.dart
+      path: firebase_admin_sdk
 
 dev_dependencies:
   lints: ">=6.1.0"
