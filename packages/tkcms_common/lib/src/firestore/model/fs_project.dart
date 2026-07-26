@@ -2,7 +2,16 @@ import 'package:tkcms_common/tkcms_firestore_v2.dart';
 import 'package:tkcms_common/tkcms_flavor.dart';
 
 /// V2
-class TkCmsFsProject extends TkCmsFsEntity {}
+class TkCmsFsProject extends TkCmsFsEntity {
+  /// User id of the user who created this project.
+  ///
+  /// Used by the standalone (no backend) security rules to allow the
+  /// creator to manage sub entities without a separate access grant.
+  final creatorUserId = CvField<String>('creatorUserId');
+
+  @override
+  CvFields get fields => [creatorUserId, ...super.fields];
+}
 
 /// Project in `/app/<app_id>/project/<project_id>`
 const tkCmsProjectFirestorePathPart = 'project';
