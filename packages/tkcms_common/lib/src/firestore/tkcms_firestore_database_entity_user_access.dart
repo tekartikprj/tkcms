@@ -311,6 +311,18 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
     txn.refSet(userEntityAccessRef, userAccess);
   }
 
+  /// Set user access in a transaction.
+  Future<void> noTxnSetEntityUserAccess({
+    required String entityId,
+    required String userId,
+    required TkCmsFsUserAccess userAccess,
+  }) async {
+    var entityUserAccessRef = _entityUserAccessDoc(entityId, userId);
+    var userEntityAccessRef = _userEntityAccessDoc(userId, entityId);
+    await firestore.refSet(entityUserAccessRef, userAccess);
+    await firestore.refSet(userEntityAccessRef, userAccess);
+  }
+
   /// Create a project invite, return the id
   Future<void> acceptInviteEntity({
     required String userId,
@@ -445,6 +457,22 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
   Future<bool> rootMarkAsDeleted(String entityId) async {
     var entityRef = _entityCollection.doc(entityId);
 
+    if (!firestore.supportsTransaction) {
+      var entity = await firestore.refGet(entityRef);
+      if (entity.deleted.v == true) {
+        return false;
+      }
+
+      entity.deleted.v = true;
+      entity.active.v = false;
+      await entityRef
+          .raw(firestore)
+          .set(
+            entity.toMap()
+              ..withServerTimestamp(tkCmsFsEntityModel.deletedTimestamp),
+          );
+      return true;
+    }
     return await firestore.cvRunTransaction((txn) async {
       var entity = await txn.refGet(entityRef);
       if (entity.deleted.v == true) {
