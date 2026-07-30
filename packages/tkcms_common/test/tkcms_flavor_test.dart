@@ -31,6 +31,52 @@ void main() {
       'myapp-dev',
     );
   });
+  test('suffix', () {
+    var appFlavorContext = AppFlavorContext(
+      app: 'myapp',
+      flavorContext: FlavorContext.dev,
+      suffix: '_v2',
+    );
+    expect(appFlavorContext.suffix, '_v2');
+    expect(appFlavorContext.uniqueAppName, 'myapp_dev_v2');
+    expect(appFlavorContext.appKeySuffix, '_myapp_dev_v2');
+
+    appFlavorContext = AppFlavorContext(
+      app: 'myapp_dev_v2',
+      flavorContext: FlavorContext.dev,
+      suffix: '_v2',
+    );
+    expect(appFlavorContext.uniqueAppName, 'myapp_dev_v2');
+
+    appFlavorContext = AppFlavorContext(
+      app: 'myapp',
+      flavorContext: FlavorContext.dev,
+      suffix: '_v2',
+      local: true,
+    );
+    expect(appFlavorContext.uniqueAppName, 'myapp_dev_v2_local');
+
+    appFlavorContext = FlavorContext.dev.toAppFlavorContext(
+      appId: 'myapp',
+      suffix: '_v2',
+    );
+    expect(appFlavorContext.suffix, '_v2');
+    expect(appFlavorContext.uniqueAppName, 'myapp_dev_v2');
+
+    appFlavorContext = FlavorContext.dev.toAppFlavorContext(
+      baseAppId: 'myapp',
+      suffix: '_v2',
+    );
+    expect(appFlavorContext.suffix, '_v2');
+    expect(appFlavorContext.appId, 'myapp-dev');
+
+    appFlavorContext = FlavorContext.dev.toAppFlavorContext(
+      appId: 'myapp',
+      suffix: '_v2',
+      local: true,
+    );
+    expect(appFlavorContext.uniqueAppName, 'myapp_dev_v2_local');
+  });
   test('tkCmsFlavorContextFromHost', () {
     expect(tkCmsFlavorContextFromHost('dev.example.com'), FlavorContext.dev);
     expect(tkCmsFlavorContextFromHost('prod.example.com'), FlavorContext.prod);

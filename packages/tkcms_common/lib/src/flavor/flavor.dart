@@ -117,6 +117,9 @@ class AppFlavorContext {
   /// This is typically the firestore app name
   final String app;
 
+  /// Optional suffix (for uniqueAppName)
+  final String? suffix;
+
   /// App id (firestore app name)
   String get appId => app;
 
@@ -133,16 +136,19 @@ class AppFlavorContext {
     required this.flavorContext,
     bool? local,
     required this.app,
+    this.suffix,
     this._uniqueAppName,
   }) : local = local ?? false;
 
   /// Flavor suffix if not prod.
   String get ifNotProdSuffix => flavorContext.ifNotProdFlavor;
 
+  String get _suffix => suffix ?? '';
+
   /// Unique app name for local use (_dev or _prod)
   String get uniqueAppName => _uniqueAppName ??= () {
-    var flavorSuffix1 = '_${flavorContext.flavor}';
-    var flavorSuffix2 = '-${flavorContext.flavor}';
+    var flavorSuffix1 = '_${flavorContext.flavor}$_suffix';
+    var flavorSuffix2 = '-${flavorContext.flavor}$_suffix';
     var hasSuffix = app.endsWith(flavorSuffix1) || app.endsWith(flavorSuffix2);
     return '$app${hasSuffix ? '' : flavorSuffix1}${local ? '_local' : ''}';
   }();
@@ -214,8 +220,14 @@ extension FlavorContextExt on FlavorContext {
     String? appId,
     String? baseAppId,
     bool local = false,
+    String? suffix,
   }) {
     appId ??= '$baseAppId-$flavor';
-    return AppFlavorContext(flavorContext: this, local: local, app: appId);
+    return AppFlavorContext(
+      flavorContext: this,
+      local: local,
+      app: appId,
+      suffix: suffix,
+    );
   }
 }
