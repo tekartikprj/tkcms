@@ -14,3 +14,11 @@ class TkCmsFsPublicAccess extends CvFirestoreDocumentBase {
   @override
   List<CvField<Object>> get fields => [read];
 }
+
+/// Common helpers
+extension TkCmsFsPublicAccessExt on TkCmsFsPublicAccess {
+  /// Fix access, granting read from write and write from admin.
+  void fixAccess() {
+    read.v ??= false;
+  }
+}
