@@ -293,7 +293,7 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
   Future<void> setEntityUserAccess({
     required String entityId,
     required String userId,
-    required TkCmsFsUserAccess userAccess,
+    required TkCmsFsUserAccess? userAccess,
   }) async {
     await firestore.cvRunTransaction((txn) async {
       txnSetEntityUserAccess(txn, entityId, userId, userAccess);
@@ -305,24 +305,17 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
     CvFirestoreTransaction txn,
     String entityId,
     String userId,
-    TkCmsFsUserAccess userAccess,
+    TkCmsFsUserAccess? userAccess,
   ) {
     var entityUserAccessRef = _entityUserAccessDoc(entityId, userId);
     var userEntityAccessRef = _userEntityAccessDoc(userId, entityId);
-    txn.refSet(entityUserAccessRef, userAccess);
-    txn.refSet(userEntityAccessRef, userAccess);
-  }
-
-  /// Set user access in a transaction.
-  Future<void> noTxnSetEntityUserAccess({
-    required String entityId,
-    required String userId,
-    required TkCmsFsUserAccess userAccess,
-  }) async {
-    var entityUserAccessRef = _entityUserAccessDoc(entityId, userId);
-    var userEntityAccessRef = _userEntityAccessDoc(userId, entityId);
-    await firestore.refSet(entityUserAccessRef, userAccess);
-    await firestore.refSet(userEntityAccessRef, userAccess);
+    if (userAccess == null) {
+      txn.refDelete(userEntityAccessRef);
+      txn.refDelete(entityUserAccessRef);
+    } else {
+      txn.refSet(entityUserAccessRef, userAccess);
+      txn.refSet(userEntityAccessRef, userAccess);
+    }
   }
 
   /// Create a project invite, return the id
@@ -459,22 +452,6 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
   Future<bool> rootMarkAsDeleted(String entityId) async {
     var entityRef = _entityCollection.doc(entityId);
 
-    if (!firestore.supportsTransaction) {
-      var entity = await firestore.refGet(entityRef);
-      if (entity.deleted.v == true) {
-        return false;
-      }
-
-      entity.deleted.v = true;
-      entity.active.v = false;
-      await entityRef
-          .raw(firestore)
-          .set(
-            entity.toMap()
-              ..withServerTimestamp(tkCmsFsEntityModel.deletedTimestamp),
-          );
-      return true;
-    }
     return await firestore.cvRunTransaction((txn) async {
       var entity = await txn.refGet(entityRef);
       if (entity.deleted.v == true) {
