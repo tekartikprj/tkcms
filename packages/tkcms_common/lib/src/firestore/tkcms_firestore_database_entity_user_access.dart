@@ -104,6 +104,7 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
       .doc(entityId)
       .collection<TkCmsFsUserAccess>(tkCmsFsUserAccessCollectionId);
 
+  /// The one to use as a reference for other users
   CvDocumentReference<TkCmsFsUserAccess> _entityUserAccessDoc(
     String entityId,
     String userId,
@@ -112,6 +113,7 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
   CvDocumentReference<CvFirestoreDocument> _userAccessTop(String userId) =>
       _entityTypeAccessDoc.collection(tkCmsFsUserIdCollectionId).doc(userId);
 
+  /// The one to use from the user side
   CvDocumentReference<TkCmsFsUserAccess> _userEntityAccessDoc(
     String userId,
     String entityId,
@@ -554,8 +556,9 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
     void txnDeleteUserAccess(CvFirestoreTransaction txn, String userId) {
       var entityUserAccessRef = _entityUserAccessDoc(entityId, userId);
       var userEntityAccessRef = _userEntityAccessDoc(userId, entityId);
-      txn.refDelete(entityUserAccessRef);
       txn.refDelete(userEntityAccessRef);
+      print('delete userEntityAccessRef: $userEntityAccessRef');
+      txn.refDelete(entityUserAccessRef);
     }
 
     while (true) {
