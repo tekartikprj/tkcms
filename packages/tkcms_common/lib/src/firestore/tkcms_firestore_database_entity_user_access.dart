@@ -557,7 +557,6 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
       var entityUserAccessRef = _entityUserAccessDoc(entityId, userId);
       var userEntityAccessRef = _userEntityAccessDoc(userId, entityId);
       txn.refDelete(userEntityAccessRef);
-      print('delete userEntityAccessRef: $userEntityAccessRef');
       txn.refDelete(entityUserAccessRef);
     }
 
