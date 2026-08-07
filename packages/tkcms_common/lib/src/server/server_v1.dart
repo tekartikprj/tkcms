@@ -130,6 +130,14 @@ class InfoCommandHandler extends CommandHandler {
 void ensureFields(CvModel model, CvFields fields) {
   for (var field in fields) {
     if (model.field(field.name)?.isNull ?? true) {
+      if (isDebug) {
+        // ignore: avoid_print
+        print('field ${field.name} missing or null in $model');
+        // debugPrintStack(label: 'field ${field.name} missing or null in $model');
+        final stackTrace = StackTrace.current;
+        // ignore: avoid_print
+        print(stackTrace);
+      }
       throw ArgumentError('field ${field.name} missing or null in $model');
     }
   }
