@@ -14,6 +14,7 @@ Future<FirebaseServicesContext> initFirebaseServicesRest({
   var firebase = firebaseRest;
   var firestoreService = firestoreServiceRest;
   var authService = authServiceRest;
+  var storageService = storageServiceRest;
   var functionsCallService = firebaseFunctionsCallServiceRest;
 
   var firebaseServicesContext = FirebaseServicesContext(
@@ -23,6 +24,7 @@ Future<FirebaseServicesContext> initFirebaseServicesRest({
     authService: authService,
     functionsCallService: functionsCallService,
     functionsCallRegion: regionBelgium,
+    storageService: storageService,
   );
   return firebaseServicesContext;
 }
