@@ -5,6 +5,7 @@ import 'package:tkcms_common/server/server_common.dart';
 import 'package:tkcms_common/src/flavor/flavor.dart';
 import 'package:tkcms_common/tkcms_api.dart';
 import 'package:tkcms_common/tkcms_common.dart';
+
 //import 'package:tkcms_common/tkcms_server.dart';
 
 /// base options.
@@ -121,7 +122,7 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
         throw StateError('Invalid encoding options');
       }
 
-      return onSecuredCommand(innerRequest);
+      return await onSecuredCommand(innerRequest);
     } catch (e, st) {
       if (isDebug) {
         // ignore: avoid_print
