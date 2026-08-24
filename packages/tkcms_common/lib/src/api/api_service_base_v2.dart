@@ -149,6 +149,11 @@ class TkCmsApiServiceBaseV2 implements TkCmsTimestampProvider {
   final HttpClientFactory httpClientFactory;
 
   /// Rest support
+  ///
+  /// No longer sent: the http transport is not authenticated, so the server
+  /// ignores any userId coming from the request body. Use the callable api
+  /// ([callableApi]), where the userId comes from the verified auth context.
+  @Deprecated('Unauthenticated, ignored by the server since 2026-08-25')
   String? userIdOrNull;
 
   /// Set from login and prefs
@@ -355,9 +360,8 @@ class TkCmsApiServiceBaseV2 implements TkCmsTimestampProvider {
     return apiExceptionWrapAction(() async {
       var uri = httpsApiUri!;
 
-      /// Dev/Rest only
-
-      request.userId.setValue(userIdOrNull);
+      // No userId is sent: it is not authenticated over http and the server
+      // ignores it anyway.
       if (debugWebServices) {
         log('-> uri: $uri');
         log('  ${tkCmsApiLogModelContent(request)}');

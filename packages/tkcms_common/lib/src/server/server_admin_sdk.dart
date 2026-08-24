@@ -48,6 +48,10 @@ extension TkCmsServerAppAdminSdkExt on TkCmsServerAppV2 {
     try {
       var requestMap = (await request.readAsString()).jsonToMap();
       var apiRequest = requestMap.cv<ApiRequest>();
+      // The http transport is NOT authenticated: any client can put any
+      // userId in the body. Never trust it, only the callable transport can
+      // set it (from `request.context.auth`).
+      apiRequest.userId.clear();
       var result = await onCommand(apiRequest);
       response = ApiResponse()..result.v = (CvMapModel()..copyFrom(result));
     } catch (e, st) {

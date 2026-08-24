@@ -405,6 +405,10 @@ class TkCmsServerAppV1 implements TkCmsCommonServerApp {
     try {
       var requestMap = request.bodyAsMap;
       var apiRequest = requestMap.cv<ApiRequest>();
+      // The http transport is NOT authenticated: any client can put any
+      // userId in the body. Never trust it, only the callable transport can
+      // set it (from `request.context.auth`).
+      apiRequest.userId.clear();
       var result = await onCommandV2(apiRequest);
 
       await sendResponse(
