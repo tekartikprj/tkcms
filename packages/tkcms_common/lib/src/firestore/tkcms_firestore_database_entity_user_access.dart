@@ -197,14 +197,19 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
   }
 
   /// Create a project invite, return the id
+  ///
+  /// When [email] is set, the invite targets this email and can only be
+  /// accepted by a user with the same email (see [acceptInviteEntity]).
   Future<String> createInviteEntity({
     required String userId,
     required String entityId,
     required TkCmsCvUserAccess userAccess,
     required TFsEntity entity,
     String? inviteCode,
+    String? email,
     bool autoId = false,
   }) async {
+    var inviteEmail = tkCmsNormalizeInviteEmail(email);
     return await firestore.cvRunTransaction((txn) async {
       String? inviteId;
 
@@ -264,6 +269,7 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
       inviteEntity.userAccess.v = userAccess;
       inviteEntity.entity.v = entity;
       inviteEntity.entityId.v = entityId;
+      inviteEntity.email.setValue(inviteEmail);
 
       var inviteIdDoc = _inviteIdCollection.doc(inviteId).cv()
         ..entityId.v = entityId;
@@ -318,12 +324,17 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
     }
   }
 
-  /// Create a project invite, return the id
+  /// Accept an invite.
+  ///
+  /// [email] is the accepting user email, it must match the invite email when
+  /// the invite targets a given email (see [createInviteEntity]).
   Future<void> acceptInviteEntity({
     required String userId,
     required String inviteId,
     required String entityId,
+    String? email,
   }) async {
+    var userEmail = tkCmsNormalizeInviteEmail(email);
     return await firestore.cvRunTransaction((txn) async {
       var inviteEntityRef = _inviteEntityDoc(inviteId, entityId);
 
@@ -336,6 +347,14 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
       if (!inviteEntity.exists) {
         throw ArgumentError(
           '$_entityName $entityId invite $inviteId not found',
+        );
+      }
+
+      var inviteEmail = tkCmsNormalizeInviteEmail(inviteEntity.email.v);
+      if (inviteEmail != null && inviteEmail != userEmail) {
+        throw ArgumentError(
+          'Invite $inviteId reserved to another email'
+          '${userEmail == null ? ' (no email supplied)' : ''}',
         );
       }
 

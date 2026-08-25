@@ -32,11 +32,16 @@ Future<FirebaseServicesContext> initFirebaseServicesRest({
 /// Use emulator
 extension FirebaseContextRestExt on FirebaseContext {
   /// Use emulator.
-  Future<void> useEmulator() async {
+  ///
+  /// When [firestoreOwner] is true, firestore requests are sent as the
+  /// emulator owner (admin), bypassing the security rules. Only use it on a
+  /// dedicated context, typically to setup or teardown test data.
+  Future<void> useEmulator({bool? firestoreOwner}) async {
     await (authOrNull as FirebaseAuthRest?)?.useAuthEmulator('localhost', 9099);
     await (firestoreOrNull as FirestoreRest?)?.useFirestoreEmulator(
       'localhost',
       8080,
+      owner: firestoreOwner,
     );
     await (storageOrNull as StorageRest?)?.useStorageEmulator(
       'localhost',

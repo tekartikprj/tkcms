@@ -200,6 +200,100 @@ void main() {
     userEntityAccess = await userEntityAccessRef2.get(firestore);
     expect(userEntityAccess.exists, isFalse);
   });
+  test('email invite', () async {
+    var entity = TestFsEntity()
+      ..name.v = 'e1'
+      ..specific.v = 's1';
+    var userId = 'user1';
+    var userId2 = 'user2';
+    var userId3 = 'user3';
+    var entityId = await db.createEntity(userId: userId, entity: entity);
+
+    // Deliberately not normalized.
+    var invitedEmail = ' Invited@Test.Local ';
+    var inviteId = await db.createInviteEntity(
+      userId: userId,
+      entityId: entityId,
+      userAccess: TkCmsCvUserAccess()..read.v = true,
+      entity: entity,
+      email: invitedEmail,
+    );
+
+    var inviteEntityRef = db.fsInviteEntityRef(inviteId, entityId);
+    var inviteEntity = await inviteEntityRef.get(firestore);
+    expect(inviteEntity.email.v, 'invited@test.local');
+
+    // No email supplied.
+    await expectLater(
+      () => db.acceptInviteEntity(
+        userId: userId2,
+        inviteId: inviteId,
+        entityId: entityId,
+      ),
+      throwsA(isA<ArgumentError>()),
+    );
+    // Wrong email supplied.
+    await expectLater(
+      () => db.acceptInviteEntity(
+        userId: userId2,
+        inviteId: inviteId,
+        entityId: entityId,
+        email: 'other@test.local',
+      ),
+      throwsA(isA<ArgumentError>()),
+    );
+    expect((await inviteEntityRef.get(firestore)).exists, isTrue);
+    expect(
+      (await db.fsEntityUserAccessRef(entityId, userId2).get(firestore)).exists,
+      isFalse,
+    );
+
+    // The invited user, whatever the casing.
+    await db.acceptInviteEntity(
+      userId: userId3,
+      inviteId: inviteId,
+      entityId: entityId,
+      email: 'INVITED@test.local',
+    );
+    expect((await inviteEntityRef.get(firestore)).exists, isFalse);
+    expect((await db.fsInviteIdRef(inviteId).get(firestore)).exists, isFalse);
+    expect(
+      await db.fsEntityUserAccessRef(entityId, userId3).get(firestore),
+      TkCmsFsUserAccess()
+        ..inviteId.v = inviteId
+        ..admin.v = false
+        ..write.v = false
+        ..read.v = true,
+    );
+  });
+  test('invite without email', () async {
+    var entity = TestFsEntity()..name.v = 'e1';
+    var userId = 'user1';
+    var userId2 = 'user2';
+    var entityId = await db.createEntity(userId: userId, entity: entity);
+    var inviteId = await db.createInviteEntity(
+      userId: userId,
+      entityId: entityId,
+      userAccess: TkCmsCvUserAccess()..read.v = true,
+      entity: entity,
+    );
+    var inviteEntity = await db
+        .fsInviteEntityRef(inviteId, entityId)
+        .get(firestore);
+    expect(inviteEntity.email.v, isNull);
+
+    // Any email (or none) is accepted.
+    await db.acceptInviteEntity(
+      userId: userId2,
+      inviteId: inviteId,
+      entityId: entityId,
+      email: 'anyone@test.local',
+    );
+    expect(
+      (await db.fsEntityUserAccessRef(entityId, userId2).get(firestore)).isRead,
+      isTrue,
+    );
+  });
   test('purge old invites', () async {
     var now = Timestamp.now();
     var inviteId1 = 'invite1';

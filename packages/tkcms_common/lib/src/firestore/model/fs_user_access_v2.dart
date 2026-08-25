@@ -42,6 +42,21 @@ const tkCmsFsInviteEntityCollectionId = 'invite_entity';
 /// Invite code key.
 const tkCmsFsInviteCodeKey = 'inviteCode'; // in invite
 
+/// Invite email key.
+const tkCmsFsInviteEmailKey = 'email'; // in invite
+
+/// Normalize an invite email (trimmed, lower cased) so that invites created
+/// and accepted with a different casing still match.
+///
+/// Returns null for a null or empty email.
+String? tkCmsNormalizeInviteEmail(String? email) {
+  var normalized = email?.trim().toLowerCase();
+  if (normalized?.isEmpty ?? true) {
+    return null;
+  }
+  return normalized;
+}
+
 var _fsBuildersInitialized = false;
 
 /// Init fs builders.
@@ -108,12 +123,19 @@ class TkCmsFsInviteEntity<TFsEntity extends TkCmsFsEntity>
 
   /// Invite code.
   final inviteCode = CvField<String>('inviteCode');
+
+  /// Invited email, when the invite targets a given user email.
+  ///
+  /// Always stored normalized (see [tkCmsNormalizeInviteEmail]), only the
+  /// matching user can accept the invite.
+  final email = CvField<String>('email');
   @override
   CvFields get fields => [
     entityId,
     entity,
     userAccess,
     inviteCode,
+    email,
     ...timedMixinFields,
   ];
 }
