@@ -1,5 +1,11 @@
 import 'package:tkcms_common/tkcms_firestore.dart';
 
+/// [path] relative to [rootPath] (a doc path below it), or [path] itself.
+String firestorePathRelativeTo(String path, String rootPath) {
+  var prefix = '$rootPath/';
+  return path.startsWith(prefix) ? path.substring(prefix.length) : path;
+}
+
 /// Recursive delete helpers.
 extension TkCmsCollectionReferenceRecursiveDeleteExt on CollectionReference {
   /// Delete all item in a query, return the count deleted
@@ -8,6 +14,8 @@ extension TkCmsCollectionReferenceRecursiveDeleteExt on CollectionReference {
   Future<int> tkCmsRecursiveDelete(
     TkCmsCollectionsTreeDef def, {
     int? batchSize,
+    String? rootDocPath,
+    List<String> rootParents = const [],
   }) async {
     var collection = this;
 
@@ -40,11 +48,21 @@ extension TkCmsCollectionReferenceRecursiveDeleteExt on CollectionReference {
         batch.delete(ref);
 
         /// Delete recursive
-        var collectionIds = def.docPathGetCollectionsId(path);
+        var collectionIds = rootDocPath == null
+            ? def.docPathGetCollectionsId(path)
+            : def.relativeDocPathGetCollectionsId(
+                firestorePathRelativeTo(path, rootDocPath),
+                parents: rootParents,
+              );
         for (var collectionId in collectionIds) {
           count += await ref
               .collection(collectionId)
-              .tkCmsRecursiveDelete(def, batchSize: batchSize);
+              .tkCmsRecursiveDelete(
+                def,
+                batchSize: batchSize,
+                rootDocPath: rootDocPath,
+                rootParents: rootParents,
+              );
         }
       }
 
@@ -63,13 +81,21 @@ extension DocumentReferenceRecursiveDeleteExt on DocumentReference {
     TkCmsCollectionsTreeDef def, {
     int? batchSize,
   }) async {
-    var collectionIds = def.docPathGetCollectionsId(path);
+    // The tree is resolved relative to this document, whatever the depth it
+    // lives at (`type1/e1` or `app/x/type1/e1`): either rooted at its own
+    // collection id (`{'type1': {'subType2': null}}`) or at its sub
+    // collections (`{'item': null}`).
+    var rootParents = def.docRootParents(path);
+    var collectionIds = def.getCollectionIds(rootParents);
 
     var count = 0;
     for (var collectionId in collectionIds) {
-      count += await collection(
-        collectionId,
-      ).tkCmsRecursiveDelete(def, batchSize: batchSize);
+      count += await collection(collectionId).tkCmsRecursiveDelete(
+        def,
+        batchSize: batchSize,
+        rootDocPath: path,
+        rootParents: rootParents,
+      );
     }
 
     /// Assume exists
@@ -137,6 +163,26 @@ class TkCmsCollectionsTreeDef {
   /// Get list of collection from a document path
   List<String> docPathGetCollectionsId(String path) {
     return getCollectionIds(_docPathParentCollectionIds(path));
+  }
+
+  /// The tree parents an entity document [path] hangs from: its own
+  /// collection id when the tree is rooted at it, nothing when the tree is
+  /// rooted at its sub collections.
+  List<String> docRootParents(String path) {
+    var collectionId = firestorePathGetId(firestoreDocPathGetParent(path));
+    return _model.containsKey(collectionId) ? [collectionId] : [];
+  }
+
+  /// The collection ids of a document at [relativeDocPath] below a root
+  /// document whose tree parents are [parents] (see [docRootParents]).
+  List<String> relativeDocPathGetCollectionsId(
+    String relativeDocPath, {
+    List<String> parents = const [],
+  }) {
+    return getCollectionIds([
+      ...parents,
+      ..._docPathParentCollectionIds(relativeDocPath),
+    ]);
   }
 
   /// Add a single collection

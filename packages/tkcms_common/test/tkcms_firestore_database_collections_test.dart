@@ -38,4 +38,40 @@ void main() {
       'subSubType4',
     ]);
   });
+
+  test('relative to a rooted entity', () {
+    // Rooted at the entity collection id.
+    var def = TkCmsCollectionsTreeDef(
+      map: {
+        'type2': {
+          'subType3': {'subSubType4': null},
+        },
+      },
+    );
+    expect(def.docRootParents('app/x/type2/e1'), ['type2']);
+    expect(def.docRootParents('type2/e1'), ['type2']);
+    expect(
+      def.relativeDocPathGetCollectionsId('subType3/e3', parents: ['type2']),
+      ['subSubType4'],
+    );
+    // Rooted at the sub collections.
+    def = TkCmsCollectionsTreeDef(
+      map: {
+        'data': {'data': null, 'meta': null},
+      },
+    );
+    expect(def.docRootParents('app/x/project/p1'), isEmpty);
+    expect(def.getCollectionIds(def.docRootParents('app/x/project/p1')), [
+      'data',
+    ]);
+    expect(def.relativeDocPathGetCollectionsId('data/codes'), ['data', 'meta']);
+    expect(def.relativeDocPathGetCollectionsId('data/codes/data/c1'), isEmpty);
+    expect(
+      firestorePathRelativeTo(
+        'app/x/project/p1/data/codes',
+        'app/x/project/p1',
+      ),
+      'data/codes',
+    );
+  });
 }
