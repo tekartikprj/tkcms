@@ -141,6 +141,8 @@ class ApiRequest extends CvModelBase with CvApiMixin {
   }
 
   /// User id if any.
+  /// This is set by the TkCms onCallableCommand
+  /// onHttpsCommand clears it
   final userId = CvField<String>('userId');
 
   /// Command name.
