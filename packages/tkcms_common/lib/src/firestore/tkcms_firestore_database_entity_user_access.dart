@@ -161,6 +161,45 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
     String userId,
   ) => _entityUserAccessDoc(entityId, userId);
 
+  /// The public access flag of an entity,
+  /// `access/{entity}/entity_id/{entityId}/public_access/public`.
+  ///
+  /// When it says `read: true` (see [TkCmsFsPublicAccess]), the firestore
+  /// rules let anyone read the entity and its subtree, signed in or not.
+  /// Written by the api only.
+  CvDocumentReference<TkCmsFsPublicAccess> fsEntityPublicAccessRef(
+    String entityId,
+  ) => _entityTypeAccessDoc
+      .collection(tkCmsFsEntityIdCollectionId)
+      .doc(entityId)
+      .collection<TkCmsFsPublicAccess>(tkCmsPublicAccessFirestorePathPart)
+      .doc(tkCmsPublicAccessPublicDocumentId);
+
+  /// True when the entity is public (readable by anyone).
+  Future<bool> isEntityPublic(String entityId) async {
+    var access = await fsEntityPublicAccessRef(entityId).get(firestore);
+    return access.exists && access.read.v == true;
+  }
+
+  /// Whether the entity is public, as a stream.
+  Stream<bool> onEntityPublic(String entityId) =>
+      fsEntityPublicAccessRef(entityId)
+          .onSnapshot(firestore)
+          .map((access) => access.exists && access.read.v == true);
+
+  /// Set (or clear, with `public: false`) the public flag of an entity.
+  ///
+  /// Server side only: no rule lets a client write the flag.
+  Future<void> setEntityPublic(String entityId, {required bool public}) async {
+    var ref = fsEntityPublicAccessRef(entityId);
+    if (public) {
+      await ref.set(firestore, TkCmsFsPublicAccess()..read.v = true);
+    } else {
+      // No document at all is the cheapest "not public" for the rules.
+      await ref.delete(firestore);
+    }
+  }
+
   /// Helper to get the collection reference
   CvCollectionReference<TkCmsFsUserAccess> fsUserEntityAccessCollectionRef(
     String userId,
