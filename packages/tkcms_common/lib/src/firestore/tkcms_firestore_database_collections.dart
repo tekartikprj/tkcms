@@ -106,6 +106,19 @@ extension DocumentReferenceRecursiveDeleteExt on DocumentReference {
   }
 }
 
+/// The sub collections of an entity holding synced data, the layout every
+/// tkcms app uses (`<entity>/<id>/data/<dataId>/data/*` and
+/// `.../data/<dataId>/meta/*`): the `data/{dataId}/**` subtree the security
+/// rules open to the entity members.
+///
+/// The default tree of [fsProjectCollectionInfo], to use (or extend) when
+/// declaring an entity collection info.
+final tkCmsEntityDataTreeDef = TkCmsCollectionsTreeDef(
+  map: {
+    'data': {'data': null, 'meta': null},
+  },
+);
+
 /// Collections def for delete
 class TkCmsCollectionsTreeDef {
   TkCmsCollectionsTreeDef._(this._model);

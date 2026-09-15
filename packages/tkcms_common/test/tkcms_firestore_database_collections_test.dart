@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:tkcms_common/src/firestore/tkcms_firestore_database_collections.dart';
+import 'package:tkcms_common/tkcms_firestore.dart';
 
 void main() {
   test('collections def', () async {
@@ -37,6 +37,18 @@ void main() {
     expect(def.docPathGetCollectionsId('type2/e1/subType3/e3'), [
       'subSubType4',
     ]);
+  });
+
+  test('entity data tree def', () {
+    var def = tkCmsEntityDataTreeDef;
+    expect(def.getCollectionIds([]), ['data']);
+    expect(def.getCollectionIds(['data']), ['data', 'meta']);
+    expect(def.getCollectionIds(['data', 'data']), isEmpty);
+    // A project document hangs below the tree (rooted at its sub
+    // collections): its `data` documents have `data` and `meta` below.
+    expect(def.docRootParents('app/a1/project/p1'), isEmpty);
+    expect(def.relativeDocPathGetCollectionsId('data/d1'), ['data', 'meta']);
+    expect(fsProjectCollectionInfo.treeDef, same(def));
   });
 
   test('relative to a rooted entity', () {

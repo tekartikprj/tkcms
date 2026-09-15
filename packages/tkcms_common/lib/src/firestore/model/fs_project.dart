@@ -17,11 +17,17 @@ class TkCmsFsProject extends TkCmsFsEntity {
 const tkCmsProjectFirestorePathPart = 'project';
 
 /// Project collection info.
+///
+/// The tree is the synced data layout ([tkCmsEntityDataTreeDef]), the one the
+/// security rules open to the project members: a client side purge (no
+/// backend) lists and deletes it as the project admin. It used to declare an
+/// `item` sub collection instead, which no rule allows a client to list and
+/// which left the `data` subtree behind.
 var fsProjectCollectionInfo =
     TkCmsFirestoreDatabaseEntityCollectionInfo<TkCmsFsProject>(
       id: tkCmsProjectFirestorePathPart,
       name: 'Project',
-      treeDef: TkCmsCollectionsTreeDef(map: {'item': null}),
+      treeDef: tkCmsEntityDataTreeDef,
     );
 
 /// Project access from context.
