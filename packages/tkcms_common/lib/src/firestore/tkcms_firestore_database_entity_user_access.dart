@@ -94,9 +94,14 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
     _init();
   }
 
-  // ignore: unused_element
   void _init() {
     initTkCmsFsUserAccessBuilders();
+    // The invite documents are generic on the entity type: registered here
+    // for this one, whatever the app registered for its own entity types.
+    cvAddConstructors([
+      TkCmsFsInviteEntity<TFsEntity>.new,
+      TkCmsFsEmailInvite<TFsEntity>.new,
+    ]);
   }
 
   /// Get root path.
