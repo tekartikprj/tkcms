@@ -32,6 +32,7 @@ void main() {
     cvAddConstructors([
       TestFsEntity.new,
       TkCmsFsInviteEntity<TestFsEntity>.new,
+      TkCmsFsEmailInvite<TestFsEntity>.new,
       _Content.new,
     ]);
     var firebaseContext = initFirebaseSimMemory(projectId: tkTestCmsProjectId);
@@ -332,5 +333,419 @@ void main() {
     expect((await fsInviteEntity1Ref.get(db.firestore)).exists, isTrue);
     expect((await fsInviteId2Ref.get(db.firestore)).exists, isFalse);
     expect((await fsInviteEntity2Ref.get(db.firestore)).exists, isFalse);
+  });
+
+  group('email invite (addressed)', () {
+    const owner = 'owner';
+    const invitedEmail = 'invited@test.local';
+    late TestFsEntity entity;
+    late String entityId;
+
+    setUp(() async {
+      entity = TestFsEntity()..name.v = 'e1';
+      entityId = await db.createEntity(userId: owner, entity: entity);
+    });
+
+    Future<String> invite(
+      String email, {
+      String userId = owner,
+      TkCmsCvUserAccess? userAccess,
+      bool skipAccessCheck = false,
+    }) => db.createEmailInviteEntity(
+      userId: userId,
+      entityId: entityId,
+      email: email,
+      userAccess: userAccess ?? (TkCmsCvUserAccess()..read.v = true),
+      skipAccessCheck: skipAccessCheck,
+    );
+
+    test('create, list, upsert', () async {
+      // Deliberately not normalized.
+      var inviteId = await invite(' Invited@Test.Local ');
+      var inviteRef = db.fsEmailInviteRef(inviteId);
+      expect(
+        inviteRef.path,
+        db.getRootPath('invite/type1/email_invite_id/$inviteId'),
+      );
+      var fsInvite = await inviteRef.get(firestore);
+      expect(fsInvite.email.v, invitedEmail);
+      expect(fsInvite.status.v, tkCmsEmailInviteStatusPending);
+      expect(fsInvite.isPending, isTrue);
+      expect(fsInvite.entityId.v, entityId);
+      expect(fsInvite.entity.v!.name.v, 'e1');
+      expect(fsInvite.inviterUserId.v, owner);
+      expect(fsInvite.timestamp.v, isNotNull);
+      expect(fsInvite.closedTimestamp.v, isNull);
+      expect(fsInvite.acceptedUserId.v, isNull);
+      expect(
+        fsInvite.userAccess.v,
+        TkCmsCvUserAccess()
+          ..read.v = true
+          ..write.v = false
+          ..admin.v = false,
+      );
+
+      expect((await db.listEntityEmailInvites(entityId)).map((e) => e.id), [
+        inviteId,
+      ]);
+      expect(
+        (await db.listEmailInvites('INVITED@test.local')).map((e) => e.id),
+        [inviteId],
+      );
+      expect(await db.listEmailInvites('other@test.local'), isEmpty);
+      expect(await db.listEmailInvites(' '), isEmpty);
+      expect(
+        await db.listEntityEmailInvites(
+          entityId,
+          status: tkCmsEmailInviteStatusAccepted,
+        ),
+        isEmpty,
+      );
+
+      // Re-inviting the same email updates the pending invite.
+      var inviteId2 = await invite(
+        invitedEmail,
+        userAccess: TkCmsCvUserAccess()..write.v = true,
+      );
+      expect(inviteId2, inviteId);
+      fsInvite = await inviteRef.get(firestore);
+      expect(fsInvite.userAccess.v!.isWrite, isTrue);
+      expect(fsInvite.userAccess.v!.isRead, isTrue);
+      expect(fsInvite.isPending, isTrue);
+      expect((await db.listEntityEmailInvites(entityId)).length, 1);
+
+      // Another email is another invite.
+      var inviteId3 = await invite('other@test.local');
+      expect(inviteId3, isNot(inviteId));
+      expect((await db.listEntityEmailInvites(entityId)).length, 2);
+
+      // The api summary.
+      var cvInvite = fsInvite.toCvEmailInvite();
+      expect(cvInvite.inviteId.v, inviteId);
+      expect(cvInvite.entityId.v, entityId);
+      expect(cvInvite.entityName.v, 'e1');
+      expect(cvInvite.email.v, invitedEmail);
+      expect(cvInvite.status.v, tkCmsEmailInviteStatusPending);
+      expect(cvInvite.inviterUserId.v, owner);
+      expect(cvInvite.timestamp.v, fsInvite.timestamp.v!.toIso8601String());
+      expect(cvInvite.isWrite, isTrue);
+      expect(cvInvite.isAdmin, isFalse);
+      // Round trip through json (the api).
+      expect(cvInvite.toMap().cv<TkCmsCvEmailInvite>(), cvInvite);
+    });
+
+    test('create access check', () async {
+      await db.joinEntity(
+        entityId: entityId,
+        userId: 'reader',
+        userAccess: TkCmsFsUserAccess()
+          ..read.v = true
+          ..fixAccess(),
+      );
+      // A reader can create a read invite...
+      await invite('a@test.local', userId: 'reader');
+      // ...not a write one.
+      await expectLater(
+        () => invite(
+          'b@test.local',
+          userId: 'reader',
+          userAccess: TkCmsCvUserAccess()..write.v = true,
+        ),
+        throwsA(isA<ArgumentError>()),
+      );
+      // A non member cannot...
+      await expectLater(
+        () => invite('b@test.local', userId: 'stranger'),
+        throwsA(isA<ArgumentError>()),
+      );
+      // ...unless the check is skipped (a global app admin).
+      await invite(
+        'b@test.local',
+        userId: 'stranger',
+        userAccess: TkCmsCvUserAccess()..admin.v = true,
+        skipAccessCheck: true,
+      );
+      expect((await db.listEntityEmailInvites(entityId)).length, 2);
+
+      // An email and some access are required.
+      await expectLater(() => invite(' '), throwsA(isA<ArgumentError>()));
+      await expectLater(
+        () => invite('c@test.local', userAccess: TkCmsCvUserAccess()),
+        throwsA(isA<ArgumentError>()),
+      );
+      // The entity must exist and not be deleted.
+      await expectLater(
+        () => db.createEmailInviteEntity(
+          userId: owner,
+          entityId: 'missing',
+          email: 'c@test.local',
+          userAccess: TkCmsCvUserAccess()..read.v = true,
+        ),
+        throwsA(isA<ArgumentError>()),
+      );
+      await db.deleteEntity(entityId, userId: owner);
+      await expectLater(
+        () => invite('c@test.local'),
+        throwsA(isA<ArgumentError>()),
+      );
+    });
+
+    test('pending cap', () async {
+      db.maxPendingEmailInvitesPerEntity = 2;
+      await invite('a@test.local');
+      await invite('b@test.local');
+      await expectLater(
+        () => invite('c@test.local'),
+        throwsA(isA<StateError>()),
+      );
+      // Re-inviting a pending email is fine.
+      await invite('a@test.local');
+      expect((await db.listEntityEmailInvites(entityId)).length, 2);
+    });
+
+    test('accept', () async {
+      var inviteId = await invite(
+        invitedEmail,
+        userAccess: TkCmsCvUserAccess()..write.v = true,
+      );
+      var inviteRef = db.fsEmailInviteRef(inviteId);
+      var accessRef = db.fsEntityUserAccessRef(entityId, 'user2');
+
+      // The wrong email, no email, an unknown invite.
+      await expectLater(
+        () => db.acceptEmailInviteEntity(
+          userId: 'user2',
+          email: 'other@test.local',
+          inviteId: inviteId,
+        ),
+        throwsA(isA<ArgumentError>()),
+      );
+      await expectLater(
+        () => db.acceptEmailInviteEntity(
+          userId: 'user2',
+          email: '',
+          inviteId: inviteId,
+        ),
+        throwsA(isA<ArgumentError>()),
+      );
+      await expectLater(
+        () => db.acceptEmailInviteEntity(
+          userId: 'user2',
+          email: invitedEmail,
+          inviteId: 'missing',
+        ),
+        throwsA(isA<ArgumentError>()),
+      );
+      expect((await accessRef.get(firestore)).exists, isFalse);
+      expect((await inviteRef.get(firestore)).isPending, isTrue);
+
+      // The invited user, whatever the casing.
+      await db.acceptEmailInviteEntity(
+        userId: 'user2',
+        email: ' INVITED@test.local',
+        inviteId: inviteId,
+      );
+      var access = await accessRef.get(firestore);
+      expect(
+        access,
+        TkCmsFsUserAccess()
+          ..inviteId.v = inviteId
+          ..admin.v = false
+          ..write.v = true
+          ..read.v = true,
+      );
+      expect(
+        await db.fsUserEntityAccessRef('user2', entityId).get(firestore),
+        access,
+      );
+      var fsInvite = await inviteRef.get(firestore);
+      expect(fsInvite.status.v, tkCmsEmailInviteStatusAccepted);
+      expect(fsInvite.isPending, isFalse);
+      expect(fsInvite.acceptedUserId.v, 'user2');
+      expect(fsInvite.closedTimestamp.v, isNotNull);
+      expect(fsInvite.timestamp.v, isNotNull);
+      expect(fsInvite.email.v, invitedEmail);
+
+      // Only once.
+      await expectLater(
+        () => db.acceptEmailInviteEntity(
+          userId: 'user3',
+          email: invitedEmail,
+          inviteId: inviteId,
+        ),
+        throwsA(isA<StateError>()),
+      );
+      expect(
+        await db.listEntityEmailInvites(
+          entityId,
+          status: tkCmsEmailInviteStatusPending,
+        ),
+        isEmpty,
+      );
+      expect(
+        (await db.listEmailInvites(
+          invitedEmail,
+          status: tkCmsEmailInviteStatusAccepted,
+        )).map((e) => e.id),
+        [inviteId],
+      );
+
+      // Inviting the same email again is a new invite, the accepted one stays.
+      var inviteId2 = await invite(invitedEmail);
+      expect(inviteId2, isNot(inviteId));
+      expect((await db.listEntityEmailInvites(entityId)).length, 2);
+    });
+
+    test('accept merges access', () async {
+      await db.joinEntity(
+        entityId: entityId,
+        userId: 'user2',
+        userAccess: TkCmsFsUserAccess()
+          ..write.v = true
+          ..fixAccess(),
+      );
+      // Less than what the user has.
+      var inviteId = await invite(invitedEmail);
+      await db.acceptEmailInviteEntity(
+        userId: 'user2',
+        email: invitedEmail,
+        inviteId: inviteId,
+      );
+      var access = await db
+          .fsEntityUserAccessRef(entityId, 'user2')
+          .get(firestore);
+      expect(access.isRead, isTrue);
+      expect(access.isWrite, isTrue);
+      expect(access.isAdmin, isFalse);
+      expect(access.inviteId.v, inviteId);
+
+      // More than what the user has.
+      inviteId = await invite(
+        invitedEmail,
+        userAccess: TkCmsCvUserAccess()..admin.v = true,
+      );
+      await db.acceptEmailInviteEntity(
+        userId: 'user2',
+        email: invitedEmail,
+        inviteId: inviteId,
+      );
+      access = await db.fsEntityUserAccessRef(entityId, 'user2').get(firestore);
+      expect(access.isAdmin, isTrue);
+      expect(access.isWrite, isTrue);
+      expect(access.isRead, isTrue);
+    });
+
+    test('discard', () async {
+      var inviteId = await invite(invitedEmail);
+      var inviteRef = db.fsEmailInviteRef(inviteId);
+      await expectLater(
+        () => db.discardEmailInviteEntity(
+          email: 'other@test.local',
+          inviteId: inviteId,
+        ),
+        throwsA(isA<ArgumentError>()),
+      );
+      await db.discardEmailInviteEntity(
+        email: invitedEmail,
+        inviteId: inviteId,
+      );
+      var fsInvite = await inviteRef.get(firestore);
+      expect(fsInvite.status.v, tkCmsEmailInviteStatusDiscarded);
+      expect(fsInvite.closedTimestamp.v, isNotNull);
+      expect(fsInvite.acceptedUserId.v, isNull);
+      expect(
+        (await db.fsEntityUserAccessRef(entityId, 'user2').get(firestore))
+            .exists,
+        isFalse,
+      );
+      // Final.
+      await expectLater(
+        () => db.acceptEmailInviteEntity(
+          userId: 'user2',
+          email: invitedEmail,
+          inviteId: inviteId,
+        ),
+        throwsA(isA<StateError>()),
+      );
+      await expectLater(
+        () => db.discardEmailInviteEntity(
+          email: invitedEmail,
+          inviteId: inviteId,
+        ),
+        throwsA(isA<StateError>()),
+      );
+    });
+
+    test('delete', () async {
+      var inviteId = await invite(invitedEmail);
+      var inviteRef = db.fsEmailInviteRef(inviteId);
+      await expectLater(
+        () => db.deleteEmailInviteEntity(inviteId: inviteId, entityId: 'other'),
+        throwsA(isA<ArgumentError>()),
+      );
+      expect((await inviteRef.get(firestore)).exists, isTrue);
+      await db.deleteEmailInviteEntity(inviteId: inviteId, entityId: entityId);
+      expect((await inviteRef.get(firestore)).exists, isFalse);
+      // Missing: nothing happens.
+      await db.deleteEmailInviteEntity(inviteId: inviteId, entityId: entityId);
+      await db.deleteEmailInviteEntity(inviteId: inviteId);
+    });
+
+    test('purge old email invites', () async {
+      var now = Timestamp.now();
+      const minute = Duration(minutes: 1);
+      TkCmsFsEmailInvite<TestFsEntity> newInvite(
+        String id, {
+        required Duration age,
+        String status = tkCmsEmailInviteStatusPending,
+        Duration? closedAge,
+      }) {
+        var fsInvite = db.fsEmailInviteRef(id).cv()
+          ..entityId.v = entityId
+          ..email.v = invitedEmail
+          ..status.v = status
+          ..timestamp.v = now.substractDuration(age);
+        if (closedAge != null) {
+          fsInvite.closedTimestamp.v = now.substractDuration(closedAge);
+        }
+        return fsInvite;
+      }
+
+      var pendingRecent = newInvite(
+        'pending_recent',
+        age: tkCmsEmailInviteExpirationDefault - minute,
+      );
+      var pendingOld = newInvite(
+        'pending_old',
+        age: tkCmsEmailInviteExpirationDefault + minute,
+      );
+      // Older than the pending cutoff but closed recently: it stays.
+      var acceptedRecent = newInvite(
+        'accepted_recent',
+        age: tkCmsEmailInviteExpirationDefault + minute,
+        status: tkCmsEmailInviteStatusAccepted,
+        closedAge: tkCmsEmailInviteClosedExpirationDefault - minute,
+      );
+      var discardedOld = newInvite(
+        'discarded_old',
+        age: tkCmsEmailInviteClosedExpirationDefault + minute,
+        status: tkCmsEmailInviteStatusDiscarded,
+        closedAge: tkCmsEmailInviteClosedExpirationDefault + minute,
+      );
+      await firestore.cvRunTransaction((txn) {
+        txn.cvSet(pendingRecent);
+        txn.cvSet(pendingOld);
+        txn.cvSet(acceptedRecent);
+        txn.cvSet(discardedOld);
+      });
+      expect((await db.listEntityEmailInvites(entityId)).length, 4);
+
+      // Through the shared cron entry point.
+      await db.deleteOldInvites();
+      expect(
+        (await db.listEntityEmailInvites(entityId)).map((e) => e.id).toSet(),
+        {'pending_recent', 'accepted_recent'},
+      );
+    });
   });
 }

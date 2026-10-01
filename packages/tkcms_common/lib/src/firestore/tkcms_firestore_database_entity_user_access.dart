@@ -5,6 +5,18 @@ import 'package:tkcms_common/tkcms_firestore_v2.dart';
 /// Invite expiration
 const tkCmsInviteEntityExpirationDefault = Duration(days: 7);
 
+/// Pending email invite expiration.
+///
+/// Longer than the link invite: the invitee may not have an account yet.
+const tkCmsEmailInviteExpirationDefault = Duration(days: 30);
+
+/// How long an accepted or discarded email invite is kept, so that the
+/// inviter can see what happened.
+const tkCmsEmailInviteClosedExpirationDefault = Duration(days: 3);
+
+/// Default maximum number of pending email invites per entity.
+const tkCmsEmailInviteMaxPendingPerEntityDefault = 100;
+
 /// Entity access service.
 class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
     implements TkCmsFirestoreDatabaseServiceEntityAccessor<TFsEntity> {
@@ -50,6 +62,10 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
   _entityCollectionRef;
   @override
   late final Firestore firestore;
+
+  /// Maximum number of pending email invites per entity (bounds abuse).
+  int maxPendingEmailInvitesPerEntity =
+      tkCmsEmailInviteMaxPendingPerEntityDefault;
 
   //FirestoreDatabaseContext? firestoreDatabaseContext;
   /// Entity access service.
@@ -142,6 +158,12 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
       )
       .doc(entityId);
 
+  CvCollectionReference<TkCmsFsEmailInvite<TFsEntity>>
+  get _emailInviteCollection =>
+      _entityTypeInviteDoc.collection<TkCmsFsEmailInvite<TFsEntity>>(
+        tkCmsFsEmailInviteIdCollectionId,
+      );
+
   @override
   CvCollectionReference<TFsEntity> get fsEntityCollectionRef =>
       _entityCollection;
@@ -223,6 +245,15 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
     String entityId,
   ) => _inviteEntityDoc(inviteId, entityId);
 
+  /// The email invites collection, `invite/<entityType>/email_invite_id`.
+  CvCollectionReference<TkCmsFsEmailInvite<TFsEntity>>
+  get fsEmailInviteCollectionRef => _emailInviteCollection;
+
+  /// Email invite reference.
+  CvDocumentReference<TkCmsFsEmailInvite<TFsEntity>> fsEmailInviteRef(
+    String inviteId,
+  ) => _emailInviteCollection.doc(inviteId);
+
   String get _entityName => _info.name;
 
   /// Set user access from invite.
@@ -233,6 +264,39 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
   }) async {
     var inviteAccessRef = _userInviteAccessDoc(userId, inviteCode);
     await inviteAccessRef.set(firestore, userAccess);
+  }
+
+  /// Check that [userId], with [entityUserAccess] on the entity, can create
+  /// an invite granting [userAccess]: read, then write, then admin, each
+  /// needs the same access (no escalation).
+  void _checkInviteUserAccess(
+    String userId,
+    TkCmsFsUserAccess entityUserAccess,
+    TkCmsCvUserAccess userAccess,
+  ) {
+    entityUserAccess.fixAccess();
+    userAccess.fixAccess();
+    if (userAccess.isRead) {
+      if (!entityUserAccess.isRead) {
+        throw ArgumentError('User $userId not allowed to create read invite');
+      }
+      if (userAccess.isWrite) {
+        if (!entityUserAccess.isWrite) {
+          throw ArgumentError(
+            'User $userId not allowed to create write invite',
+          );
+        }
+        if (userAccess.isAdmin) {
+          if (!entityUserAccess.isAdmin) {
+            throw ArgumentError(
+              'User $userId not allowed to create admin invite',
+            );
+          }
+        }
+      }
+    } else {
+      throw ArgumentError('At least read access required');
+    }
   }
 
   /// Create a project invite, return the id
@@ -273,31 +337,7 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
         }
         var entityUserAccessRef = _entityUserAccessDoc(entityId, userId);
         var entityUserAccess = await txn.refGet(entityUserAccessRef);
-        entityUserAccess.fixAccess();
-        userAccess.fixAccess();
-        if (userAccess.isRead) {
-          if (!entityUserAccess.isRead) {
-            throw ArgumentError(
-              'User $userId not allowed to create read invite',
-            );
-          }
-          if (userAccess.isWrite) {
-            if (!entityUserAccess.isWrite) {
-              throw ArgumentError(
-                'User $userId not allowed to create write invite',
-              );
-            }
-            if (userAccess.isAdmin) {
-              if (!entityUserAccess.isAdmin) {
-                throw ArgumentError(
-                  'User $userId not allowed to create admin invite',
-                );
-              }
-            }
-          }
-        } else {
-          throw ArgumentError('At least read access required');
-        }
+        _checkInviteUserAccess(userId, entityUserAccess, userAccess);
       } else if (!userAccess.isAdmin) {
         throw ArgumentError('Admin access required');
       }
@@ -447,6 +487,254 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
       txn.refDelete(inviteEntityRef);
       txn.refDelete(inviteIdRef);
     });
+  }
+
+  /// Create an addressed email invite, return its id.
+  ///
+  /// [email] is normalized (see [tkCmsNormalizeInviteEmail]) and never
+  /// resolved to a user: the invitee may not have an account yet. Only a user
+  /// with this verified email can accept it ([acceptEmailInviteEntity]) or
+  /// discard it ([discardEmailInviteEntity]).
+  ///
+  /// [userId] is the inviter. It needs at least the access it grants
+  /// (read, then write, then admin), like [createInviteEntity], unless
+  /// [skipAccessCheck] is true (a global app admin).
+  ///
+  /// One pending invite per entity and email: inviting the same email again
+  /// updates the access, the inviter and the timestamp of the pending invite
+  /// and returns its id. Throws when the entity does not exist or is deleted,
+  /// or when it already has [maxPendingEmailInvitesPerEntity] pending invites.
+  Future<String> createEmailInviteEntity({
+    required String userId,
+    required String entityId,
+    required String email,
+    required TkCmsCvUserAccess userAccess,
+    bool skipAccessCheck = false,
+  }) async {
+    var inviteEmail = tkCmsNormalizeInviteEmail(email);
+    if (inviteEmail == null) {
+      throw ArgumentError('Email required');
+    }
+    userAccess.fixAccess();
+    if (!userAccess.isRead) {
+      throw ArgumentError('At least read access required');
+    }
+
+    // The pending invites of the entity, for the upsert and the cap.
+    var pendingInvites = await listEntityEmailInvites(
+      entityId,
+      status: tkCmsEmailInviteStatusPending,
+    );
+    String? existingInviteId;
+    for (var invite in pendingInvites) {
+      if (invite.email.v == inviteEmail) {
+        existingInviteId = invite.id;
+        break;
+      }
+    }
+    if (existingInviteId == null &&
+        pendingInvites.length >= maxPendingEmailInvitesPerEntity) {
+      throw StateError(
+        '$_entityName $entityId has too many pending email invites',
+      );
+    }
+
+    return await firestore.cvRunTransaction((txn) async {
+      var entity = await txn.refGet(_entityCollection.doc(entityId));
+      if (!entity.exists) {
+        throw ArgumentError('$_entityName $entityId not found');
+      }
+      if (entity.deleted.v == true) {
+        throw ArgumentError('$_entityName $entityId deleted');
+      }
+      if (!skipAccessCheck) {
+        var entityUserAccess = await txn.refGet(
+          _entityUserAccessDoc(entityId, userId),
+        );
+        _checkInviteUserAccess(userId, entityUserAccess, userAccess);
+      }
+
+      String? inviteId;
+      if (existingInviteId != null) {
+        // Still pending? It could have been accepted since the query.
+        var current = await txn.refGet(fsEmailInviteRef(existingInviteId));
+        if (current.exists && current.isPending) {
+          inviteId = existingInviteId;
+        }
+      }
+      inviteId ??= AutoIdGenerator.autoId();
+
+      var inviteRef = fsEmailInviteRef(inviteId);
+      var invite = inviteRef.cv()
+        ..entityId.v = entityId
+        ..entity.v = entity
+        ..userAccess.v = userAccess
+        ..email.v = inviteEmail
+        ..inviterUserId.v = userId
+        ..status.v = tkCmsEmailInviteStatusPending;
+      txn.refSetMap(inviteRef, invite.toMapWithServerTimestamp());
+      return inviteId;
+    });
+  }
+
+  /// Read a pending email invite in a transaction, checking the invitee email.
+  Future<TkCmsFsEmailInvite<TFsEntity>> _txnGetPendingEmailInvite(
+    CvFirestoreTransaction txn,
+    CvDocumentReference<TkCmsFsEmailInvite<TFsEntity>> inviteRef,
+    String userEmail,
+  ) async {
+    var invite = await txn.refGet(inviteRef);
+    if (!invite.exists) {
+      throw ArgumentError('Email invite ${inviteRef.id} not found');
+    }
+    if (!invite.isPending) {
+      throw StateError(
+        'Email invite ${inviteRef.id} already ${invite.status.v}',
+      );
+    }
+    if (invite.email.v != userEmail) {
+      throw ArgumentError(
+        'Email invite ${inviteRef.id} reserved to another email',
+      );
+    }
+    return invite;
+  }
+
+  /// Accept an email invite: [userId] gets its access.
+  ///
+  /// [email] is the verified email of the accepting user (the caller, the
+  /// server, is responsible for the verification), it must match the invite
+  /// email. The granted access is merged into the existing access of the
+  /// user, if any (read, write and admin are or-ed). The invite is kept with
+  /// the status [tkCmsEmailInviteStatusAccepted] until the cron sweeps it.
+  Future<void> acceptEmailInviteEntity({
+    required String userId,
+    required String email,
+    required String inviteId,
+  }) async {
+    var userEmail = tkCmsNormalizeInviteEmail(email);
+    if (userEmail == null) {
+      throw ArgumentError('Email required');
+    }
+    await firestore.cvRunTransaction((txn) async {
+      var inviteRef = fsEmailInviteRef(inviteId);
+      var invite = await _txnGetPendingEmailInvite(txn, inviteRef, userEmail);
+      var entityId = invite.entityId.v!;
+      var inviteUserAccess = invite.userAccess.v!;
+
+      var entityUserAccess = await txn.refGet(
+        _entityUserAccessDoc(entityId, userId),
+      );
+      entityUserAccess.admin.v =
+          inviteUserAccess.isAdmin || entityUserAccess.isAdmin;
+      entityUserAccess.write.v =
+          inviteUserAccess.isWrite || entityUserAccess.isWrite;
+      entityUserAccess.read.v =
+          inviteUserAccess.isRead || entityUserAccess.isRead;
+      entityUserAccess.inviteId.v = inviteId;
+      txnSetEntityUserAccess(txn, entityId, userId, entityUserAccess);
+
+      invite
+        ..status.v = tkCmsEmailInviteStatusAccepted
+        ..acceptedUserId.v = userId;
+      txn.refSetMap(
+        inviteRef,
+        invite.toMap()..withServerTimestamp(invite.closedTimestamp),
+      );
+    });
+  }
+
+  /// Discard an email invite: the invitee refuses it, no access is granted.
+  ///
+  /// [email] must match the invite email, like [acceptEmailInviteEntity]. The
+  /// invite is kept with the status [tkCmsEmailInviteStatusDiscarded] until
+  /// the cron sweeps it.
+  Future<void> discardEmailInviteEntity({
+    required String email,
+    required String inviteId,
+  }) async {
+    var userEmail = tkCmsNormalizeInviteEmail(email);
+    if (userEmail == null) {
+      throw ArgumentError('Email required');
+    }
+    await firestore.cvRunTransaction((txn) async {
+      var inviteRef = fsEmailInviteRef(inviteId);
+      var invite = await _txnGetPendingEmailInvite(txn, inviteRef, userEmail);
+      invite.status.v = tkCmsEmailInviteStatusDiscarded;
+      txn.refSetMap(
+        inviteRef,
+        invite.toMap()..withServerTimestamp(invite.closedTimestamp),
+      );
+    });
+  }
+
+  /// Delete an email invite (the inviter revokes it), whatever its status.
+  ///
+  /// When [entityId] is set, the invite must belong to this entity. Deleting
+  /// a missing invite does nothing.
+  Future<void> deleteEmailInviteEntity({
+    required String inviteId,
+    String? entityId,
+  }) async {
+    var inviteRef = fsEmailInviteRef(inviteId);
+    if (entityId != null) {
+      var invite = await inviteRef.get(firestore);
+      if (!invite.exists) {
+        return;
+      }
+      if (invite.entityId.v != entityId) {
+        throw ArgumentError(
+          'Email invite $inviteId not on $_entityName $entityId',
+        );
+      }
+    }
+    await inviteRef.delete(firestore);
+  }
+
+  /// The email invites sent on an entity (the inviter side), most recent
+  /// first, optionally only the ones with [status].
+  Future<List<TkCmsFsEmailInvite<TFsEntity>>> listEntityEmailInvites(
+    String entityId, {
+    String? status,
+  }) async {
+    var list = await _emailInviteCollection
+        .query()
+        .where(tkCmsFsEmailInviteModel.entityId.name, isEqualTo: entityId)
+        .get(firestore);
+    return _filterEmailInvites(list, status: status);
+  }
+
+  /// The email invites addressed to an email (the invitee side), most recent
+  /// first, optionally only the ones with [status].
+  Future<List<TkCmsFsEmailInvite<TFsEntity>>> listEmailInvites(
+    String email, {
+    String? status,
+  }) async {
+    var inviteEmail = tkCmsNormalizeInviteEmail(email);
+    if (inviteEmail == null) {
+      return <TkCmsFsEmailInvite<TFsEntity>>[];
+    }
+    var list = await _emailInviteCollection
+        .query()
+        .where(tkCmsFsEmailInviteModel.email.name, isEqualTo: inviteEmail)
+        .get(firestore);
+    return _filterEmailInvites(list, status: status);
+  }
+
+  /// The status filter and the order are applied in memory: the result sets
+  /// are tiny, and it keeps the queries single field (no composite index).
+  List<TkCmsFsEmailInvite<TFsEntity>> _filterEmailInvites(
+    List<TkCmsFsEmailInvite<TFsEntity>> list, {
+    String? status,
+  }) {
+    // The query result is read only.
+    var result = status == null
+        ? list.toList()
+        : list.where((invite) => invite.status.v == status).toList();
+    int millis(TkCmsFsEmailInvite<TFsEntity> invite) =>
+        invite.timestamp.v?.millisecondsSinceEpoch ?? 0;
+    result.sort((a, b) => millis(b).compareTo(millis(a)));
+    return result;
   }
 
   @override
@@ -669,8 +957,15 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
       fsEntityRef(entityId).get(firestore);
 
   // Admin only
-  /// Delete old invites.
+  /// Delete old invites, link and email ones (the cron).
   Future<void> deleteOldInvites() async {
+    await deleteOldLinkInvites();
+    await deleteOldEmailInvites();
+  }
+
+  // Admin only
+  /// Delete old link invites (older than [tkCmsInviteEntityExpirationDefault]).
+  Future<void> deleteOldLinkInvites() async {
     /// 7 days old
     var pastTimestamp = Timestamp.now().substractDuration(
       tkCmsInviteEntityExpirationDefault,
@@ -702,6 +997,62 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
 
       var last = list.last;
       query = query.startAfter(values: [last.timestamp.v, list.last.id]);
+    }
+  }
+
+  // Admin only
+  /// Delete old email invites: the pending ones older than
+  /// [tkCmsEmailInviteExpirationDefault], the accepted or discarded ones
+  /// closed more than [tkCmsEmailInviteClosedExpirationDefault] ago.
+  Future<void> deleteOldEmailInvites() async {
+    var now = Timestamp.now();
+    await _deleteEmailInvitesBefore(
+      fieldName: tkCmsFsEmailInviteModel.timestamp.name,
+      timestampOf: (invite) => invite.timestamp.v,
+      before: now.substractDuration(tkCmsEmailInviteExpirationDefault),
+      // A closed invite that old waits for its closed cutoff.
+      where: (invite) => invite.isPending,
+    );
+    await _deleteEmailInvitesBefore(
+      fieldName: tkCmsFsEmailInviteModel.closedTimestamp.name,
+      timestampOf: (invite) => invite.closedTimestamp.v,
+      before: now.substractDuration(tkCmsEmailInviteClosedExpirationDefault),
+    );
+  }
+
+  /// Delete the email invites with [fieldName] before [before], in pages of
+  /// 20, keeping the ones [where] refuses.
+  Future<void> _deleteEmailInvitesBefore({
+    required String fieldName,
+    required Timestamp? Function(TkCmsFsEmailInvite<TFsEntity> invite)
+    timestampOf,
+    required Timestamp before,
+    bool Function(TkCmsFsEmailInvite<TFsEntity> invite)? where,
+  }) async {
+    var query = _emailInviteCollection
+        .query()
+        .where(fieldName, isLessThan: before)
+        .orderBy(fieldName)
+        .orderById()
+        .limit(20);
+    while (true) {
+      var list = await query.get(firestore);
+      if (list.isEmpty) {
+        break;
+      }
+      var batch = firestore.cvBatch();
+      var count = 0;
+      for (var invite in list) {
+        if (where == null || where(invite)) {
+          batch.refDelete(fsEmailInviteRef(invite.id));
+          count++;
+        }
+      }
+      if (count > 0) {
+        await batch.commit();
+      }
+      var last = list.last;
+      query = query.startAfter(values: [timestampOf(last), last.id]);
     }
   }
 

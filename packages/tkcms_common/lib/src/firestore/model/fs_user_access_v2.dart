@@ -39,6 +39,26 @@ const tkCmsFsEntityAccessCollectionId = 'entity_access';
 /// Collection id.
 const tkCmsFsInviteEntityCollectionId = 'invite_entity';
 
+/// Collection id of the addressed email invites,
+/// `invite/<entityType>/email_invite_id/<inviteId>` (see [TkCmsFsEmailInvite]).
+const tkCmsFsEmailInviteIdCollectionId = 'email_invite_id';
+
+/// Email invite status: waiting for the invitee.
+const tkCmsEmailInviteStatusPending = 'pending';
+
+/// Email invite status: the invitee accepted it, the access was granted.
+const tkCmsEmailInviteStatusAccepted = 'accepted';
+
+/// Email invite status: the invitee discarded it.
+const tkCmsEmailInviteStatusDiscarded = 'discarded';
+
+/// All email invite statuses.
+const tkCmsEmailInviteStatuses = [
+  tkCmsEmailInviteStatusPending,
+  tkCmsEmailInviteStatusAccepted,
+  tkCmsEmailInviteStatusDiscarded,
+];
+
 /// Invite code key.
 const tkCmsFsInviteCodeKey = 'inviteCode'; // in invite
 
@@ -75,6 +95,7 @@ void initTkCmsFsUserAccessBuilders() {
     TkCmsFsEntityTypeAccess.new,
     TkCmsFsInviteId.new,
     TkCmsFsEntityId.new,
+    TkCmsCvEmailInvite.new,
   ]);
 }
 
@@ -83,6 +104,7 @@ void initTkCmsFsUserAccessBuilders() {
 // access/{entity_type}/user_id/{user_id}/entity_access/{entity_id} (TkCmsFsUserAccess) - used for user enumeration
 // access/{entity_type}/user_id/{user_id}/invite_access/{invite_code} (TkCmsFsUserAccess) - used for allowing creating invite
 // invite/{entity_type}/invite_id/{invite_id}/invite_entity/{entity_id} (TkCmsFsEntityInvite)
+// invite/{entity_type}/email_invite_id/{invite_id} (TkCmsFsEmailInvite) - addressed invite, api only
 
 /// Empty or no document
 class TkCmsFsEntityTypeAccess extends CvFirestoreDocumentBase {
@@ -137,6 +159,117 @@ class TkCmsFsInviteEntity<TFsEntity extends TkCmsFsEntity>
     inviteCode,
     email,
     ...timedMixinFields,
+  ];
+}
+
+/// Addressed invite, `invite/<entityType>/email_invite_id/<inviteId>`.
+///
+/// Unlike [TkCmsFsInviteEntity] (a bearer link), only the user whose verified
+/// email matches [email] can accept it, and the invitee finds it by a query on
+/// [email]. Admin only data: no client reads or writes it, the server does
+/// through the api. The document keeps its [status] once closed so that the
+/// inviter can see what happened; the cron sweeps it later
+/// (`deleteOldEmailInvites`).
+class TkCmsFsEmailInvite<TFsEntity extends TkCmsFsEntity>
+    extends CvFirestoreDocumentBase
+    with WithServerTimestampMixin {
+  /// Entity id.
+  final entityId = CvField<String>('entityId');
+
+  /// Entity, cached at creation (for its name).
+  final entity = CvModelField<TFsEntity>('entity');
+
+  /// Granted access.
+  final userAccess = CvModelField<TkCmsCvUserAccess>('userAccess');
+
+  /// Invited email, always stored normalized (see [tkCmsNormalizeInviteEmail]).
+  final email = CvField<String>('email');
+
+  /// The user that created the invite.
+  final inviterUserId = CvField<String>('inviterUserId');
+
+  /// Status, one of [tkCmsEmailInviteStatuses].
+  final status = CvField<String>('status');
+
+  /// The user that accepted the invite, once accepted.
+  final acceptedUserId = CvField<String>('acceptedUserId');
+
+  /// When the invite was accepted or discarded.
+  final closedTimestamp = CvField<Timestamp>('closedTimestamp');
+
+  @override
+  CvFields get fields => [
+    entityId,
+    entity,
+    userAccess,
+    email,
+    inviterUserId,
+    status,
+    acceptedUserId,
+    closedTimestamp,
+    ...timedMixinFields,
+  ];
+}
+
+/// Email invite model (field names).
+final tkCmsFsEmailInviteModel = TkCmsFsEmailInvite<TkCmsFsEntity>();
+
+/// Email invite helpers.
+extension TkCmsFsEmailInviteExt on TkCmsFsEmailInvite {
+  /// True while waiting for the invitee.
+  bool get isPending => status.v == tkCmsEmailInviteStatusPending;
+
+  /// The api side summary.
+  TkCmsCvEmailInvite toCvEmailInvite() {
+    var cvInvite = TkCmsCvEmailInvite()
+      ..inviteId.v = id
+      ..entityId.v = entityId.v
+      ..entityName.v = entity.v?.name.v
+      ..email.v = email.v
+      ..status.v = status.v
+      ..inviterUserId.v = inviterUserId.v
+      ..timestamp.v = timestamp.v?.toIso8601String();
+    var access = userAccess.v;
+    if (access != null) {
+      cvInvite.copyAccessFrom(access);
+    }
+    return cvInvite;
+  }
+}
+
+/// Api side summary of an email invite (not a firestore document).
+class TkCmsCvEmailInvite extends CvModelBase with TkCmsCvUserAccessMixin {
+  /// Invite id.
+  final inviteId = CvField<String>('inviteId');
+
+  /// Entity id.
+  final entityId = CvField<String>('entityId');
+
+  /// Entity name, when known.
+  final entityName = CvField<String>('entityName');
+
+  /// Invited email (normalized).
+  final email = CvField<String>('email');
+
+  /// Status, one of [tkCmsEmailInviteStatuses].
+  final status = CvField<String>('status');
+
+  /// The user that created the invite.
+  final inviterUserId = CvField<String>('inviterUserId');
+
+  /// Creation time (ISO 8601).
+  final timestamp = CvField<String>('timestamp');
+
+  @override
+  CvFields get fields => [
+    inviteId,
+    entityId,
+    entityName,
+    email,
+    status,
+    inviterUserId,
+    timestamp,
+    ...userAccessMixinFields,
   ];
 }
 
