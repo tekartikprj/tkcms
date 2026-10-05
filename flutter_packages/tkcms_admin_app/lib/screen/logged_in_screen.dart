@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:tkcms_admin_app/auth/auth.dart';
 import 'package:tkcms_admin_app/src/import_common.dart';
 import 'package:tkcms_admin_app/src/import_flutter.dart';
@@ -106,7 +106,6 @@ class _LoggedInScreenState extends State<LoggedInScreen> {
 Future<void> goToLoggedInScreen(BuildContext context) async {
   // ignore: avoid_print
   print('goToLoggedInScreen()');
-  await Navigator.of(
-    context,
-  ).push(MaterialPageRoute<void>(builder: (_) => const LoggedInScreen()));
+  await Navigator.of(context)
+      .push(MaterialPageRoute<void>(builder: (_) => const LoggedInScreen()));
 }

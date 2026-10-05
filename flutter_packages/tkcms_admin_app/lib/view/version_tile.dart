@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:tkcms_admin_app/src/import_common.dart';
 import 'package:tkcms_admin_app/utils/version_utils.dart';
 
@@ -22,9 +22,7 @@ class VersionTile extends StatelessWidget {
               if (version == null) {
                 return const Text('');
               }
-              return Text(
-                '$version',
-              ); // (${gAppService.app} - ${gAppService.appType}${gAppService.isLocal ? ' - local' : ''})');
+              return Text('$version'); // (${gAppService.app} - ${gAppService.appType}${gAppService.isLocal ? ' - local' : ''})');
             },
           ),
         ],

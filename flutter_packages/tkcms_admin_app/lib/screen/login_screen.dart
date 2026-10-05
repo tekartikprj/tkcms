@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:tkcms_admin_app/auth/auth.dart';
 import 'package:tkcms_admin_app/route/route_paths.dart';
 import 'package:tkcms_admin_app/src/import_common.dart';
@@ -18,8 +18,10 @@ import 'logged_in_screen.dart';
 String? gDebugUsername;
 String? gDebugPassword;
 
-typedef OnLoggedIn =
-    void Function(BuildContext context, FsUserAccess userAccess);
+typedef OnLoggedIn = void Function(
+  BuildContext context,
+  FsUserAccess userAccess,
+);
 
 class LoginScreen extends RouteAwareStatefulWidget {
   final OnLoggedIn? onLoggedIn;

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:tekartik_app_rx_utils/app_rx_utils.dart';
 
 class OptionalSwitch<T> extends StatefulWidget {
