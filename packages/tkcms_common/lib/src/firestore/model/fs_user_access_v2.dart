@@ -283,8 +283,11 @@ class TkCmsFsEntityId extends CvFirestoreDocumentBase {
 class TkCmsEditedFsUserAccess extends TkCmsFsUserAccess {
   /// Name.
   final name = CvField<String?>('name');
+
+  /// Email, informative (shown to the admins).
+  final email = CvField<String?>('email');
   @override
-  CvFields get fields => [name, ...super.fields];
+  CvFields get fields => [name, email, ...super.fields];
 }
 
 /// User access on a given entity
