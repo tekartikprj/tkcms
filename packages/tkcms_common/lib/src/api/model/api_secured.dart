@@ -140,10 +140,11 @@ extension TekartikApiQuerySecuredRequestExt on ApiRequest {
   }) {
     assert(options.version == apiSecuredEncOptionsVersion1);
     var map = toMap();
+    // Generate from enclosed query
+    var enc = data.v!.encGenerate(options);
     var securedQuery = ApiSecuredQuery()
       ..data.v = map
-      /// Generate from enclosed query
-      ..enc.v = data.v!.encGenerate(options);
+      ..enc.v = enc;
     var securedRequest = ApiRequest()
       ..command.v = apiCommandSecured
       ..data.v = securedQuery.toMap();
