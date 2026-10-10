@@ -88,6 +88,24 @@ class TestApiContext {
   }
 }
 
+/// Server time provider counting its fetches, the first one shifted.
+class _TestTimestampProvider implements TkCmsTimestampProvider {
+  final TkCmsTimestampProvider serverProvider;
+  final Duration firstFetchOffset;
+  var fetchCount = 0;
+
+  _TestTimestampProvider(
+    this.serverProvider, {
+    this.firstFetchOffset = Duration.zero,
+  });
+
+  @override
+  Future<DateTime> fetchNow() async {
+    var now = await serverProvider.fetchNow();
+    return (fetchCount++ == 0) ? now.add(firstFetchOffset) : now;
+  }
+}
+
 Future<void> main() async {
   debugWebServices = true;
   testServerTest(initAllMemory);
@@ -198,6 +216,40 @@ void testServerTest(Future<TestApiContext> Function() initAllContext) {
     );
     expect(result.data.v, {'message': 'hello'});
     expect(result.timestamp.v, timestamp);
+  });
+  Future<void> securedEchoV2WithProvider(
+    _TestTimestampProvider provider,
+  ) async {
+    var securedOptions = apiService.securedOptions;
+    var timestampService = securedOptions.timestampServiceOrNull;
+    securedOptions.timestampServiceOrNull = TkCmsTimestampService.withProvider(
+      timestampProvider: provider,
+    );
+    try {
+      for (var i = 0; i < 2; i++) {
+        var result = await apiService.securedEchoV2(
+          ApiEchoQuery()..data.v = {'message': 'hello $i'},
+        );
+        expect(result.data.v, {'message': 'hello $i'});
+      }
+    } finally {
+      securedOptions.timestampServiceOrNull = timestampService;
+    }
+  }
+
+  test('secured echo v2 server time fetched once', () async {
+    var provider = _TestTimestampProvider(apiService);
+    await securedEchoV2WithProvider(provider);
+    expect(provider.fetchCount, 1);
+  });
+  test('secured echo v2 wrong server time fetched again', () async {
+    // 10 minutes late, refused by the server (5 minutes max)
+    var provider = _TestTimestampProvider(
+      apiService,
+      firstFetchOffset: const Duration(minutes: -10),
+    );
+    await securedEchoV2WithProvider(provider);
+    expect(provider.fetchCount, 2);
   });
   test('timestamp', () async {
     var timestamp = await apiService.getTimestamp();

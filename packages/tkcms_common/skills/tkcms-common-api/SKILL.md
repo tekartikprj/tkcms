@@ -96,9 +96,12 @@ added in one place and reached over either transport.
   timestamp, so it needs `securedOptions.timestampServiceOrNull` (already set:
   the api service is itself a `TkCmsTimestampProvider`, the server uses
   `TkCmsTimestampService.local()`).
-* `TkCmsTimestampService.local()` / `.withProvider(timestampProvider:)` caches
-  the fetched time and offsets it with a stopwatch: use `now()` for a server
-  aligned clock, `now(forceFetch: true)` to refetch.
+* `TkCmsTimestampService.withProvider(timestampProvider:)` fetches the time
+  once and offsets it with a stopwatch, fetching again after
+  `refreshInterval` (1 hour by default): use `now()` for a server aligned
+  clock, `now(forceFetch: true)` to refetch. `getSecuredApiResult` refetches
+  and signs again on a `secured_timestamp` error. `.local()` is the local
+  clock.
 * Debug: `debugWebServices = true` logs every call, `debugTkCmsApiFull = true`
   logs the full body instead of a summary.
 * Anti-patterns: trusting `apiRequest.apiUserId` on the http transport;

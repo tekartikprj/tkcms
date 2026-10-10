@@ -1,5 +1,9 @@
 import 'package:tkcms_common/tkcms_common.dart';
 
+/// Default delay after which [TkCmsTimestampService.withProvider] fetches the
+/// time again.
+const _refreshIntervalDefault = Duration(hours: 1);
+
 /// Timestamp async provider
 abstract class TkCmsTimestampProvider {
   /// Fetch current time.
@@ -9,20 +13,29 @@ abstract class TkCmsTimestampProvider {
 /// Timestamp service
 abstract class TkCmsTimestampService {
   /// Get current time.
+  ///
+  /// [forceFetch] ignores the cached time (typically after a
+  /// `secured_timestamp` error).
   Future<DateTime> now({bool forceFetch = false});
 
-  /// Local timestamp service
+  /// Local timestamp service, the local clock.
   factory TkCmsTimestampService.local() {
-    return TkCmsTimestampService.withProvider(
-      timestampProvider: _TkCmsTimestampProviderLocal(),
-    );
+    return _TkCmsTimestampServiceLocal();
   }
 
   /// Create a timestamp service with a provider
+  ///
+  /// The time is fetched once, then computed from a stopwatch until
+  /// [refreshInterval] (default 1 hour) has elapsed or `now(forceFetch: true)`
+  /// is called.
   factory TkCmsTimestampService.withProvider({
     required TkCmsTimestampProvider timestampProvider,
+    Duration? refreshInterval,
   }) {
-    return _TkCmsTimestampService(timestampProvider: timestampProvider);
+    return _TkCmsTimestampService(
+      timestampProvider: timestampProvider,
+      refreshInterval: refreshInterval ?? _refreshIntervalDefault,
+    );
   }
 
   /// Dispose service.
@@ -31,44 +44,70 @@ abstract class TkCmsTimestampService {
 
 class _TkCmsTimestampService implements TkCmsTimestampService {
   final TkCmsTimestampProvider timestampProvider;
+  final Duration refreshInterval;
 
-  _TkCmsTimestampService({required this.timestampProvider});
+  _TkCmsTimestampService({
+    required this.timestampProvider,
+    required this.refreshInterval,
+  });
 
-  /// Null only at the beginning
+  /// Provider time when [_stopwatch] started, null until the first fetch.
   DateTime? _fetchTimestamp;
 
-  /// Null when invalidated
+  /// Started after each fetch, null when invalidated.
   Stopwatch? _stopwatch;
 
   final _fetchLock = Lock();
+
+  /// The cached time, null if never fetched, invalidated or expired.
+  DateTime? get _cachedNow {
+    var stopwatch = _stopwatch;
+    if (stopwatch == null) {
+      return null;
+    }
+    var elapsed = stopwatch.elapsed;
+    if (elapsed >= refreshInterval) {
+      return null;
+    }
+    return _fetchTimestamp!.add(elapsed);
+  }
+
   @override
   Future<DateTime> now({bool forceFetch = false}) async {
     if (forceFetch) {
       _stopwatch = null;
     }
-    if (_stopwatch != null) {
-      return _fetchTimestamp!.add(
-        Duration(milliseconds: _stopwatch!.elapsedMilliseconds),
-      );
+    var cachedNow = _cachedNow;
+    if (cachedNow != null) {
+      return cachedNow;
     }
-    var previousFetchTimestamp = _fetchTimestamp;
-    await _fetchLock.synchronized(() async {
-      if (_fetchTimestamp != previousFetchTimestamp) {
-        return;
+    return await _fetchLock.synchronized(() async {
+      // Fetched by a concurrent call while waiting for the lock
+      var cachedNow = _cachedNow;
+      if (cachedNow != null) {
+        return cachedNow;
       }
-
-      _fetchTimestamp = await timestampProvider.fetchNow();
+      var roundTrip = Stopwatch()..start();
+      var fetchedNow = await timestampProvider.fetchNow();
+      // The provider time is taken somewhere during the round trip, assume
+      // the middle.
+      var fetchTimestamp = fetchedNow.add(roundTrip.elapsed ~/ 2);
+      _fetchTimestamp = fetchTimestamp;
+      _stopwatch = Stopwatch()..start();
+      return fetchTimestamp;
     });
-    return _fetchTimestamp!;
   }
 
   @override
   void dispose() {}
 }
 
-class _TkCmsTimestampProviderLocal implements TkCmsTimestampProvider {
+class _TkCmsTimestampServiceLocal implements TkCmsTimestampService {
   @override
-  Future<DateTime> fetchNow() async {
+  Future<DateTime> now({bool forceFetch = false}) async {
     return DateTime.timestamp();
   }
+
+  @override
+  void dispose() {}
 }

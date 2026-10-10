@@ -285,14 +285,14 @@ class TkCmsApiServiceBaseV2 implements TkCmsTimestampProvider {
     bool? preferHttp,
   }) async {
     var options = securedOptions.getOrThrow(apiRequest.apiCommand);
-    late ApiRequest securedApiRequest;
-    if (options.version == apiSecuredEncOptionsVersion1) {
-      securedApiRequest = apiRequest.wrapInSecuredRequest(options);
-    } else if (options.version == apiSecuredEncOptionsVersion2) {
-      securedApiRequest = await securedOptions.wrapInSecuredRequestV2Async(
-        apiRequest,
-      );
+    Future<ApiRequest> wrap() async {
+      if (options.version == apiSecuredEncOptionsVersion2) {
+        return await securedOptions.wrapInSecuredRequestV2Async(apiRequest);
+      }
+      return apiRequest.wrapInSecuredRequest(options);
     }
+
+    var securedApiRequest = await wrap();
     return await _retry(() async {
       try {
         return await _getApiResult<R>(
@@ -300,11 +300,11 @@ class TkCmsApiServiceBaseV2 implements TkCmsTimestampProvider {
           preferHttp: preferHttp,
         );
       } on ApiException catch (e) {
-        if (e.error?.code.v == apiErrorCodeSecuredTimestamp) {
-          // restart timestamp services
-          securedOptions.timestampServiceOrNull!
-              .now(forceFetch: true)
-              .unawait();
+        if (e.error?.code.v == apiErrorCodeSecuredTimestamp &&
+            options.version == apiSecuredEncOptionsVersion2) {
+          // The cached server time is off, fetch it again and sign again
+          await securedOptions.timestampServiceOrNull!.now(forceFetch: true);
+          securedApiRequest = await wrap();
           return await _getApiResult<R>(
             securedApiRequest,
             preferHttp: preferHttp,
