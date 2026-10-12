@@ -86,4 +86,22 @@ void main() {
       'data/codes',
     );
   });
+
+  test('recursive delete below a missing document', () async {
+    var firestore = initFirebaseSimMemory(
+      projectId: 'tkcms_collections_test',
+    ).firestore;
+    // A synced entity: `data/synced` itself is never written.
+    var entity = firestore.doc('app/x/project/p1');
+    await entity.set({'name': 'p1'});
+    var synced = entity.collection('data').doc('synced');
+    await synced.collection('data').doc('d1').set({'v': 1});
+    await synced.collection('meta').doc('info').set({'v': 1});
+    expect((await synced.get()).exists, isFalse);
+
+    await entity.tkcmsRecursiveDelete(tkCmsEntityDataTreeDef);
+    expect((await entity.get()).exists, isFalse);
+    expect((await synced.collection('data').get()).docs, isEmpty);
+    expect((await synced.collection('meta').get()).docs, isEmpty);
+  });
 }

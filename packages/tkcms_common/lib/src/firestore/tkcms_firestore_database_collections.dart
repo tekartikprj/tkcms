@@ -11,6 +11,12 @@ extension TkCmsCollectionReferenceRecursiveDeleteExt on CollectionReference {
   /// Delete all item in a query, return the count deleted
   /// Batch size default to 10
   /// Keep doc with paths in keepPaths
+  ///
+  /// The "missing" documents of the collection (no fields of their own, only
+  /// sub collections, `data/<dataId>` of a synced entity), which no query
+  /// returns, are listed too when the service can
+  /// ([FirestoreService.supportsListMissingDocuments], the admin sdk): their
+  /// sub collections of [def] are deleted as well.
   Future<int> tkCmsRecursiveDelete(
     TkCmsCollectionsTreeDef def, {
     int? batchSize,
@@ -69,6 +75,44 @@ extension TkCmsCollectionReferenceRecursiveDeleteExt on CollectionReference {
       await batch.commit();
       count += snapshot.docs.length;
     } while (snapshotSize >= batchSize);
+
+    if (firestore.service.supportsListMissingDocuments) {
+      // All listed first: the listing changes as their sub collections go.
+      var missing = <DocumentReference>[];
+      String? pageToken;
+      do {
+        var result = await collection.listDocuments(
+          options: FirestoreListDocumentsOptions(
+            pageSize: 100,
+            pageToken: pageToken,
+          ),
+        );
+        missing.addAll(result.refs);
+        pageToken = result.nextPageToken;
+      } while (pageToken != null);
+      for (var ref in missing) {
+        var path = ref.path;
+        if (!deletedPaths.add(path)) {
+          continue;
+        }
+        var collectionIds = rootDocPath == null
+            ? def.docPathGetCollectionsId(path)
+            : def.relativeDocPathGetCollectionsId(
+                firestorePathRelativeTo(path, rootDocPath),
+                parents: rootParents,
+              );
+        for (var collectionId in collectionIds) {
+          count += await ref
+              .collection(collectionId)
+              .tkCmsRecursiveDelete(
+                def,
+                batchSize: batchSize,
+                rootDocPath: rootDocPath,
+                rootParents: rootParents,
+              );
+        }
+      }
+    }
 
     return count;
   }

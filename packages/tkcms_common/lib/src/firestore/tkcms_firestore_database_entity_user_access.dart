@@ -909,6 +909,11 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
       query = query.startAfter(values: [entityAccessUsers.last.id]);
     }
 
+    // What refers to the entity besides its users: its public access flag
+    // and its invites.
+    await fsEntityPublicAccessRef(entityId).delete(firestore);
+    await _deleteEntityInvites(entityId);
+
     var treeDef = _info.treeDef;
     if (treeDef != null) {
       await entityRef.raw(firestore).tkcmsRecursiveDelete(treeDef);
@@ -924,6 +929,43 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
 
         txnDeleteUserAccess(txn, userId);
       });
+    }
+  }
+
+  /// Delete the invites to [entityId]: the link invites (`invite_id/<id>`
+  /// and its `entity_id/<entityId>`) and the email invites, whatever their
+  /// status.
+  Future<void> _deleteEntityInvites(String entityId) async {
+    while (true) {
+      var list = await _inviteIdCollection
+          .query()
+          .where(tkCmsFsInviteIdModel.entityId.name, isEqualTo: entityId)
+          .limit(20)
+          .get(firestore);
+      if (list.isEmpty) {
+        break;
+      }
+      var batch = firestore.cvBatch();
+      for (var inviteIdDoc in list) {
+        batch.refDelete(inviteIdDoc.ref);
+        batch.refDelete(_inviteEntityDoc(inviteIdDoc.id, entityId));
+      }
+      await batch.commit();
+    }
+    while (true) {
+      var list = await _emailInviteCollection
+          .query()
+          .where(tkCmsFsEmailInviteModel.entityId.name, isEqualTo: entityId)
+          .limit(20)
+          .get(firestore);
+      if (list.isEmpty) {
+        break;
+      }
+      var batch = firestore.cvBatch();
+      for (var invite in list) {
+        batch.refDelete(invite.ref);
+      }
+      await batch.commit();
     }
   }
 

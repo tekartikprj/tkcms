@@ -201,6 +201,63 @@ void main() {
     userEntityAccess = await userEntityAccessRef2.get(firestore);
     expect(userEntityAccess.exists, isFalse);
   });
+  test('purge leaves nothing behind', () async {
+    initTkCmsFsBuilders();
+    // Synced data below the entity (`data/synced` never written), a public
+    // flag, a link invite and an email invite.
+    var dataDb = TkCmsFirestoreDatabaseServiceEntityAccess<TestFsEntity>(
+      entityCollectionInfo:
+          TkCmsFirestoreDatabaseEntityCollectionInfo<TestFsEntity>(
+            id: 'type3',
+            name: 'Type3',
+            treeDef: tkCmsEntityDataTreeDef,
+          ),
+      firestore: firestore,
+    );
+    var entity = TestFsEntity()..name.v = 'e1';
+    var userId = 'user1';
+    var entityId = await dataDb.createEntity(userId: userId, entity: entity);
+    var entityRef = dataDb.fsEntityCollectionRef.doc(entityId).raw(firestore);
+    var synced = entityRef.collection('data').doc('synced');
+    await synced.collection('data').doc('d1').set({'v': 1});
+    await synced.collection('meta').doc('info').set({'v': 1});
+    await dataDb.setEntityPublic(entityId, public: true);
+    var inviteId = await dataDb.createInviteEntity(
+      userId: userId,
+      entityId: entityId,
+      userAccess: TkCmsCvUserAccess()..read.v = true,
+      entity: entity,
+    );
+    var emailInviteId = await dataDb.createEmailInviteEntity(
+      userId: userId,
+      entityId: entityId,
+      email: 'invited@test.local',
+      userAccess: TkCmsCvUserAccess()..read.v = true,
+    );
+
+    await dataDb.deleteEntity(entityId, userId: userId);
+    await dataDb.purgeEntity(entityId);
+    expect((await synced.collection('data').get()).docs, isEmpty);
+    expect((await synced.collection('meta').get()).docs, isEmpty);
+    expect(await dataDb.isEntityPublic(entityId), isFalse);
+    expect(
+      (await dataDb.fsEntityPublicAccessRef(entityId).get(firestore)).exists,
+      isFalse,
+    );
+    expect(
+      (await dataDb.fsInviteIdRef(inviteId).get(firestore)).exists,
+      isFalse,
+    );
+    expect(
+      (await dataDb.fsInviteEntityRef(inviteId, entityId).get(firestore))
+          .exists,
+      isFalse,
+    );
+    expect(
+      (await dataDb.fsEmailInviteRef(emailInviteId).get(firestore)).exists,
+      isFalse,
+    );
+  });
   test('email invite', () async {
     var entity = TestFsEntity()
       ..name.v = 'e1'
