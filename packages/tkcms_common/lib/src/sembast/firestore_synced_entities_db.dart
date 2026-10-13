@@ -44,7 +44,7 @@ class DbProject extends DbStringRecordBase with TkCmsCvUserAccessMixin {
   bool get isWrite => isLocal ? true : TkCmsCvUserAccessCommonExt(this).isWrite;
 
   /// True if the user has admin access
-  bool get isAdmin => isLocal ? true : TkCmsCvUserAccessCommonExt(this).isRead;
+  bool get isAdmin => isLocal ? true : TkCmsCvUserAccessCommonExt(this).isAdmin;
 
   /// True if the user has read access
   bool get isRead => isLocal ? true : TkCmsCvUserAccessCommonExt(this).isRead;
