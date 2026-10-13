@@ -17,6 +17,16 @@ const tkCmsEmailInviteClosedExpirationDefault = Duration(days: 3);
 /// Default maximum number of pending email invites per entity.
 const tkCmsEmailInviteMaxPendingPerEntityDefault = 100;
 
+/// True for a permission denied error, whatever the firestore implementation:
+/// cloud_firestore (flutter) throws its own `FirebaseException`
+/// (`[cloud_firestore/permission-denied] ...`).
+bool _isPermissionDenied(Object e) {
+  if (e is FirestoreException) {
+    return e.code == FirestoreErrorCode.permissionDenied;
+  }
+  return e.toString().contains('/${FirestoreErrorCode.permissionDenied}]');
+}
+
 /// Entity access service.
 class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
     implements TkCmsFirestoreDatabaseServiceEntityAccessor<TFsEntity> {
@@ -910,9 +920,14 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
     }
 
     // What refers to the entity besides its users: its public access flag
-    // and its invites.
-    await fsEntityPublicAccessRef(entityId).delete(firestore);
-    await _deleteEntityInvites(entityId);
+    // and its invites. Skipped when the rules deny it: a client purge (no
+    // backend) whose rules do not have them could not have created them
+    // either.
+    await _ignorePermissionDenied(
+      () => fsEntityPublicAccessRef(entityId).delete(firestore),
+    );
+    await _ignorePermissionDenied(() => _deleteEntityLinkInvites(entityId));
+    await _ignorePermissionDenied(() => _deleteEntityEmailInvites(entityId));
 
     var treeDef = _info.treeDef;
     if (treeDef != null) {
@@ -932,10 +947,20 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
     }
   }
 
-  /// Delete the invites to [entityId]: the link invites (`invite_id/<id>`
-  /// and its `entity_id/<entityId>`) and the email invites, whatever their
-  /// status.
-  Future<void> _deleteEntityInvites(String entityId) async {
+  /// Run [action], ignoring a permission denied error.
+  Future<void> _ignorePermissionDenied(Future<void> Function() action) async {
+    try {
+      await action();
+    } catch (e) {
+      if (!_isPermissionDenied(e)) {
+        rethrow;
+      }
+    }
+  }
+
+  /// Delete the link invites to [entityId] (`invite_id/<id>` and its
+  /// `entity_id/<entityId>`).
+  Future<void> _deleteEntityLinkInvites(String entityId) async {
     while (true) {
       var list = await _inviteIdCollection
           .query()
@@ -952,6 +977,10 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
       }
       await batch.commit();
     }
+  }
+
+  /// Delete the email invites to [entityId], whatever their status.
+  Future<void> _deleteEntityEmailInvites(String entityId) async {
     while (true) {
       var list = await _emailInviteCollection
           .query()
