@@ -62,34 +62,6 @@ class SembastFirestoreSyncHelper<TFsEntity extends fbfs.TkCmsFsEntity> {
     sembast.initTkCmsDbEntityBuilders();
   }
 
-  Future<void> _dbCheckAndPutEntity(
-    DatabaseClient db,
-    sembast.TkCmsDbEntity localDbEntity,
-    TFsEntity fsEntity,
-  ) async {
-    if (localDbEntity.name.v != fsEntity.name.v ||
-        localDbEntity.active.v != fsEntity.active.v ||
-        localDbEntity.created.v != fsEntity.created.v?.toDbTimestamp()) {
-      localDbEntity.copyFrom(fsEntity);
-      await sembast.cvDbEntityStore.record(fsEntity.id).put(db, localDbEntity);
-    }
-  }
-
-  Future<void> _dbCheckAndPutUserAccess(
-    DatabaseClient db,
-    sembast.TkCmsDbUserAccess localDbUserAccess,
-    fbfs.TkCmsFsUserAccess fsUserAccess,
-  ) async {
-    if (localDbUserAccess.admin.v != fsUserAccess.admin.v ||
-        localDbUserAccess.role.v != fsUserAccess.role.v ||
-        localDbUserAccess.read.v != fsUserAccess.read.v ||
-        localDbUserAccess.write.v != fsUserAccess.write.v) {
-      await sembast.cvDbUserAccessStore
-          .record(fsUserAccess.id)
-          .put(db, dbUserAccessFromFsUserAccess(fsUserAccess));
-    }
-  }
-
   /// Add fs entity to local db.
   Future<void> localDbAddFsEntity({required TFsEntity fsEntity}) async {
     await db.transaction((txn) async {
@@ -152,81 +124,12 @@ class SembastFirestoreSyncHelper<TFsEntity extends fbfs.TkCmsFsEntity> {
   }
 
   /// Generate local db from firestore.
-  Future<void> generateLocalDbFromEntitiesUserAccess() async {
-    var firestore = entityAccess.firestore;
-    var userId = options.userId;
-    var fsUserEntityAccessMap =
-        (await entityAccess
-                .fsUserEntityAccessCollectionRef(userId)
-                .get(firestore))
-            .toMap();
-    var localDbEntityMap = (await sembast.cvDbEntityStore.query().getRecords(
-      db,
-    )).toMap();
-    var localDbUserAccessMap =
-        (await sembast.cvDbUserAccessStore.query().getRecords(db)).toMap();
-    var fsEntityMap = <String, TFsEntity>{};
-    var ids = fsUserEntityAccessMap.keys.toList();
-    for (var list in listChunk(ids, 10)) {
-      fsEntityMap.clear();
-      for (var id in list) {
-        var fsEntity = await entityAccess.fsEntityRef(id).get(firestore);
-        fsEntityMap[id] = fsEntity;
-      }
-      await db.transaction((txn) async {
-        for (var id in list) {
-          var fsUserAccess = fsUserEntityAccessMap[id];
-          var localDbUserAccess = localDbUserAccessMap[id];
-          if (fsUserAccess == null) {
-            continue;
-          }
-          if (localDbUserAccess != null) {
-            await _dbCheckAndPutUserAccess(
-              txn,
-              localDbUserAccess,
-              fsUserAccess,
-            );
-            if (localDbUserAccess.admin.v != fsUserAccess.admin.v ||
-                localDbUserAccess.role.v != fsUserAccess.role.v ||
-                localDbUserAccess.read.v != fsUserAccess.read.v ||
-                localDbUserAccess.write.v != fsUserAccess.write.v) {
-              await sembast.cvDbUserAccessStore
-                  .record(id)
-                  .put(txn, dbUserAccessFromFsUserAccess(fsUserAccess));
-            }
-            localDbUserAccessMap.remove(id);
-          } else {
-            await sembast.cvDbUserAccessStore
-                .record(id)
-                .put(txn, dbUserAccessFromFsUserAccess(fsUserAccess));
-          }
-          var localDbEntity = localDbEntityMap[id];
-          var fsEntity = fsEntityMap[id];
-          if (fsEntity == null || !fsEntity.exists) {
-            continue;
-          }
-          if (localDbEntity != null) {
-            await _dbCheckAndPutEntity(txn, localDbEntity, fsEntity);
-
-            localDbEntityMap.remove(id);
-          } else {
-            await sembast.cvDbEntityStore
-                .record(id)
-                .put(txn, dbEntityFromFsEntity(fsEntity));
-          }
-        }
-      });
-      // Delete the remaining ones
-      if (localDbUserAccessMap.isNotEmpty) {
-        await sembast.cvDbUserAccessStore
-            .records(localDbUserAccessMap.keys)
-            .delete(db);
-      }
-      if (localDbEntityMap.isNotEmpty) {
-        await sembast.cvDbEntityStore.records(localDbEntityMap.keys).delete(db);
-      }
-    }
-  }
+  Future<void> generateLocalDbFromEntitiesUserAccess() =>
+      _generateLocalDbFromEntitiesUserAccess(
+        db: db,
+        entityAccess: entityAccess,
+        options: options,
+      );
 
   /// Sync one entity.
   Future<void> localDbSyncOne({required String entityId}) async {
@@ -293,6 +196,18 @@ generateLocalDbFromEntitiesUserAccess<TFsEntity extends fbfs.TkCmsFsEntity>({
   required fbfs.TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity>
   entityAccess,
   required LocalDbFromFsOptions options,
+}) => _generateLocalDbFromEntitiesUserAccess(
+  db: db,
+  entityAccess: entityAccess,
+  options: options,
+);
+
+Future<void>
+_generateLocalDbFromEntitiesUserAccess<TFsEntity extends fbfs.TkCmsFsEntity>({
+  required sembast.Database db,
+  required fbfs.TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity>
+  entityAccess,
+  required LocalDbFromFsOptions options,
 }) async {
   var firestore = entityAccess.firestore;
   var userId = options.userId;
@@ -301,6 +216,7 @@ generateLocalDbFromEntitiesUserAccess<TFsEntity extends fbfs.TkCmsFsEntity>({
               .fsUserEntityAccessCollectionRef(userId)
               .get(firestore))
           .toMap();
+  // The local records not found in firestore are deleted at the end.
   var localDbEntityMap = (await sembast.cvDbEntityStore.query().getRecords(
     db,
   )).toMap();
@@ -317,35 +233,25 @@ generateLocalDbFromEntitiesUserAccess<TFsEntity extends fbfs.TkCmsFsEntity>({
     await db.transaction((txn) async {
       for (var id in list) {
         var fsUserAccess = fsUserEntityAccessMap[id];
-        var localDbUserAccess = localDbUserAccessMap[id];
         if (fsUserAccess == null) {
           continue;
         }
+        var localDbUserAccess = localDbUserAccessMap.remove(id);
         if (localDbUserAccess != null) {
           await _dbCheckAndPutUserAccess(txn, localDbUserAccess, fsUserAccess);
-          if (localDbUserAccess.admin.v != fsUserAccess.admin.v ||
-              localDbUserAccess.role.v != fsUserAccess.role.v ||
-              localDbUserAccess.read.v != fsUserAccess.read.v ||
-              localDbUserAccess.write.v != fsUserAccess.write.v) {
-            await sembast.cvDbUserAccessStore
-                .record(id)
-                .put(txn, dbUserAccessFromFsUserAccess(fsUserAccess));
-          }
-          localDbUserAccessMap.remove(id);
         } else {
           await sembast.cvDbUserAccessStore
               .record(id)
               .put(txn, dbUserAccessFromFsUserAccess(fsUserAccess));
         }
-        var localDbEntity = localDbEntityMap[id];
         var fsEntity = fsEntityMap[id];
         if (fsEntity == null || !fsEntity.exists) {
+          // Kept in localDbEntityMap, deleted at the end.
           continue;
         }
+        var localDbEntity = localDbEntityMap.remove(id);
         if (localDbEntity != null) {
           await _dbCheckAndPutEntity(txn, localDbEntity, fsEntity);
-
-          localDbEntityMap.remove(id);
         } else {
           await sembast.cvDbEntityStore
               .record(id)
@@ -353,14 +259,17 @@ generateLocalDbFromEntitiesUserAccess<TFsEntity extends fbfs.TkCmsFsEntity>({
         }
       }
     });
-    // Delete the remaining ones
+  }
+  // Delete the remaining ones, once all the chunks are handled (also when
+  // there is no access left).
+  await db.transaction((txn) async {
     if (localDbUserAccessMap.isNotEmpty) {
       await sembast.cvDbUserAccessStore
           .records(localDbUserAccessMap.keys)
-          .delete(db);
+          .delete(txn);
     }
     if (localDbEntityMap.isNotEmpty) {
-      await sembast.cvDbEntityStore.records(localDbEntityMap.keys).delete(db);
+      await sembast.cvDbEntityStore.records(localDbEntityMap.keys).delete(txn);
     }
-  }
+  });
 }

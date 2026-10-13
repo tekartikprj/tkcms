@@ -38,6 +38,13 @@ class DocEntitiesScreenBloc<T extends TkCmsFsDocEntity>
   }
   TrackChangesSupportOptionsController? _supportOptionsController;
   Firestore get firestore => entityAccess.firestore;
+
+  @override
+  void dispose() {
+    _supportOptionsController?.dispose();
+    super.dispose();
+  }
+
   Future<void> _init() async {
     _supportOptionsController = TrackChangesSupportOptionsController();
     audiAddStreamSubscription(

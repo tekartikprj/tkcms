@@ -1,12 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:tekartik_app_flutter_widget/mini_ui.dart';
-import 'package:tekartik_app_flutter_widget/view/body_h_padding.dart';
 import 'package:tekartik_app_flutter_widget/view/busy_indicator.dart';
 import 'package:tekartik_app_flutter_widget/view/busy_screen_state_mixin.dart';
 import 'package:tkcms_admin_app/audi/tkcms_audi.dart';
 import 'package:tkcms_admin_app/src/import_common.dart';
-import 'package:tkcms_admin_app/view/body_container.dart';
 import 'package:tkcms_common/tkcms_firestore_v2.dart';
 import 'package:tkcms_common/tkcms_sembast.dart';
 
@@ -89,7 +87,6 @@ class _DocEntityEditScreenState<T extends TkCmsFsDocEntity>
     with
         PopOnLoggedOutMixin<DocEntityEditScreen<T>>,
         AutoDisposedBusyScreenStateMixin<DocEntityEditScreen<T>> {
-  TextEditingController? _nameController;
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -109,37 +106,13 @@ class _DocEntityEditScreenState<T extends TkCmsFsDocEntity>
           var state = snapshot.data;
           var dbEntity = state?.fsEntity;
           //var dbUserAccess = state?.dbUserAccess;
-          if (dbEntity != null) {
-            _nameController ??= TextEditingController(
-              text: null,
-            ); // dbEntity.name.v);
-          }
           return Scaffold(
             appBar: AppBar(title: Text(bloc.entityName)),
             body: dbEntity == null
                 ? const Center(child: CircularProgressIndicator())
                 : Stack(
                     children: [
-                      ListView(
-                        children: [
-                          const SizedBox(height: 16),
-                          BodyContainer(
-                            child: Column(
-                              children: [
-                                BodyHPadding(
-                                  child: TextFormField(
-                                    controller: _nameController,
-                                    decoration: const InputDecoration(
-                                      labelText: 'Name',
-                                      hintText: 'Name',
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
+                      ListView(children: const [SizedBox(height: 16)]),
                       BusyIndicator(busy: busyStream),
                     ],
                   ),
@@ -162,11 +135,8 @@ class _DocEntityEditScreenState<T extends TkCmsFsDocEntity>
       if (_formKey.currentState!.validate()) {
         var bloc = BlocProvider.of<DocEntityEditScreenBloc<T>>(context);
 
+        // A doc entity has no name field to edit.
         var newEntity = cvNewModel<T>()..copyFrom(dbEntity);
-        var name = _nameController!.text.trimmedNonEmpty();
-        if (name != null) {
-          //newEntity.name.v = name;
-        }
         await bloc.save(newEntity);
         if (mounted) {
           Navigator.of(context).pop();

@@ -344,7 +344,7 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
         }
 
         var entity = await txn.refGet(entityRef);
-        if (inviteCode == null && !entity.exists) {
+        if (!entity.exists) {
           throw ArgumentError('${_info.name} $entityId not found');
         }
         if (entity.deleted.v == true) {
@@ -790,7 +790,9 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
 
         txnSetEntityUserAccess(txn, newEntityId, userId, entityUserAccess);
       }
-      txn.refSet(entityRef, entity);
+      // Like the basic and doc entities, the caller entity gets its ref.
+      entity.ref = entityRef;
+      txn.cvSet(entity);
       return newEntityId;
     });
   }

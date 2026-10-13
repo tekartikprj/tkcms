@@ -88,6 +88,9 @@ void main() {
     var entityId = await db.createEntity(userId: userId, entity: entity);
     var entityRef = db.fsEntityCollectionRef.doc(entityId);
     expect(entityRef.path, db.getRootPath('type1/$entityId'));
+    // The created entity gets its ref, like the basic and doc entities.
+    expect(entity.id, entityId);
+    expect(entity.path, entityRef.path);
     var readEntity = await entityRef.get(firestore);
     expect(readEntity.name.v, 'e1');
     expect(readEntity.specific.v, 's1');

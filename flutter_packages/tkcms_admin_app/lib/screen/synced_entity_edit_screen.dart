@@ -6,6 +6,7 @@ import 'package:tekartik_app_flutter_widget/view/busy_indicator.dart';
 import 'package:tekartik_app_flutter_widget/view/busy_screen_state_mixin.dart';
 import 'package:tkcms_admin_app/audi/tkcms_audi.dart';
 import 'package:tkcms_admin_app/auth/auth.dart';
+import 'package:tkcms_admin_app/src/entity_save.dart';
 import 'package:tkcms_admin_app/src/import_common.dart';
 import 'package:tkcms_admin_app/view/body_container.dart';
 import 'package:tkcms_common/tkcms_firestore.dart';
@@ -96,10 +97,11 @@ class SyncedEntityEditScreenBloc<T extends TkCmsFsEntity>
       );
     } else {
       entityId = this.entityId!;
-      fsEntity.path = entityAccess.fsEntityRef(entityId).path;
-
-      var firestore = entityAccess.firestore;
-      await firestore.cvSet(fsEntity);
+      await tkCmsAdminUpdateEntityName(
+        entityAccess.firestore,
+        entityAccess.fsEntityRef(entityId),
+        fsEntity.name,
+      );
     }
     await syncFromFirestore(entityId: entityId);
   }
@@ -120,6 +122,12 @@ class _SyncedEntityEditScreenState<T extends TkCmsFsEntity>
         AutoDisposedBusyScreenStateMixin<SyncedEntityEditScreen<T>> {
   TextEditingController? _nameController;
   final _formKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    _nameController?.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
