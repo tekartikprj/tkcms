@@ -816,9 +816,7 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
   /// purged user leaves. Returns the ids of the entities it had an access
   /// to.
   Future<List<String>> deleteUserAccesses(String userId) async {
-    var accesses = await fsUserEntityAccessCollectionRef(
-      userId,
-    ).get(firestore);
+    var accesses = await fsUserEntityAccessCollectionRef(userId).get(firestore);
     var entityIds = accesses.map((access) => access.id).toList();
     for (var entityId in entityIds) {
       await firestore.cvRunTransaction((txn) async {

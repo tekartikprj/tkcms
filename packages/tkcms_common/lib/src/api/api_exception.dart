@@ -109,19 +109,17 @@ class ApiException implements Exception {
 /// The exception of a command the server does not know ([message] names
 /// it): `unimplemented`, not retried, so that an older server answers a newer
 /// client right away.
-ApiException apiUnimplementedCommandException(String message) =>
-    ApiException(
-      error: ApiError()
-        ..code.v = apiErrorCodeUnimplemented
-        ..message.v = message
-        ..noRetry.v = true,
-    );
+ApiException apiUnimplementedCommandException(String message) => ApiException(
+  error: ApiError()
+    ..code.v = apiErrorCodeUnimplemented
+    ..message.v = message
+    ..noRetry.v = true,
+);
 
 /// True when [error] says the server does not know the command, see
 /// [apiUnimplementedCommandException].
 bool apiIsUnimplementedCommandError(Object error) =>
-    error is ApiException &&
-    error.error?.code.v == apiErrorCodeUnimplemented;
+    error is ApiException && error.error?.code.v == apiErrorCodeUnimplemented;
 
 /// ApiResponse from any exception
 ApiResponse apiResponseFromException(Object e, {StackTrace? st, bool? debug}) {
