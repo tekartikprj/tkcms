@@ -4,7 +4,13 @@ import 'package:tkcms_common/firebase/firestore.dart';
 import 'package:tkcms_common/server/server_common.dart';
 import 'package:tkcms_common/src/flavor/flavor.dart';
 import 'package:tkcms_common/tkcms_api.dart';
+import 'package:tkcms_common/tkcms_app_user.dart';
 import 'package:tkcms_common/tkcms_common.dart';
+import 'package:tkcms_common/tkcms_firestore.dart'
+    show
+        TkCmsFirestoreDatabaseServiceEntityAccess,
+        TkCmsFsApp,
+        tkCmsFsAppCollectionInfo;
 
 //import 'package:tkcms_common/tkcms_server.dart';
 
@@ -32,6 +38,85 @@ class TkAppCmsServerAppBase extends TkCmsServerAppV2 {
     required super.context,
     super.apiVersion = apiVersion2,
   });
+
+  /// How often a client tells the server it uses the app.
+  Duration get appUserSeenInterval => tkCmsAppUserSeenIntervalDefault;
+
+  /// The purge of the users run by [cronPurgeAppUsers], null (the default)
+  /// for none.
+  TkCmsAppUserPurgePolicy? get appUserPurgePolicy => null;
+
+  /// What the app purges for a user besides its private data, nothing by
+  /// default.
+  Future<void> onPurgeAppUser(String userId) async {}
+
+  /// What the app hands from an anonymous user to an account, nothing by
+  /// default.
+  Future<void> onMergeAppUser({
+    required String fromUserId,
+    required String toUserId,
+  }) async {}
+
+  /// True when [userId] is an admin of the app entity
+  /// (`access/app/entity_id/<app>/user_access/<userId>`).
+  Future<bool> isAppAdmin(String userId) async {
+    var access = await TkCmsFirestoreDatabaseServiceEntityAccess<TkCmsFsApp>(
+      entityCollectionInfo: tkCmsFsAppCollectionInfo,
+      firestore: firestore,
+    ).fsEntityUserAccessRef(appFlavorContext.app, userId).get(firestore);
+    return access.exists && (access.admin.v ?? false);
+  }
+
+  /// The users of the app, with admin rights.
+  late final appUsers = TkCmsAppUsersFirestore(
+    firestore: firestore,
+    auth: this.firebaseContext.auth,
+    app: appFlavorContext.app,
+    seenInterval: appUserSeenInterval,
+    retention:
+        appUserPurgePolicy?.anonymousRetention ?? tkCmsAppUserRetentionDefault,
+    onPurgeUser: onPurgeAppUser,
+    onMergeUser: onMergeAppUser,
+  );
+
+  /// Answers the `app-user/*` commands.
+  late final appUsersHandler = TkCmsAppUsersServerHandler(
+    appUsers: appUsers,
+    isAppAdmin: isAppAdmin,
+  );
+
+  @override
+  Future<ApiResult> onCommand(ApiRequest apiRequest) async {
+    var result = await appUsersHandler.onCommandOrNull(apiRequest);
+    if (result != null) {
+      return result;
+    }
+    return await super.onCommand(apiRequest);
+  }
+
+  /// Purges the users per [appUserPurgePolicy], null without one. For the
+  /// cron ([onCronCommand]); a failure is reported, never thrown.
+  Future<ApiAppUserPurgeResult?> cronPurgeAppUsers() async {
+    var policy = appUserPurgePolicy;
+    if (policy == null) {
+      return null;
+    }
+    try {
+      var result = await appUsers.purge(policy.query());
+      // ignore: avoid_print
+      print(
+        'CRON app users ${policy.dryRun ? '(dry run) ' : ''}'
+        'purged ${result.purgedIds.v?.length}, '
+        'skipped ${result.skippedIds.v?.length}, '
+        'errors ${result.errors.v?.length}',
+      );
+      return result;
+    } catch (e) {
+      // ignore: avoid_print
+      print('CRON app users purge error $e');
+      return null;
+    }
+  }
 }
 
 /// Server app.
@@ -140,7 +225,9 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
       case apiCommandEcho:
         return onEchoCommand(apiRequest);
       default:
-        throw UnsupportedError('secured command ${apiRequest.command.v!}');
+        throw apiUnimplementedCommandException(
+          'secured command ${apiRequest.command.v!}',
+        );
     }
   }
 
@@ -202,7 +289,9 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
       case apiCommandAuthMe:
         return await onAuthMeCommand(apiRequest);
       default:
-        throw UnsupportedError('command ${apiRequest.command.v!}');
+        throw apiUnimplementedCommandException(
+          'command ${apiRequest.command.v!}',
+        );
     }
   }
 

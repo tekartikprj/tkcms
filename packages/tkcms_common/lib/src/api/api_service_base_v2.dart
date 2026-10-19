@@ -270,10 +270,16 @@ class TkCmsApiServiceBaseV2 implements TkCmsTimestampProvider {
   }
 
   /// Get api result (callable or http)
+  ///
+  /// Tried 4 times unless [noRetry] (or a `noRetry` error).
   Future<R> getApiResult<R extends ApiResult>(
     ApiRequest request, {
     bool? preferHttp,
+    bool? noRetry,
   }) {
+    if (noRetry ?? false) {
+      return _getApiResult<R>(request, preferHttp: preferHttp);
+    }
     return _retry(() {
       return _getApiResult<R>(request, preferHttp: preferHttp);
     });

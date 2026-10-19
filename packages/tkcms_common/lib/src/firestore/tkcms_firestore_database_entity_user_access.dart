@@ -811,6 +811,76 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
     });
   }
 
+  /// Deletes every access of [userId] to the entities of this type, both
+  /// sides, its invite accesses and its user side top document: what a
+  /// purged user leaves. Returns the ids of the entities it had an access
+  /// to.
+  Future<List<String>> deleteUserAccesses(String userId) async {
+    var accesses = await fsUserEntityAccessCollectionRef(
+      userId,
+    ).get(firestore);
+    var entityIds = accesses.map((access) => access.id).toList();
+    for (var entityId in entityIds) {
+      await firestore.cvRunTransaction((txn) async {
+        txnSetEntityUserAccess(txn, entityId, userId, null);
+      });
+    }
+    var inviteAccesses = await _userAccessTop(userId)
+        .collection<TkCmsFsUserAccess>(tkCmsFsInviteAccessCollectionId)
+        .get(firestore);
+    for (var inviteAccess in inviteAccesses) {
+      await _userInviteAccessDoc(userId, inviteAccess.id).delete(firestore);
+    }
+    await _userAccessTop(userId).delete(firestore);
+    return entityIds;
+  }
+
+  /// Moves every access of [fromUserId] to the entities of this type to
+  /// [toUserId], both sides: what a merged user hands to its account. An
+  /// access [toUserId] already has to an entity is kept. Returns the ids of
+  /// the entities moved.
+  Future<List<String>> moveUserAccesses({
+    required String fromUserId,
+    required String toUserId,
+  }) async {
+    var accesses = await fsUserEntityAccessCollectionRef(
+      fromUserId,
+    ).get(firestore);
+    var entityIds = <String>[];
+    for (var userSideAccess in accesses) {
+      var entityId = userSideAccess.id;
+      await firestore.cvRunTransaction((txn) async {
+        // The entity side is the reference (name, email).
+        var access = await txn.refGet(
+          _entityUserAccessDoc(entityId, fromUserId),
+        );
+        var existing = await txn.refGet(
+          _entityUserAccessDoc(entityId, toUserId),
+        );
+        if (!existing.exists) {
+          txnSetEntityUserAccess(
+            txn,
+            entityId,
+            toUserId,
+            TkCmsFsUserAccess()
+              ..copyFrom(access.exists ? access : userSideAccess),
+          );
+        }
+        txnSetEntityUserAccess(txn, entityId, fromUserId, null);
+      });
+      entityIds.add(entityId);
+    }
+    return entityIds;
+  }
+
+  /// True when at least one user has an access to [entityId].
+  Future<bool> entityHasUserAccess(String entityId) async {
+    var accesses = await _entityUserAccessColl(
+      entityId,
+    ).query().limit(1).get(firestore);
+    return accesses.isNotEmpty;
+  }
+
   /// Mark as deleted, true if modified
   Future<bool> rootMarkAsDeleted(String entityId) async {
     var entityRef = _entityCollection.doc(entityId);
