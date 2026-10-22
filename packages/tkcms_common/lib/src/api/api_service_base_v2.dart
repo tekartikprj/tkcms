@@ -198,7 +198,7 @@ class TkCmsApiServiceBaseV2 implements TkCmsTimestampProvider {
   /// Call 'timestamp' command
   Future<ApiGetTimestampResult> callGetTimestamp() async {
     return await callGetApiResult<ApiGetTimestampResult>(
-      ApiRequest()..command.v = commandTimestamp,
+      fixRequestApp(ApiRequest()..command.v = commandTimestamp),
     );
   }
 
@@ -247,7 +247,7 @@ class TkCmsApiServiceBaseV2 implements TkCmsTimestampProvider {
   /// Get timestamp using http.
   Future<ApiGetTimestampResult> httpGetTimestamp() async {
     return await httpGetApiResult<ApiGetTimestampResult>(
-      ApiRequest()..command.v = commandTimestamp,
+      fixRequestApp(ApiRequest()..command.v = commandTimestamp),
     );
   }
 
