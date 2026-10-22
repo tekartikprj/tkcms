@@ -80,16 +80,23 @@ void main() {
     expect(readEntity.specific.v, 's1');
   });
   test('tkCmsIsValidDocumentId', () {
-    for (var id in ['e1', 'a.b', '_x_', '__', '___', 'é', 'x' * 1500]) {
+    for (var id in [
+      'e1',
+      'a.b',
+      '_x_',
+      '__service_account__',
+      'é',
+      'x' * 1500,
+    ]) {
       expect(tkCmsIsValidDocumentId(id), isTrue, reason: id);
     }
-    for (var id in ['', 'a/b', '/a/b', 'a/', '.', '..', '__x__', 'x' * 1501]) {
+    for (var id in ['', 'a/b', '/a/b', 'a/', '.', '..', 'x' * 1501]) {
       expect(tkCmsIsValidDocumentId(id), isFalse, reason: id);
     }
   });
   test('an invalid id is refused', () async {
     var userId = 'user1';
-    for (var entityId in ['', 'a/b/c', '/type1_other/x', '..', '__x__']) {
+    for (var entityId in ['', 'a/b/c', '/type1_other/x', '..']) {
       await expectLater(
         db.createEntity(
           userId: userId,
