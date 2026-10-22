@@ -131,6 +131,8 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  # The localizations of lib/l10n (l10n.yaml), required by flutter gen-l10n.
+  generate: true
 resolution: workspace
 
   # To add assets to your application, add an assets section, like this:

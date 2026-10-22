@@ -4,3 +4,6 @@ template-arb-file: app_en.arb
 output-localization-file: app_localizations.dart
 synthetic-package: false
 format: true
+# gen-l10n (3.49 beta included) still lists the flutter_localizations
+# delegates, deprecated for the material_ui ones the app uses (main.dart).
+header: "// ignore_for_file: deprecated_member_use"
