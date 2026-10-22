@@ -79,6 +79,45 @@ void main() {
     expect(readEntity.name.v, 'e1');
     expect(readEntity.specific.v, 's1');
   });
+  test('tkCmsIsValidDocumentId', () {
+    for (var id in ['e1', 'a.b', '_x_', '__', '___', 'é', 'x' * 1500]) {
+      expect(tkCmsIsValidDocumentId(id), isTrue, reason: id);
+    }
+    for (var id in ['', 'a/b', '/a/b', 'a/', '.', '..', '__x__', 'x' * 1501]) {
+      expect(tkCmsIsValidDocumentId(id), isFalse, reason: id);
+    }
+  });
+  test('an invalid id is refused', () async {
+    var userId = 'user1';
+    for (var entityId in ['', 'a/b/c', '/type1_other/x', '..', '__x__']) {
+      await expectLater(
+        db.createEntity(
+          userId: userId,
+          entity: TestFsEntity()..name.v = 'e1',
+          entityId: entityId,
+        ),
+        throwsArgumentError,
+        reason: entityId,
+      );
+      expect(
+        () => db.joinEntity(
+          userId: userId,
+          entityId: entityId,
+          userAccess: TkCmsFsUserAccess()..admin.v = true,
+        ),
+        throwsArgumentError,
+        reason: entityId,
+      );
+      expect(
+        () => db.setEntityPublic(entityId, public: true),
+        throwsArgumentError,
+        reason: entityId,
+      );
+    }
+    // Nothing written, neither under the collection nor at the root.
+    expect((await firestore.doc('type1/a/b/c').get()).exists, isFalse);
+    expect((await firestore.doc('type1_other/x').get()).exists, isFalse);
+  });
   test('entity', () async {
     var entity = TestFsEntity()
       ..name.v = 'e1'

@@ -132,17 +132,21 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
     String entityId,
   ) => _entityTypeAccessDoc
       .collection(tkCmsFsEntityIdCollectionId)
-      .doc(entityId)
+      .doc(tkCmsCheckDocumentId(entityId, 'entityId'))
       .collection<TkCmsFsUserAccess>(tkCmsFsUserAccessCollectionId);
 
   /// The one to use as a reference for other users
   CvDocumentReference<TkCmsFsUserAccess> _entityUserAccessDoc(
     String entityId,
     String userId,
-  ) => _entityUserAccessColl(entityId).doc(userId);
+  ) => _entityUserAccessColl(
+    entityId,
+  ).doc(tkCmsCheckDocumentId(userId, 'userId'));
 
   CvDocumentReference<CvFirestoreDocument> _userAccessTop(String userId) =>
-      _entityTypeAccessDoc.collection(tkCmsFsUserIdCollectionId).doc(userId);
+      _entityTypeAccessDoc
+          .collection(tkCmsFsUserIdCollectionId)
+          .doc(tkCmsCheckDocumentId(userId, 'userId'));
 
   /// The one to use from the user side
   CvDocumentReference<TkCmsFsUserAccess> _userEntityAccessDoc(
@@ -150,14 +154,14 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
     String entityId,
   ) => _userAccessTop(userId)
       .collection<TkCmsFsUserAccess>(tkCmsFsEntityAccessCollectionId)
-      .doc(entityId);
+      .doc(tkCmsCheckDocumentId(entityId, 'entityId'));
 
   CvDocumentReference<TkCmsFsUserAccess> _userInviteAccessDoc(
     String userId,
     String inviteCode,
   ) => _userAccessTop(userId)
       .collection<TkCmsFsUserAccess>(tkCmsFsInviteAccessCollectionId)
-      .doc(inviteCode);
+      .doc(tkCmsCheckDocumentId(inviteCode, 'inviteCode'));
 
   CvCollectionReference<TkCmsFsInviteId> get _inviteIdCollection =>
       _entityTypeInviteDoc.collection<TkCmsFsInviteId>(
@@ -171,7 +175,7 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
       .collection<TkCmsFsInviteEntity<TFsEntity>>(
         tkCmsFsInviteEntityCollectionId,
       )
-      .doc(entityId);
+      .doc(tkCmsCheckDocumentId(entityId, 'entityId'));
 
   CvCollectionReference<TkCmsFsEmailInvite<TFsEntity>>
   get _emailInviteCollection =>
@@ -185,7 +189,7 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
 
   @override
   CvDocumentReference<TFsEntity> fsEntityRef(String entityId) =>
-      _entityCollection.doc(entityId);
+      _entityCollection.doc(tkCmsCheckDocumentId(entityId, 'entityId'));
 
   /// Helper to get the collection reference
   CvCollectionReference<TkCmsFsUserAccess> fsEntityUserAccessCollectionRef(
@@ -208,7 +212,7 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
     String entityId,
   ) => _entityTypeAccessDoc
       .collection(tkCmsFsEntityIdCollectionId)
-      .doc(entityId)
+      .doc(tkCmsCheckDocumentId(entityId, 'entityId'))
       .collection<TkCmsFsPublicAccess>(tkCmsPublicAccessFirestorePathPart)
       .doc(tkCmsPublicAccessPublicDocumentId);
 
@@ -248,11 +252,13 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
   CvDocumentReference<TkCmsFsUserAccess> fsUserEntityAccessRef(
     String userId,
     String entityId,
-  ) => fsUserEntityAccessCollectionRef(userId).doc(entityId);
+  ) => fsUserEntityAccessCollectionRef(
+    userId,
+  ).doc(tkCmsCheckDocumentId(entityId, 'entityId'));
 
   /// Helper to get the entity reference
   CvDocumentReference<TkCmsFsInviteId> fsInviteIdRef(String inviteId) =>
-      _inviteIdCollection.doc(inviteId);
+      _inviteIdCollection.doc(tkCmsCheckDocumentId(inviteId, 'inviteId'));
 
   /// Helper to get the entity reference
   CvDocumentReference<TkCmsFsInviteEntity<TFsEntity>> fsInviteEntityRef(
@@ -267,7 +273,7 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
   /// Email invite reference.
   CvDocumentReference<TkCmsFsEmailInvite<TFsEntity>> fsEmailInviteRef(
     String inviteId,
-  ) => _emailInviteCollection.doc(inviteId);
+  ) => _emailInviteCollection.doc(tkCmsCheckDocumentId(inviteId, 'inviteId'));
 
   String get _entityName => _info.name;
 
@@ -331,7 +337,9 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
     return await firestore.cvRunTransaction((txn) async {
       String? inviteId;
 
-      var entityRef = _entityCollection.doc(entityId);
+      var entityRef = _entityCollection.doc(
+        tkCmsCheckDocumentId(entityId, 'entityId'),
+      );
 
       userAccess.fixAccess();
       if (inviteCode == null) {
@@ -365,8 +373,11 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
       inviteEntity.entityId.v = entityId;
       inviteEntity.email.setValue(inviteEmail);
 
-      var inviteIdDoc = _inviteIdCollection.doc(inviteId).cv()
-        ..entityId.v = entityId;
+      var inviteIdDoc =
+          _inviteIdCollection
+              .doc(tkCmsCheckDocumentId(inviteId, 'inviteId'))
+              .cv()
+            ..entityId.v = entityId;
       var inviteIdMap = inviteIdDoc.toMapWithServerTimestamp();
       if (inviteCode != null) {
         inviteIdMap[tkCmsFsInviteCodeKey] = inviteCode;
@@ -432,7 +443,9 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
     return await firestore.cvRunTransaction((txn) async {
       var inviteEntityRef = _inviteEntityDoc(inviteId, entityId);
 
-      var inviteIdRef = _inviteIdCollection.doc(inviteId);
+      var inviteIdRef = _inviteIdCollection.doc(
+        tkCmsCheckDocumentId(inviteId, 'inviteId'),
+      );
       var inviteIdDoc = await txn.refGet(inviteIdRef);
       if (!inviteIdDoc.exists) {
         throw ArgumentError('Invite $inviteId not found');
@@ -498,7 +511,9 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
   }) async {
     return await firestore.cvRunTransaction((txn) async {
       var inviteEntityRef = _inviteEntityDoc(inviteId, entityId);
-      var inviteIdRef = _inviteIdCollection.doc(inviteId);
+      var inviteIdRef = _inviteIdCollection.doc(
+        tkCmsCheckDocumentId(inviteId, 'inviteId'),
+      );
       txn.refDelete(inviteEntityRef);
       txn.refDelete(inviteIdRef);
     });
@@ -555,7 +570,9 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
     }
 
     return await firestore.cvRunTransaction((txn) async {
-      var entity = await txn.refGet(_entityCollection.doc(entityId));
+      var entity = await txn.refGet(
+        _entityCollection.doc(tkCmsCheckDocumentId(entityId, 'entityId')),
+      );
       if (!entity.exists) {
         throw ArgumentError('$_entityName $entityId not found');
       }
@@ -758,12 +775,18 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
   }
 
   /// Create a project, return the id
+  ///
+  /// [entityId], when set, must be a valid document id
+  /// ([tkCmsIsValidDocumentId], never a path): an [ArgumentError] otherwise.
   Future<String> createEntity({
     required String? userId,
     required TFsEntity entity,
     String? entityId,
     String Function()? customIdGenerator,
   }) async {
+    if (entityId != null) {
+      tkCmsCheckDocumentId(entityId, 'entityId');
+    }
     entity.created.v ??= Timestamp.now();
     entity.active.v ??= true;
     return await firestore.cvRunTransaction((txn) async {
@@ -881,7 +904,9 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
 
   /// Mark as deleted, true if modified
   Future<bool> rootMarkAsDeleted(String entityId) async {
-    var entityRef = _entityCollection.doc(entityId);
+    var entityRef = _entityCollection.doc(
+      tkCmsCheckDocumentId(entityId, 'entityId'),
+    );
 
     return await firestore.cvRunTransaction((txn) async {
       var entity = await txn.refGet(entityRef);
@@ -949,7 +974,9 @@ class TkCmsFirestoreDatabaseServiceEntityAccess<TFsEntity extends TkCmsFsEntity>
     bool? force,
   }) async {
     force ??= false;
-    var entityRef = _entityCollection.doc(entityId);
+    var entityRef = _entityCollection.doc(
+      tkCmsCheckDocumentId(entityId, 'entityId'),
+    );
     var project = await firestore.refGet(entityRef);
     //if (!project.exists) {
     //  return;
