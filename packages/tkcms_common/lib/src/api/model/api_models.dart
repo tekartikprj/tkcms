@@ -100,6 +100,9 @@ class ApiGetInfoResult extends ApiResult {
   /// Debug mode.
   late final debug = CvField<bool>('debug');
 
+  /// True when the server is run by the Firebase functions emulator.
+  late final emulator = CvField<bool>('emulator');
+
   @override
   late final CvFields fields = [
     app,
@@ -110,6 +113,7 @@ class ApiGetInfoResult extends ApiResult {
     globalInstanceCallCount,
     instanceCallCount,
     debug,
+    emulator,
   ];
 }
 

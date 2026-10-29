@@ -1,4 +1,5 @@
 import 'package:tekartik_firebase_functions/firebase_functions.dart';
+import 'package:tekartik_firebase_functions_admin_sdk/functions_emulator.dart';
 import 'package:tkcms_common/firebase/firebase.dart';
 import 'package:tkcms_common/firebase/firestore.dart';
 import 'package:tkcms_common/server/server_common.dart';
@@ -248,7 +249,8 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
     var result = ApiGetInfoResult()
       ..app.setValue(app)
       ..version.setValue(version?.toString())
-      ..projectId.setValue(firebaseContext.projectId);
+      ..projectId.setValue(firebaseContext.projectId)
+      ..emulator.setValue(isFunctionsEmulator);
     var instanceCallCount = ++this.instanceCallCount;
     var globalInstanceCallCount = ++TkCmsServerAppV2.globalInstanceCallCount;
     if (debug) {

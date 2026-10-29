@@ -143,6 +143,7 @@ void main() {
           'g': 5,
           'i': 6,
           'debug': false,
+          'emulator': true,
         },
       );
     });
