@@ -129,16 +129,24 @@ class AppFlavorContext {
   /// True for local app.
   final bool local;
 
+  /// The unique app name given to the constructor, if any (kept by
+  /// [copyWith]).
+  final String? _explicitUniqueAppName;
+
+  /// The computed unique app name, once read (never copied).
   String? _uniqueAppName;
 
   /// App flavor context
+  ///
+  /// [uniqueAppName], when set, replaces the computed one.
   AppFlavorContext({
     required this.flavorContext,
     bool? local,
     required this.app,
     this.suffix,
-    this._uniqueAppName,
-  }) : local = local ?? false;
+    String? uniqueAppName,
+  }) : local = local ?? false,
+       _explicitUniqueAppName = uniqueAppName;
 
   /// Flavor suffix if not prod.
   String get ifNotProdSuffix => flavorContext.ifNotProdFlavor;
@@ -146,12 +154,15 @@ class AppFlavorContext {
   String get _suffix => suffix ?? '';
 
   /// Unique app name for local use (_dev or _prod)
-  String get uniqueAppName => _uniqueAppName ??= () {
-    var flavorSuffix1 = '_${flavorContext.flavor}$_suffix';
-    var flavorSuffix2 = '-${flavorContext.flavor}$_suffix';
-    var hasSuffix = app.endsWith(flavorSuffix1) || app.endsWith(flavorSuffix2);
-    return '$app${hasSuffix ? '' : flavorSuffix1}${local ? '_local' : ''}';
-  }();
+  String get uniqueAppName => _uniqueAppName ??=
+      _explicitUniqueAppName ??
+      () {
+        var flavorSuffix1 = '_${flavorContext.flavor}$_suffix';
+        var flavorSuffix2 = '-${flavorContext.flavor}$_suffix';
+        var hasSuffix =
+            app.endsWith(flavorSuffix1) || app.endsWith(flavorSuffix2);
+        return '$app${hasSuffix ? '' : flavorSuffix1}${local ? '_local' : ''}';
+      }();
 
   /// App key suffix.
   late final appKeySuffix = '_$uniqueAppName';
@@ -189,6 +200,9 @@ class AppFlavorContext {
   }
 
   /// Copy with
+  ///
+  /// The [suffix] is kept, and the unique app name when it was given
+  /// explicitly; a computed one is computed again for the copy.
   AppFlavorContext copyWith({
     String? appId,
     FlavorContext? flavorContext,
@@ -199,7 +213,8 @@ class AppFlavorContext {
       flavorContext: flavorContext ?? this.flavorContext,
       local: local ?? this.local,
       app: appId ?? app,
-      uniqueAppName: uniqueAppName ?? _uniqueAppName,
+      suffix: suffix,
+      uniqueAppName: uniqueAppName ?? _explicitUniqueAppName,
     );
   }
 

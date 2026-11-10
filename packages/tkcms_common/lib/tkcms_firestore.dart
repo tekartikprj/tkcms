@@ -1,5 +1,11 @@
 // ignore_for_file: depend_on_referenced_packages
 
+/// Firestore entities with a per user access ([TkCmsFsEntity],
+/// [TkCmsFirestoreDatabaseServiceEntityAccess]: create, invites, public flag,
+/// purge), the app paths ([fsAppRoot]...) and the user access models.
+/// Exports `tkcms_firebase.dart` too.
+library;
+
 export 'package:cv/cv_json.dart';
 export 'package:tekartik_app_cv_firestore/app_cv_firestore.dart';
 export 'package:tekartik_firebase_firestore/firestore.dart';

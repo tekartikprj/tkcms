@@ -1,5 +1,14 @@
 // ignore_for_file: depend_on_referenced_packages
 
+/// The tkcms api: the request envelope and its models ([ApiRequest],
+/// [ApiQuery], [ApiResult], [ApiError], [ApiException]), the client
+/// [TkCmsApiServiceBaseV2] (callable or https), the secured options and the
+/// server aligned clock [TkCmsTimestampService].
+///
+/// Call [initApiBuilders] (the service bases do) and register your own
+/// models with `cvAddConstructors` before decoding.
+library;
+
 export 'package:cv/cv_json.dart';
 export 'package:tekartik_http/http_client.dart';
 

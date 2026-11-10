@@ -110,13 +110,14 @@ FirebaseContext initFirebaseSimMemory({
   );
 }
 
-/// Init new memory services and context.
+/// Init new memory services and context, a new one at each call, kept as the
+/// global context ([firebaseContextSimOrNull]).
 FirebaseContext initNewFirebaseSimMemory({
   required String projectId,
 
   /// Unused
   String? packageName,
 }) {
-  return firebaseContextSimOrNull ??= initFirebaseServicesSimMemorySync()
+  return firebaseContextSimOrNull = initFirebaseServicesSimMemorySync()
       .initSync(appOptions: FirebaseAppOptions(projectId: projectId));
 }

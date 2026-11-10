@@ -95,7 +95,18 @@ the models, the paths and the typed service that keeps the two sides in sync.
   invite to that user (normalized with `tkCmsNormalizeInviteEmail`); it is a
   convenience check on client supplied data, not an authentication. Invites
   older than `tkCmsInviteEntityExpirationDefault` (7 days) are removed by
-  `deleteOldInvites()`.
+  `deleteOldInvites()` (the cron): accepting does not check the age. With an
+  `inviteCode`, `createInviteEntity` checks neither the inviter nor the
+  entity (server and tools only).
+* Addressed invites (server side, api only): `createEmailInviteEntity(userId:,
+  entityId:, email:, userAccess:)`, `acceptEmailInviteEntity(userId:, email:,
+  inviteId:)` (the caller verified the email), `discardEmailInviteEntity`,
+  `deleteEmailInviteEntity`, `listEntityEmailInvites` (inviter side) and
+  `listEmailInvites(email)` (invitee side).
+* Ids: the access service refuses an entity, user or invite id that is not a
+  document id (`tkCmsCheckDocumentId`: no `/`, not `.` or `..`): an
+  `ArgumentError`. The basic and doc accessors below do not check: check a
+  client id yourself before using them.
 * Access rights are the `read`/`write`/`admin` bools plus an informative
   `role` (`TkCmsCvUserAccessMixin`). `fixAccess()` derives write from admin and
   read from write — call it (or use `grantAdminAccess()`,
@@ -122,7 +133,9 @@ the models, the paths and the typed service that keeps the two sides in sync.
   `TkCmsFirestoreDatabaseServiceBasicEntityAccessor<T>`, or the raw document
   variant `TkCmsFirestoreDatabaseDocEntityCollectionInfo<T>` +
   `TkCmsFirestoreDatabaseServiceDocEntityAccessor<T>`.
-* Local mirror (`tkcms_sembast.dart`): `cvDbEntityStore` (`TkCmsDbEntity`) and
+* Local mirror (`tkcms_sembast.dart`), **legacy**: new local database code
+  uses sdb (`package:idb_shim` sdb, `tekaly_sdb_synced`), not this sembast
+  layer. `cvDbEntityStore` (`TkCmsDbEntity`) and
   `cvDbUserAccessStore` (`TkCmsDbUserAccess`) hold what the user may see,
   `initTkCmsEntityBuilders()` registers them.
   `SembastFirestoreSyncHelper<T>(db:, entityAccess:, options:
@@ -282,18 +295,19 @@ Future<void> mirror<T extends TkCmsFsEntity>(
   String userId,
 ) async {
   var db = await newDatabaseFactoryMemory().openDatabase('local.db');
-  var localDb = LocalDbSembast(db: db); // registers the db builders
 
+  // Registers the db builders (the helper does it too).
+  initTkCmsEntityBuilders();
   var helper = SembastFirestoreSyncHelper<T>(
-    db: localDb.db,
+    db: db,
     entityAccess: access,
     options: LocalDbFromFsOptions(userId: userId),
   );
   // One pass over `access/<type>/user_id/<userId>/entity_access`.
   await helper.generateLocalDbFromEntitiesUserAccess();
 
-  for (var entity in await cvDbEntityStore.find(localDb.db)) {
-    var userAccess = await cvDbUserAccessStore.record(entity.id).get(localDb.db);
+  for (var entity in await cvDbEntityStore.find(db)) {
+    var userAccess = await cvDbUserAccessStore.record(entity.id).get(db);
     print('${entity.id} ${entity.name.v} write: ${userAccess?.isWrite}');
   }
   await db.close();

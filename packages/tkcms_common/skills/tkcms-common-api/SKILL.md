@@ -76,7 +76,9 @@ added in one place and reached over either transport.
   override `onCommand(apiRequest)`, always delegating the unknown command to
   `super.onCommand` which answers `echo`, `secured`, `timestamp`, `info`,
   `cron` and `auth/me`. `TkAppCmsServerAppBase(app, context:, ...)` adds the
-  app name and an `appFlavorContext`.
+  app name, an `appFlavorContext` and the `app-user/*` commands. `cron`
+  (`onCronCommand`) is reached by any client of the https function: keep it
+  idempotent and cheap.
 * `initFunctions()` must be called before serving: it picks the function names
   from the flavor (`functionCommandV2Dev` = `commandv2dev` and
   `callableFunctionCommandV2Dev` = `callcommandv2dev` on dev/devx,
@@ -91,11 +93,20 @@ added in one place and reached over either transport.
   password:, version:)` on both sides (`securedOptions.add(command, options)`
   or `addCommands([...], options)`), then call `getSecuredApiResult<R>(request)`
   on the client and override `onSecuredCommand` on the server. The request
-  travels as an `apiCommandSecured` (`'secured'`) request whose data is the
-  encrypted inner one. `apiSecuredEncOptionsVersion2` hashes a server
-  timestamp, so it needs `securedOptions.timestampServiceOrNull` (already set:
-  the api service is itself a `TkCmsTimestampProvider`, the server uses
-  `TkCmsTimestampService.local()`).
+  travels as an `apiCommandSecured` (`'secured'`) request holding the inner
+  request **in clear** and `enc`, computed from the `encPaths` values of the
+  inner data. `apiSecuredEncOptionsVersion2` also
+  hashes a server aligned timestamp (checked within 5 minutes), so it needs
+  `securedOptions.timestampServiceOrNull` (already set: the api service is
+  itself a `TkCmsTimestampProvider`, the server uses
+  `TkCmsTimestampService.local()`). The password is 16, 24 or 32 characters
+  (AES key) and every client holds it.
+* A secured command is a speed bump against casual abuse, never the check
+  that protects data: use the callable with a signed in user and server side
+  checks for that. `onSecuredCommand` sees the user id of the transport
+  (verified on the callable, null on https), never one written in the inner
+  request. An unknown secured command answers `secured options not found`
+  (`noRetry`).
 * `TkCmsTimestampService.withProvider(timestampProvider:)` fetches the time
   once and offsets it with a stopwatch, fetching again after
   `refreshInterval` (1 hour by default): use `now()` for a server aligned
@@ -105,6 +116,7 @@ added in one place and reached over either transport.
 * Debug: `debugWebServices = true` logs every call, `debugTkCmsApiFull = true`
   logs the full body instead of a summary.
 * Anti-patterns: trusting `apiRequest.apiUserId` on the http transport;
+  relying on a secured command to protect data or money (see above);
   throwing a bare `Exception` out of a handler (wrap it so the client gets a
   code); forgetting `cvAddConstructor` for a custom query/result (it then
   decodes empty); calling `initFunctions()` twice or serving without it.
@@ -244,14 +256,17 @@ Future<void> callIt(TkCmsApiServiceBaseV2 apiService) async {
 
 ### A secured command
 
-Both sides declare the same options; the client encrypts, the server unwraps.
+Both sides declare the same options; the client signs, the server checks.
+`encPaths` name fields of the inner data (string, int, bool or null values):
+here the `timestamp` of the echo query.
 
 ```dart
 import 'package:tkcms_common/tkcms_server.dart';
 
 final myCommandSecuredOptions = ApiSecuredEncOptions(
   encPaths: ['timestamp'],
-  password: 'a-32-characters-long-shared-secret',
+  // 16, 24 or 32 characters; every client holds it, see above.
+  password: 'replace-with-your-32-char-secret',
   version: apiSecuredEncOptionsVersion2,
 );
 
@@ -263,16 +278,20 @@ class MySecuredServerApp extends TkCmsServerAppV2 {
 
   @override
   Future<ApiResult> onSecuredCommand(ApiRequest apiRequest) async {
-    // Reached once the payload is decrypted and the timestamp checked.
+    // Reached once enc and the timestamp are checked; apiRequest.apiUserId
+    // is the transport's (null on https).
     return await super.onSecuredCommand(apiRequest);
   }
 }
 
 Future<void> securedEcho(TkCmsApiServiceBaseV2 apiService) async {
   apiService.securedOptions.add(apiCommandEcho, myCommandSecuredOptions);
+  var query = ApiEchoQuery()
+    ..timestamp.v = DateTime.timestamp().toIso8601String()
+    ..data.v = <String, Object?>{'hello': 'world'};
   var result = await apiService.getSecuredApiResult<ApiEchoResult>(
-    (ApiEchoQuery()..data.v = <String, Object?>{}).request(apiCommandEcho),
+    query.request(apiCommandEcho),
   );
-  print(result.timestamp.v);
+  print('${result.timestamp.v} ${result.data.v}');
 }
 ```

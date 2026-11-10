@@ -34,7 +34,8 @@ to.
 
 * Import `package:tkcms_common/tkcms_firebase.dart` (contexts, every
   initializer, and `package:tekartik_firebase/firebase.dart` with it) and
-  `package:tkcms_common/tkcms_flavor.dart` (flavors). Node/admin-sdk only:
+  `package:tkcms_common/tkcms_flavor.dart` (flavors). The Dart admin SDK
+  (`firebase_admin_sdk`, Dart VM only):
   `package:tkcms_common/firebase/admin_sdk.dart`. Never import `src/`.
 * It is always two steps: build a `FirebaseServicesContext` (which *services*
   exist: firestore, auth, storage, functions, functions call) then turn it into
@@ -48,8 +49,8 @@ to.
   | `initFirebaseServicesLocalSembast(databaseFactory:, projectId:, isWeb:, useHttpFunctions:)` | local, sembast persisted |
   | `initFirebaseServicesLocalSdb(sdbFactory:, projectId:, isWeb:, useHttpFunctions:)` | local, idb_shim `sdb` persisted |
   | `await initFirebaseServicesRest(appOptions:)` | REST, against a real project or the emulators |
-  | `initFirebaseServicesAdminSdk()` | node, firebase admin sdk |
-  | `await initFirebaseServicesMemoryAdminSdk()` | node admin sdk shape, in memory |
+  | `initFirebaseServicesAdminSdk()` | Dart VM, the Dart admin SDK (application default credentials) |
+  | `await initFirebaseServicesMemoryAdminSdk()` | in memory, functions served by the admin SDK http server (tests) |
 
 * Then one of `init(...)` (prefer it: it also builds `functionsCall`),
   `initServer({firebaseApp})` (the cloud functions side, no `functionsCall`) or
@@ -58,8 +59,10 @@ to.
   `name`; when an `ffServer` is passed its uri becomes the callable base uri,
   which is how an in-process server and its client are wired in a test.
 * `initFirebaseSimMemory(projectId:)` and `initNewFirebaseSimMemory(projectId:)`
-  are shortcuts that return a `FirebaseContext` directly (the first one caches
-  it in the global `firebaseContextSimOrNull`, the second always builds one).
+  are shortcuts that return a `FirebaseContext` directly (the first one reuses
+  the global `firebaseContextSimOrNull`, the second always builds a new one
+  and makes it the global one). Both come without an auth (unlike
+  `initFirebaseServicesMemory()`): `context.auth` throws there.
   `TkCmsFirebaseContext.fromApp(firebaseApp:)` builds a context from an app
   whose products are already registered (the flutter side).
 * On the context: `firestore`, `auth`, `storage`, `functions`, `functionsCall`
@@ -91,7 +94,9 @@ to.
   `_<uniqueAppName>`, `appId` is the raw `app`. Build one from a flavor with
   `flavorContext.toAppFlavorContext(baseAppId: 'myapp')` (that one is
   `myapp-dev`) or use the ready made `AppFlavorContext.test` /
-  `AppFlavorContext.testLocal`.
+  `AppFlavorContext.testLocal`. `copyWith(appId:, flavorContext:, local:,
+  uniqueAppName:)` keeps the `suffix` and an explicit `uniqueAppName`, and
+  computes the others again for the copy.
 * Anti-patterns: calling `initSync()` on the rest services context (it needs the
   async app initialization), reusing one context across flavors (use
   `copyWith`/a second context), and writing `'myapp_$flavor'` by hand instead of
@@ -118,7 +123,7 @@ Future<void> main() async {
 }
 ```
 
-### A local, persisted firebase (the package `example/main.dart`)
+### A local, persisted firebase (the package `example/local_server.dart`)
 
 `getDatabaseFactory()` comes from `package:tekartik_app_sembast/sembast.dart`;
 on the web or on node use the factory of that platform instead.

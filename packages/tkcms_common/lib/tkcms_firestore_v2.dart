@@ -1,5 +1,10 @@
 // ignore_for_file: depend_on_referenced_packages
 
+/// Same as `tkcms_firestore.dart` (without the firebase context exports),
+/// plus the basic and doc entity accessors for types without access rows
+/// (they do not check the ids: see [tkCmsCheckDocumentId]).
+library;
+
 export 'package:cv/cv_json.dart';
 export 'package:tekartik_app_cv_firestore/app_cv_firestore.dart';
 export 'package:tekartik_firebase_firestore/firestore.dart';

@@ -92,8 +92,9 @@ class TimeService {
             '[time_sync] server: $serverTime, local: $now, offset: $offsetMs, diff: $diff',
           );
         }
-        // less than 1 second, take it
-        if (diff < 1000 || offsetMs > diff) {
+        // less than 1 second, or an offset (ahead or behind) larger than the
+        // round trip, take it
+        if (diff < 1000 || offsetMs.abs() > diff) {
           _needFix = false;
           offsetFromServerTimestampMs = offsetMs;
           _offsetSubject.add(offsetMs);

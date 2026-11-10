@@ -187,11 +187,22 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
   );
 
   /// Handle secured command.
+  ///
+  /// The inner request gets the user id of [apiRequest], the one of the
+  /// transport (set from the verified auth on the callable, cleared on http):
+  /// a user id written in the inner request by the client is never trusted.
   Future<ApiResult> handleSecuredCommandRequest(ApiRequest apiRequest) async {
     try {
-      var options = securedOptions.getOrThrow(
-        apiRequest.securedInnerRequestCommand,
-      );
+      var command = apiRequest.securedInnerRequestCommand;
+      var options = securedOptions.get(command);
+      if (options == null) {
+        // Never the registered options in the answer.
+        throw ApiException(
+          error: ApiError()
+            ..message.v = 'secured options not found for $command'
+            ..noRetry.v = true,
+        );
+      }
       late ApiRequest innerRequest;
       if (options.version == apiSecuredEncOptionsVersion1) {
         innerRequest = securedOptions.unwrapSecuredRequest(apiRequest);
@@ -207,6 +218,7 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
       } else {
         throw StateError('Invalid encoding options');
       }
+      innerRequest.userId.setValue(apiRequest.userId.v);
 
       return await onSecuredCommand(innerRequest);
     } catch (e, st) {
@@ -221,6 +233,9 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
   }
 
   /// Handle command once unwrapped.
+  ///
+  /// [apiRequest] is the inner request, with the user id of the transport
+  /// (null on https).
   Future<ApiResult> onSecuredCommand(ApiRequest apiRequest) async {
     switch (apiRequest.command.v!) {
       case apiCommandEcho:
@@ -269,6 +284,9 @@ class TkCmsServerAppV2 implements TkCmsCommonServerApp {
   }
 
   /// Cron command.
+  ///
+  /// Reached by any client of the https function (no caller check): keep it
+  /// idempotent and cheap.
   Future<ApiResult> onCronCommand(ApiRequest apiRequest) async {
     return ApiEmpty();
   }

@@ -1,3 +1,9 @@
+/// The legacy local sembast mirror of the entities a user can access
+/// (`cvDbEntityStore`, `cvDbUserAccessStore`, `SembastFirestoreSyncHelper`,
+/// `SyncedEntitiesDb`). New local database code uses sdb
+/// (`package:idb_shim` sdb, `tekaly_sdb_synced`).
+library;
+
 import 'package:sembast/timestamp.dart';
 
 export 'package:sembast/sembast.dart';

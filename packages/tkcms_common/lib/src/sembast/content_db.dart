@@ -102,10 +102,11 @@ class ContentDb {
 
   /// Close db
   Future<void> close() async {
+    // Nothing was opened before ready.
     if (_initialized) {
       await ready;
+      await _syncedDb.close();
     }
-    await _syncedDb.close();
   }
 
   @override

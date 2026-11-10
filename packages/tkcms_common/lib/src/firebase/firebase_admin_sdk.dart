@@ -14,7 +14,9 @@ import 'package:tekartik_http/http_memory.dart';
 import 'package:tkcms_common/tkcms_common.dart';
 import 'package:tkcms_common/tkcms_firebase.dart';
 
-/// Admin sdk based services.
+/// Admin sdk based services: the Dart admin SDK (`firebase_admin_sdk`),
+/// Dart VM only, with the application default credentials or a service
+/// account.
 FirebaseServicesContext initFirebaseServicesAdminSdk() {
   var firebase = firebaseAdminSdk;
   var firestoreService = firestoreServiceAdminSdk;

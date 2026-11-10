@@ -77,6 +77,34 @@ void main() {
     );
     expect(appFlavorContext.uniqueAppName, 'myapp_dev_v2_local');
   });
+  test('copyWith', () {
+    var appFlavorContext = AppFlavorContext(
+      app: 'myapp',
+      flavorContext: FlavorContext.dev,
+      suffix: '_v2',
+    );
+    // Before and after the unique app name is read (toString reads it).
+    for (var i = 0; i < 2; i++) {
+      if (i == 1) {
+        expect(appFlavorContext.toString(), contains('myapp_dev_v2'));
+      }
+      var copy = appFlavorContext.copyWith(flavorContext: FlavorContext.prod);
+      expect(copy.suffix, '_v2');
+      expect(copy.uniqueAppName, 'myapp_prod_v2');
+      expect(
+        appFlavorContext.copyWith(appId: 'other').uniqueAppName,
+        'other_dev_v2',
+      );
+      expect(
+        appFlavorContext.copyWith(local: true).uniqueAppName,
+        'myapp_dev_v2_local',
+      );
+    }
+    // An explicit unique app name is kept by the next copies.
+    var named = appFlavorContext.copyWith(uniqueAppName: 'myapp_named');
+    expect(named.uniqueAppName, 'myapp_named');
+    expect(named.copyWith(local: true).uniqueAppName, 'myapp_named');
+  });
   test('tkCmsFlavorContextFromHost', () {
     expect(tkCmsFlavorContextFromHost('dev.example.com'), FlavorContext.dev);
     expect(tkCmsFlavorContextFromHost('prod.example.com'), FlavorContext.prod);

@@ -19,7 +19,14 @@ const apiSecuredEncOptionsVersion1 = 1;
 /// enc paths and timestamp encoding
 const apiSecuredEncOptionsVersion2 = 2;
 
-/// Encoding options
+/// Encoding options of a secured command, the same on the client and the
+/// server.
+///
+/// The inner request travels in clear; `enc` covers the [encPaths] values of
+/// its data (and a server aligned timestamp in
+/// [apiSecuredEncOptionsVersion2]). Every client holds [password] (16, 24 or
+/// 32 characters): it is a speed bump against casual abuse, not an
+/// authentication.
 class ApiSecuredEncOptions {
   /// version
   final int version;

@@ -256,7 +256,8 @@ abstract class AuthBlocBase implements TkCmsAuthBloc {
         // ignore: avoid_print
         print('listen to userId $userId');
       }
-      _loggedInUserSubscription = fsAppUserAccessCollection(app)
+      // Cancelled when the user changes (_cancelUserAccessSubscription).
+      _loggedInUserAccessSubscription = fsAppUserAccessCollection(app)
           .doc(userId)
           .onSnapshotSupport(
             firestore,
