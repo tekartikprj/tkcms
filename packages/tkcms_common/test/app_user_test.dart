@@ -40,8 +40,13 @@ KvStore _newKvStore() {
   var map = <String, String>{};
   return KvStore(
     getString: (key) async => map[key],
-    setString: (key, value) async => map[key] = value,
-    remove: (key) async => map.remove(key),
+    setString: (key, value) async {
+      if (value == null) {
+        map.remove(key);
+      } else {
+        map[key] = value;
+      }
+    },
   );
 }
 
