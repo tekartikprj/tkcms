@@ -4,7 +4,9 @@ description: >-
   Use when checking that a tkcms api deployment behaves - run the shared server
   suite testServerTest(initContext) from tkcms_test against a memory server, a
   firebase emulator or a real deployment: TestApiContext, TestServerContext,
-  initAllMemory, TestServerApiService (test, securedEchoV1/V2/V3),
+  initAllMemory, TestServerApiService (test, securedEchoV1/V2/V3,
+  securedWhoAmI), the secured command user id and unknown secured command
+  checks,
   TkCmsTestServerApp, ApiTestQuery (doThrowNoRetry, doThrowBefore),
   ApiTestResult, commandTest, initTestApiBuilders and the
   client/serverTestServerSecuredOptions.
@@ -45,9 +47,13 @@ server, a firebase emulator, a node deployment or a dart-runtime one.
 * What it checks: `httpTimestamp`, `callTimestamp` and `timestamp` (parsable
   server time over both transports), `echo` and the three secured echo
   variants, `callAuthMe` (the uid seen by the server matches the signed-in
-  user, and is null after `signOut`), and the retry contract over http and
-  callable — a `noRetry` error must fail in under 3s, a plain failure must be
-  retried for more than 2s and then succeed.
+  user, and is null after `signOut`), the secured command user id (over the
+  callable a secured command sees the caller, never a user id written in the
+  inner request; over http none), an unknown secured command (a `noRetry`
+  error naming it, never the registered commands and their options), and
+  the retry contract over http and callable — a `noRetry` error must fail in
+  under 3s, a plain failure must be retried for more than 2s and then
+  succeed.
 * Build the context with `TestApiContext(apiService:, credentials:,
   firebaseAuth:)`. `apiService` is required; `credentials` and `firebaseAuth`
   are optional and the `callAuthMe` test simply prints "skipped" when either
@@ -64,23 +70,36 @@ server, a firebase emulator, a node deployment or a dart-runtime one.
 * The server side must be a `TkCmsTestServerApp` (or a subclass): the suite
   calls commands a plain `TkCmsServerAppV2` does not know — `commandTest`
   (`'test'`) and the secured `echo_v1` / `echo_v2` / `echo_v1_client_v2_server`
-  ones. `TkCmsTestServerApp(context:)` pins `apiVersion2`, calls
+  ones, and `test_secured_whoami` (`apiCommandTestSecuredWhoAmI`, answers
+  the user id the secured command sees). A server deployed before a suite
+  test was added fails it until it is deployed again with the current
+  `tkcms_common` and `tkcms_test`. `TkCmsTestServerApp(context:)` pins
+  `apiVersion2`, calls
   `initTestApiBuilders()` and installs `serverTestServerSecuredOptions`.
 * Likewise the client must be a `TestServerApiService(httpClientFactory:,
   app:, httpsApiUri:, callableApi:)`, not a bare `TkCmsApiServiceBaseV2`: it
   installs `clientTestServerSecuredOptions` and adds `test(query,
-  {preferHttp})`, `securedEchoV1/V2/V3(query)` on top of the standard api. Give
+  {preferHttp})`, `securedEchoV1/V2/V3(query)` and `securedWhoAmI({innerUserId,
+  preferHttp})` on top of the standard api. Give
   it both `httpsApiUri` and `callableApi` when the deployment has both — the
   suite exercises each transport.
 * The v3 command (`apiCommandTestEchoV3`) is deliberately asymmetric: the
   client encrypts with v1 options and the server decodes with v2, which is how
+  the client encrypts with v1 options and the server decodes with v2, which is how
   the backward compatibility of the secured envelope is checked. Do not
-  "fix" it by aligning the two option sets.
+  "fix" it by aligning the two option sets. It also means a v2 command
+  accepts a v1 request (no freshness check): if v2 commands ever refuse v1
+  requests, this test changes with them.
 * `ApiTestQuery` drives the failure paths: `doThrowNoRetry.v = true` makes the
   server throw an `ApiException` carrying `noRetry`, `doThrowBefore.v =
   <iso8601>` makes it throw until that timestamp is passed. `ApiTestResult` is
   empty. Register them with `initTestApiBuilders()` if you build the models
   yourself.
+* On the memory (http) backend the callable caller is an unauthenticated
+  header honoured only with asserts enabled
+  (`debugFirebaseFunctionsHttpAllowCallUidHeader`): `dart test` enables
+  them, a plain `dart run` of a suite file does not (`--enable-asserts`), and
+  `callAuthMe` and the secured user id tests then fail.
 * Set `debugWebServices = true` (from `tkcms_common/tkcms_api.dart`) before
   `testServerTest` to log every request and response while debugging a
   deployment.

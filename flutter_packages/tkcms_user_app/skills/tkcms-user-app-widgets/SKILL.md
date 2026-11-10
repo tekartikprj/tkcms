@@ -46,6 +46,11 @@ second tap is ignored.
   (re-export of `tekartik_app_rx_bloc_flutter/app_rx_flutter.dart`).
   `lib/main.dart` is the untouched Flutter counter template left by
   `flutter create`: never import it.
+* The package is on `material_ui` (`package:material_ui/material_ui.dart`),
+  not Flutter's material library: `themeData1()` returns material_ui's
+  `ThemeData`, a class of its own, that Flutter's `MaterialApp` refuses.
+  Build the app on material_ui too (`material_ui: ">=1.5.0"`), never import
+  `package:flutter/material.dart` (deprecated on the beta channel).
 * `themeData1({TextTheme? textTheme})` returns a **dark** Material theme
   seeded on `colorBlue` (`Colors.blue`) with `adaptivePlatformDensity`, a
   floating blue snack bar, outlined inputs with always floating labels, grey
@@ -56,8 +61,8 @@ second tap is ignored.
   `colorWhite`, `colorError` (red) and `colorGrey`. Other tekartik theme
   packages also export a `themeData1`: import with `show` or a prefix when
   both are in scope.
-* `BodyContainer({child, width = 840})` centers its child in a fixed width
-  box: wrap every tile, form or list item with it so wide screens keep a
+* `BodyContainer({child, width = 840})` centers its child in a box at most
+  `width` wide (the full width on a narrower screen): wrap every tile, form or list item with it so wide screens keep a
   readable column, and put it *inside* the `ListView` (one per item), not
   around it, or the list loses its full width scroll area. `BodyHPadding`
   adds the 16 px horizontal padding used for text fields inside a
@@ -106,7 +111,7 @@ second tap is ignored.
 ### The app theme
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:tkcms_user_app/theme/theme1.dart';
 
 void main() {
@@ -130,7 +135,7 @@ class MyApp extends StatelessWidget {
 ### A screen with a bloc, a busy action and the indicator
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:tkcms_user_app/tkcms_audi.dart';
 import 'package:tkcms_user_app/view/body_container.dart';
 import 'package:tkcms_user_app/view/body_h_padding.dart';
@@ -228,7 +233,7 @@ Future<void> goToCounterScreen(BuildContext context) async {
 ### Busy state on a plain State
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:tkcms_user_app/view/busy_screen_state_mixin.dart';
 import 'package:tkcms_user_app/view/rx_busy_indicator.dart';
 

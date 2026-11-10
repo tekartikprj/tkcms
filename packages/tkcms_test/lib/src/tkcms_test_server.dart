@@ -40,6 +40,10 @@ class TkCmsTestServerApp extends TkCmsServerAppV2 {
         return onEchoCommand(apiRequest);
       case apiCommandTestEchoV3:
         return onEchoCommand(apiRequest);
+      case apiCommandTestSecuredWhoAmI:
+        return Future.value(
+          ApiAuthMeResult()..uid.setValue(apiRequest.apiUserId),
+        );
     }
     return super.onSecuredCommand(apiRequest);
   }

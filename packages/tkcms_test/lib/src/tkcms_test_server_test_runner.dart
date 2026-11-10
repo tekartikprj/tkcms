@@ -217,6 +217,72 @@ void testServerTest(Future<TestApiContext> Function() initAllContext) {
     expect(result.data.v, {'message': 'hello'});
     expect(result.timestamp.v, timestamp);
   });
+  group('secured command user id', () {
+    test('callable: the caller, never the inner request one', () async {
+      var auth = context.firebaseAuth;
+      var credentials = context.credentials;
+      if (apiService.callableApi == null ||
+          auth == null ||
+          credentials == null) {
+        markTestSkipped('no callable, auth or credentials');
+        return;
+      }
+      var userId = (await auth.signInWithCredentials(credentials)).user.uid;
+      try {
+        var result = await apiService.securedWhoAmI();
+        expect(result.uid.v, userId);
+        result = await apiService.securedWhoAmI(innerUserId: 'other_user');
+        expect(result.uid.v, userId);
+      } finally {
+        await auth.signOut();
+      }
+      var result = await apiService.securedWhoAmI(innerUserId: 'other_user');
+      expect(result.uid.v, isNull);
+    });
+    test('http: a user id written in the inner request is ignored', () async {
+      var result = await apiService.securedWhoAmI(
+        innerUserId: 'other_user',
+        preferHttp: true,
+      );
+      expect(result.uid.v, isNull);
+    });
+  });
+  for (var preferHttp in [false, true]) {
+    var prefix = preferHttp ? 'http' : 'call';
+    test('$prefix unknown secured command', () async {
+      if (!preferHttp && apiService.callableApi == null) {
+        return;
+      }
+      // Not wrapped by the client (no options for it).
+      var securedRequest = apiService.fixRequestApp(
+        ApiRequest(
+          command: apiCommandSecured,
+          data: {
+            'data': {
+              'command': 'test_unknown_secured',
+              'data': <String, Object?>{},
+            },
+            'enc': 'none',
+          },
+        ),
+      );
+      try {
+        if (preferHttp) {
+          await apiService.httpGetApiResult<ApiEchoResult>(securedRequest);
+        } else {
+          await apiService.callGetApiResult<ApiEchoResult>(securedRequest);
+        }
+        fail('should fail');
+      } on ApiException catch (e) {
+        expect(e.error?.noRetry.v, isTrue);
+        var text = e.toString();
+        expect(text, contains('test_unknown_secured'));
+        // Neither the registered commands nor their passwords.
+        expect(text, isNot(contains(apiCommandTestEchoV2)));
+        expect(text, isNot(contains('EncPaths')));
+      }
+    });
+  }
   Future<void> securedEchoV2WithProvider(
     _TestTimestampProvider provider,
   ) async {

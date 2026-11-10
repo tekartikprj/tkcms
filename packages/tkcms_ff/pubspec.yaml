@@ -63,5 +63,10 @@ dev_dependencies:
       url: https://github.com/tekartik/build_node.dart
       path: packages/build_node
   dev_build: ">=1.1.8+2"
+  # deploy/functions/package.json npm constraints check
+  tekartik_firebase_node_test:
+    git:
+      url: https://github.com/tekartik/firebase_node.dart
+      path: firebase_node_test
 resolution: workspace
 

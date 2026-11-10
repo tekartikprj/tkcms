@@ -56,14 +56,20 @@ Dart VM when run locally — and serves them from a `bin/main.dart` that
   `commandv2prod`, `callcommandv2dev` / `callcommandv2prod`, and the
   `commanddart…` variants reserved for the dart runtime deployment). Serve
   last, after every `initFunctions()`.
-* Build: `dart run build_runner build --output build`. `build.yaml` compiles
-  `bin/**` only, with `compiler: dart2js` (never dartdevc), so the output is the
-  single JS file node can require. Copy it to `deploy/functions/index.js`.
-* Deploy from `deploy/`, not from the package root: it holds `firebase.json`,
-  `functions/index.js` and `functions/package.json` (node 22,
-  `firebase-admin` and `firebase-functions`). The dev dependencies
-  `tekartik_app_node_build` and `tekartik_app_node_build_menu` provide the
-  build/deploy menu used instead of running the commands by hand.
+* Build with `GcfNodeAppBuilder` of the dev dependency
+  `tekartik_app_node_build` (`gcf_build.dart`): `build()` compiles
+  `bin/main.dart` with dart2js, adds the node preamble and writes
+  `deploy/functions/index.js`. A plain `build_runner build` + copy has no
+  preamble: that `index.js` does not run on node. (`build.yaml` keeps the
+  `build_runner` builds of `bin/**` on dart2js.)
+* Deploy from `deploy/` (`builder.deployFunctions(functions: [...])` runs
+  `firebase deploy --only functions:...` there): `firebase.json` must declare
+  the functions source (`"functions": [{"source": "functions", ...}]`),
+  `functions/package.json` holds the npm dependencies, at least
+  `firebase-admin ^14.4.0` and `firebase-functions ^7.3.2` (functions_node
+  calls the v2 api of the root `firebase-functions` module, the v1 one before
+  firebase-functions 6). `test/package_json_test.dart` checks them
+  (`firebaseNodePackageJsonTests` of `tekartik_firebase_node_test`).
 * For local development you usually do not need this package: serve
   `TkCmsServerAppV2` from `tkcms_common` over a local sembast or memory
   services context, on the Dart VM. The dart runtime deployment lives in the
@@ -162,14 +168,21 @@ FirebaseApp initApp({required bool isNode}) {
 }
 ```
 
-### Build and deploy
+### Build and deploy (`tool/deploy.dart`)
 
-```bash
-# Compile bin/main.dart to JS (build.yaml restricts the build to bin/**).
-dart run build_runner build --output build
+```dart
+import 'package:tekartik_app_node_build/gcf_build.dart';
 
-# Copy the compiled entry point, then deploy from the deploy/ tree.
-cp build/bin/main.dart.js deploy/functions/index.js
-cd deploy
-firebase deploy --only functions
+Future<void> main() async {
+  var builder = GcfNodeAppBuilder(
+    options: GcfNodeAppOptions(projectId: 'my-project'),
+  );
+  // dart2js + node preamble: bin/main.dart -> deploy/functions/index.js
+  await builder.build();
+  await builder.npmInstallIfNeeded();
+  // firebase deploy --only functions:commandv2dev,callcommandv2dev in deploy/
+  await builder.deployFunctions(
+    functions: ['commandv2dev', 'callcommandv2dev'],
+  );
+}
 ```

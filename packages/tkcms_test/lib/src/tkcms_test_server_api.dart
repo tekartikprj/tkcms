@@ -21,10 +21,16 @@ const apiCommandTestEchoV1 = 'echo_v1';
 const apiCommandTestEchoV2 = 'echo_v2';
 const apiCommandTestEchoV3 = 'echo_v1_client_v2_server';
 
+/// Secured command answering the user id the server sees
+/// ([ApiAuthMeResult]): the transport one (the callable caller, none over
+/// http), never a user id written in the request.
+const apiCommandTestSecuredWhoAmI = 'test_secured_whoami';
+
 final baseTestServerSecuredOptions = TkCmsApiSecuredOptions()
   ..add(apiCommandEcho, apiCommandEchoSecuredOptions)
   ..add(apiCommandTestEchoV1, apiCommandEchoSecuredOptionsV1)
-  ..add(apiCommandTestEchoV2, apiCommandEchoSecuredOptionsV2);
+  ..add(apiCommandTestEchoV2, apiCommandEchoSecuredOptionsV2)
+  ..add(apiCommandTestSecuredWhoAmI, apiCommandEchoSecuredOptionsV2);
 
 final clientTestServerSecuredOptions = TkCmsApiSecuredOptions()
   ..addAll(baseTestServerSecuredOptions)
@@ -70,6 +76,25 @@ class TestServerApiService extends TkCmsApiServiceBaseV2 {
       data: query.toMap(),
     );
     return getSecuredApiResult<ApiEchoResult>(apiRequest);
+  }
+
+  /// The user id a secured command sees ([apiCommandTestSecuredWhoAmI]).
+  ///
+  /// [innerUserId] is written in the inner request (the server must ignore
+  /// it).
+  Future<ApiAuthMeResult> securedWhoAmI({
+    String? innerUserId,
+    bool? preferHttp,
+  }) async {
+    var apiRequest = ApiRequest(
+      command: apiCommandTestSecuredWhoAmI,
+      data: <String, Object?>{},
+      userId: innerUserId,
+    );
+    return getSecuredApiResult<ApiAuthMeResult>(
+      apiRequest,
+      preferHttp: preferHttp,
+    );
   }
 
   Future<ApiEchoResult> securedEchoV1(ApiEchoQuery query) async {
