@@ -8,13 +8,38 @@ import 'package:tkcms_common/tkcms_content.dart';
 
 import 'package:tkcms_common/tkcms_sembast.dart';
 
+/// [notes] with the pinned ones first, latest pinned first, the others in
+/// their order.
+List<DbNote> _notesPinnedFirst(List<DbNote> notes) {
+  var indexed = notes.indexed.toList();
+  indexed.sort((a, b) {
+    var aPinned = a.$2.pinned.v;
+    var bPinned = b.$2.pinned.v;
+    if (aPinned != null && bPinned != null) {
+      var compare = bPinned.compareTo(aPinned);
+      if (compare != 0) {
+        return compare;
+      }
+    } else if (aPinned != null) {
+      return -1;
+    } else if (bPinned != null) {
+      return 1;
+    }
+    return a.$1 - b.$1;
+  });
+  return indexed.map((item) => item.$2).toList();
+}
+
 class NotesScreenBlocState {
   final TkCmsEntityAndUserAccess? project;
+
+  /// The notes, pinned ones first (latest pinned first).
   final List<DbNote>? notes;
   String? firstPinnedNoteId;
   String? firstUnpinnedNoteId;
 
-  NotesScreenBlocState({required this.project, required this.notes}) {
+  NotesScreenBlocState({required this.project, required List<DbNote>? notes})
+    : notes = notes == null ? null : _notesPinnedFirst(notes) {
     var notes = this.notes;
     if (notes != null) {
       for (var note in notes) {

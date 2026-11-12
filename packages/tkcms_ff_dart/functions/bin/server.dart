@@ -63,7 +63,7 @@ void main(List<String> args) {
     var appProd = TkCmsTestServerApp(
       context: TkCmsServerAppContext(
         firebaseContext: fbContext,
-        flavorContext: FlavorContext.dev,
+        flavorContext: FlavorContext.prod,
       ),
     );
 

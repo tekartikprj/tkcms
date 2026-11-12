@@ -98,8 +98,12 @@ firebase project): read it, never import it.
   9. `globalContentBloc = ContentDbBloc()` when `goToNotesScreen` is used:
      nothing sets it, not even the demo `main`.
 * `MaterialApp(theme: themeData1(), home: TkCmsAdminStartScreen(),
-  localizationsDelegates: [...])` with `AppLocalizations.delegate`, the three
-  `Global*Localizations.delegate` of `flutter_localizations` and
+  localizationsDelegates: [...])` with `AppLocalizations.delegate`,
+  `...GlobalMaterialLocalizations.delegates` (from `material_ui`: the
+  material, widgets and cupertino ones; the app is on `material_ui`,
+  `themeData1()` returns its `ThemeData`: import
+  `package:material_ui/material_ui.dart`, never
+  `package:flutter/material.dart`) and
   `FirebaseUiAuthServiceBasicLocalizations.delegate` when the basic auth
   screens are used. `appIntl(context)` is `AppLocalizations.of(context)!`:
   without the delegate it throws a null check error. Locales `en` and `fr`,
@@ -161,8 +165,7 @@ firebase project): read it, never import it.
 
 ```dart
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:tekartik_app_prefs/app_prefs.dart';
 import 'package:tekartik_app_sembast/sembast.dart';
 import 'package:tekartik_firebase_ui_auth/ui_auth.dart';
@@ -248,9 +251,7 @@ class AdminApp extends StatelessWidget {
       localizationsDelegates: const [
         FirebaseUiAuthServiceBasicLocalizations.delegate,
         AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
+        ...GlobalMaterialLocalizations.delegates,
       ],
       supportedLocales: AppLocalizations.supportedLocales,
     );
@@ -284,7 +285,7 @@ void initAuth(FirebaseContext firebaseContext, AppFlavorContext flavor) {
 ### Requiring a login before a screen
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:tkcms_admin_app/auth/auth.dart';
 import 'package:tkcms_admin_app/screen/logged_in_screen.dart';
 import 'package:tkcms_admin_app/screen/login_screen.dart';
@@ -313,7 +314,7 @@ void openLoginThenAccount(BuildContext context) {
 ### Reading the user in a widget
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:tkcms_admin_app/audi/tkcms_audi.dart';
 import 'package:tkcms_admin_app/auth/auth.dart';
 import 'package:tkcms_common/tkcms_auth.dart';

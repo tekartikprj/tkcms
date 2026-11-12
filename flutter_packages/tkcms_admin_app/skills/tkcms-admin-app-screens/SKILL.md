@@ -52,7 +52,9 @@ of the setup skill (`gAuthBloc`, `fsProjectSyncedDb`, `globalContentBloc`).
   (`getTkCmsFbIdentityBloc()`, i.e. `FirebaseAuth.instance.onCurrentUser`),
   **not** `gAuthBloc`, and pops the route when the identity becomes null: it
   is meaningful with `TkCmsAuthBloc.firebase`; with the local auth bloc the
-  firebase user never changes.
+  firebase user never changes. It calls `Navigator.pop()`, which pops the
+  top route: with a dialog or a picker open over the screen, that one goes
+  instead.
 * Two `BusyIndicator`s exist: `view/busy_indicator.dart` takes a
   `ValueNotifier<bool>`, `tekartik_app_flutter_widget/view/busy_indicator.dart`
   (what the package screens use) takes the `ValueStream<bool>` `busyStream`
@@ -123,8 +125,9 @@ of the setup skill (`gAuthBloc`, `fsProjectSyncedDb`, `globalContentBloc`).
   when the product needs a different layout.
 * `goToNotesScreen(context, projectId)` needs `globalContentBloc` and the
   project in `fsProjectSyncedDb` (`getOrSyncEntity`, else an error icon);
-  it lists `dbNoteStore` of the project `ContentDb` with a pinned section
-  first; the add FAB (shown when `userAccess.isWrite`) and the tile taps
+  it lists `dbNoteStore` of the project `ContentDb`, the pinned notes
+  first (latest pinned first, `NotesScreenBlocState` sorts them) under a
+  "Pinned" header, the others after; the add FAB (shown when `userAccess.isWrite`) and the tile taps
   are not implemented. Build note editing on `ContentDb` yourself.
 * Anti-patterns: pushing `SyncedEntitiesScreen<T>()` without its
   `BlocProvider` (`BlocProvider.of` throws); passing an untyped
@@ -138,7 +141,7 @@ of the setup skill (`gAuthBloc`, `fsProjectSyncedDb`, `globalContentBloc`).
 ### A project menu screen following the pattern
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:tekartik_app_flutter_widget/mini_ui.dart';
 import 'package:tekartik_app_flutter_widget/view/busy_indicator.dart';
 import 'package:tekartik_app_flutter_widget/view/busy_screen_state_mixin.dart';
@@ -272,7 +275,7 @@ Future<void> goToProjectMenuScreen(BuildContext context) async {
 ### The generic screens on your own entity types
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:tkcms_admin_app/firebase/database_service.dart';
 import 'package:tkcms_admin_app/screen/basic_entities_screen.dart';
 import 'package:tkcms_admin_app/screen/doc_entities_screen.dart';

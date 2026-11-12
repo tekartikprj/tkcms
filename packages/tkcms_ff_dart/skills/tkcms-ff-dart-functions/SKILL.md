@@ -80,11 +80,20 @@ suites (firebase emulator, and an in-memory admin sdk http server).
   `start(options: FirebaseEmulatorOptions(onlyFunctions: true))`,
   `getProjectId()`, and address the functions at
   `http://localhost:5001/<projectId>/<region>/<functionName>`. Always stop the
-  emulator in the context `close()`.
+  emulator in the context `close()` (await `emulator.stop()`). With
+  `onlyFunctions` the emulated functions' admin sdk reaches the real
+  Firestore and Auth of that project, with the machine's credentials: for a
+  new test give `FirebaseEmulatorOptions` a `demo-` `projectId` and start the
+  firestore and auth emulators too (`onlyFirestore`, `onlyAuth`). The
+  package's own `test/emulator_test.dart` still uses the `.firebaserc`
+  project: run it on purpose only.
 * Deploy with `firebase deploy --only functions` from the package root (where
   `firebase.json` lives). There is no build step: the dart runtime compiles the
   `functions/` package itself.
-* Anti-patterns: registering the node function names; forgetting
+* Anti-patterns: building the app of the prod functions with
+  `FlavorContext.dev` (each flavor has its own user access paths: one app
+  per flavor, `FlavorContext.prod` for the `…Prod` names); registering the
+  node function names; forgetting
   `copyWith(firebaseApp: firebase.firebaseApp)` so the admin sdk services use
   the runtime's own app; declaring the https/callable options inline instead of
   as top-level constants; leaving the emulator running when a test fails.
@@ -197,9 +206,9 @@ class EmulatorApiContext extends TestApiContext {
   EmulatorApiContext({required this.emulator, required super.apiService});
 
   @override
-  Future<void> close() {
-    emulator.stop();
-    return super.close();
+  Future<void> close() async {
+    await emulator.stop();
+    await super.close();
   }
 }
 
