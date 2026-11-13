@@ -68,7 +68,7 @@ class TkCmsEntityAccessSetupApp<T extends TkCmsFsEntity> {
     this.adminCredentials,
   });
 
-  /// List users
+  /// Prints the user accesses of [entityId].
   Future<void> listUsers() async {
     var users = await entityAccess
         .fsEntityUserAccessCollectionRef(entityId)
@@ -80,7 +80,10 @@ class TkCmsEntityAccessSetupApp<T extends TkCmsFsEntity> {
     stdout.writeln('count: ${users.length}');
   }
 
-  /// Setup users
+  /// Grants super admin access of [entityId] to every [adminCredentials]:
+  /// by uid for a [TkCmsUidEmailPasswordCredentials], otherwise found by
+  /// email, or created, through the admin auth of the firebase context
+  /// (required then).
   Future<void> setupUsers() async {
     var users = adminCredentials;
     if (users != null) {

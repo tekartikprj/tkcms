@@ -50,23 +50,22 @@ class TkCmsFirestoreRulesManager {
     this.localPath = localPath ?? _defaultPath(app.projectId);
   }
 
-  /// Get Firestore rules from Firebase
+  /// The newest Firestore ruleset of the project (the first of the rules api
+  /// listing, not necessarily the released one); needs admin credentials.
   Future<TkCmsFirestoreRules> getFirestoreRules() async {
     var rules = await firebaseApp.getFirestoreRules();
     return TkCmsFirestoreRules(rules);
   }
 
-  /// Write Firestore rules to local file
+  /// Write [rules] to the local file ([localPath]).
   Future<void> writeFile(TkCmsFirestoreRules rules) async {
-    rules = await getFirestoreRules();
-
     var file = File(localPath);
     var dir = file.parent;
     await dir.create(recursive: true);
     await File(localPath).writeLines(rules.lines);
   }
 
-  /// Read Firestore rules from local file
+  /// The rules of the local file ([localPath]), null when it cannot be read.
   Future<TkCmsFirestoreRules?> readFile() async {
     try {
       var lines = await File(localPath).readLines();
@@ -91,7 +90,7 @@ void _firestoreRulesMenu({required TkCmsFirestoreRulesManager manager}) {
     stdout.writeln('Rules:\n${rules!.ioText}');
   });
   item('get and write rules to file (${manager.localPath})', () async {
-    rules ??= await manager.getFirestoreRules();
+    rules = await manager.getFirestoreRules();
 
     await manager.writeFile(rules!);
     stdout.writeln('Wrote rules to ${manager.localPath}');
