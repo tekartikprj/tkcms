@@ -5,12 +5,16 @@
 ///
 /// Only the callable transport carries a verified user
 /// ([ApiRequestExt.apiUserId]); it is cleared on https.
+///
+/// [initTkCmsMemoryBackend] runs a server in process on an in memory
+/// firebase ([TkCmsMemoryBackend]: the demo and the tests of an app).
 library;
 
 export 'package:tekartik_firebase_functions/firebase_functions.dart';
 export 'package:tkcms_common/tkcms_api.dart';
 export 'package:tkcms_common/tkcms_app_user.dart';
 
+export 'src/server/memory_backend.dart';
 export 'src/server/server_common.dart';
 export 'src/server/server_v1.dart';
 export 'src/server/server_v2.dart';

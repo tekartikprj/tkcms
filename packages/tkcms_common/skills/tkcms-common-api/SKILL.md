@@ -125,6 +125,15 @@ added in one place and reached over either transport.
 
 ### Server and client end to end, in memory
 
+An app's demo and tests use `initTkCmsMemoryBackend` (`tkcms_server.dart`),
+which does all of the below with a firebase app of its own per backend:
+`initTkCmsMemoryBackend(name:, projectId:, flavorContext:, serverApp:
+(context) => MyServerApp(context: context), apiService: (callableApi) =>
+MyApiService(..., callableApi: callableApi))`, a
+`TkCmsMemoryBackend<S, A>` (`firebaseContext`, `serverApp`, `apiService`,
+`close()`; one at a time, its functions server holds its port). The long
+form:
+
 ```dart
 import 'package:tkcms_common/tkcms_common.dart';
 import 'package:tkcms_common/tkcms_firebase.dart';

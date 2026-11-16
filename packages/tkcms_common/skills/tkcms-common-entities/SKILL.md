@@ -106,7 +106,10 @@ the models, the paths and the typed service that keeps the two sides in sync.
 * Ids: the access service refuses an entity, user or invite id that is not a
   document id (`tkCmsCheckDocumentId`: no `/`, not `.` or `..`): an
   `ArgumentError`. The basic and doc accessors below do not check: check a
-  client id yourself before using them.
+  client id yourself before using them, with the strict
+  `tkCmsIsValidStrictDocumentId` / `tkCmsCheckStrictDocumentId` (1 to 64
+  letters, digits, `_` or `-`: also safe in a url segment and a storage
+  path) for the id of an entity a client names.
 * Access rights are the `read`/`write`/`admin` bools plus an informative
   `role` (`TkCmsCvUserAccessMixin`). `fixAccess()` derives write from admin and
   read from write — call it (or use `grantAdminAccess()`,

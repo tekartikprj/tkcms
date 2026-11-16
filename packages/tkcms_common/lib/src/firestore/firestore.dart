@@ -69,3 +69,26 @@ String tkCmsCheckDocumentId(String id, [String? name]) {
   }
   return id;
 }
+
+final _strictDocumentIdRegExp = RegExp(r'^[A-Za-z0-9_-]{1,64}$');
+
+/// True when [id] is a strict document id: 1 to 64 letters, digits, `_` or
+/// `-`.
+///
+/// For the id of an entity a client names (a note, a poll, a game...): the
+/// ids the apps and `AutoIdGenerator` make (20 letters and digits), with
+/// room to spare. Stricter than [tkCmsIsValidDocumentId]: never a path, and
+/// safe as is in a url segment or a storage path (no space, `#`, `?`, `%`).
+bool tkCmsIsValidStrictDocumentId(String id) =>
+    _strictDocumentIdRegExp.hasMatch(id);
+
+/// Returns [id] when it is a strict document id
+/// ([tkCmsIsValidStrictDocumentId]), throws an [ArgumentError] otherwise.
+///
+/// [name] names the argument in the error.
+String tkCmsCheckStrictDocumentId(String id, [String? name]) {
+  if (!tkCmsIsValidStrictDocumentId(id)) {
+    throw ArgumentError.value(id, name, 'Invalid strict document id');
+  }
+  return id;
+}

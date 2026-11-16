@@ -94,6 +94,27 @@ void main() {
       expect(tkCmsIsValidDocumentId(id), isFalse, reason: id);
     }
   });
+  test('tkCmsIsValidStrictDocumentId', () {
+    for (var id in ['e1', 'AbC_-9', 'x' * 64, 'V1StGXR8Z5jdHi6BmyT4']) {
+      expect(tkCmsIsValidStrictDocumentId(id), isTrue, reason: id);
+      expect(tkCmsCheckStrictDocumentId(id), id);
+    }
+    for (var id in [
+      '',
+      'a/b',
+      '..',
+      'a.b',
+      'r1 x',
+      'a#b',
+      'a?b',
+      'a%2Fb',
+      'é',
+      'x' * 65,
+    ]) {
+      expect(tkCmsIsValidStrictDocumentId(id), isFalse, reason: id);
+      expect(() => tkCmsCheckStrictDocumentId(id, 'id'), throwsArgumentError);
+    }
+  });
   test('an invalid id is refused', () async {
     var userId = 'user1';
     for (var entityId in ['', 'a/b/c', '/type1_other/x', '..']) {
