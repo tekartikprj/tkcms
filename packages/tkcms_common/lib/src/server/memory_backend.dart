@@ -1,4 +1,6 @@
 import 'package:tekartik_firebase_functions_call/functions_call.dart';
+import 'package:tekartik_firebase_functions_http/firebase_functions_http_mixin.dart'
+    show debugFirebaseFunctionsHttpAllowCallUidHeader;
 import 'package:tkcms_common/src/flavor/flavor.dart';
 import 'package:tkcms_common/src/server/server_common.dart';
 import 'package:tkcms_common/src/server/server_v2.dart';
@@ -47,6 +49,14 @@ var _memoryBackendCount = 0;
 /// (`<name>_memory_<n>`): the memory functions call service keeps one
 /// instance per app name, a second backend (tests) would otherwise talk
 /// through the first one's auth. [close] it when done.
+///
+/// The in process callable carries the user id of the memory auth in a
+/// header that the functions server reads only when
+/// [debugFirebaseFunctionsHttpAllowCallUidHeader] is set, by default with
+/// asserts on: a release build of a demo (`flutter build web`) would call
+/// every command signed out. This sets it, for the whole process (a global):
+/// never build a memory backend in a process that also serves real
+/// functions, any client could claim any user id there.
 Future<TkCmsMemoryBackend<S, A>>
 initTkCmsMemoryBackend<S extends TkCmsServerAppV2, A>({
   required String name,
@@ -55,6 +65,7 @@ initTkCmsMemoryBackend<S extends TkCmsServerAppV2, A>({
   required A Function(FirebaseFunctionsCallable callableApi) apiService,
   FlavorContext flavorContext = FlavorContext.dev,
 }) async {
+  debugFirebaseFunctionsHttpAllowCallUidHeader = true;
   var services = await initFirebaseServicesMemory();
   var firebaseApp = await services.firebase.initializeAppAsync(
     options: FirebaseAppOptions(projectId: projectId),

@@ -1,3 +1,5 @@
+import 'package:tekartik_firebase_functions_http/firebase_functions_http_mixin.dart'
+    show debugFirebaseFunctionsHttpAllowCallUidHeader;
 import 'package:test/test.dart';
 import 'package:tkcms_common/src/app/tkcms_app.dart';
 import 'package:tkcms_common/tkcms_common.dart';
@@ -34,6 +36,21 @@ void main() {
       backend.serverApp.context.firebaseContext.firebaseApp.options.projectId,
       'demo-memory-backend-test',
     );
+  });
+
+  test('the callable carries the user id, in a release build too', () async {
+    // A release build: the functions server ignores the user id header
+    // unless the backend allows it.
+    var allowed = debugFirebaseFunctionsHttpAllowCallUidHeader;
+    addTearDown(() => debugFirebaseFunctionsHttpAllowCallUidHeader = allowed);
+    debugFirebaseFunctionsHttpAllowCallUidHeader = false;
+
+    var backend = await _initBackend();
+    addTearDown(backend.close);
+    var user = (await backend.firebaseContext.auth.signInAnonymously()).user;
+    await backend.apiService.initClient();
+    expect((await backend.apiService.getAuthMe()).uid.v, user.uid);
+    expect(debugFirebaseFunctionsHttpAllowCallUidHeader, isTrue);
   });
 
   test('a next backend does not share the auth of the previous one', () async {
